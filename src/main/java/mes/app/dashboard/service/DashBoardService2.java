@@ -166,7 +166,7 @@ public class DashBoardService2 {
             ds.last_year_reqdate,
             COUNT(t.reqdate) AS last_year_totalCnt
         FROM DateSeries ds
-        LEFT JOIN ERP_SWSPANEL.dbo.TB_DA006W t
+        LEFT JOIN dbo.TB_DA006W t
             ON ds.last_year_reqdate = t.reqdate
             AND t.spjangcd = :spjangcd
         GROUP BY ds.last_year_reqdate

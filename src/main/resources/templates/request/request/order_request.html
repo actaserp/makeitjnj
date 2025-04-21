@@ -41,8 +41,7 @@
               <h3>주문등록</h3>
 <!--              <img src="/images/icon/exclamation/exclamation-circle.svg"-->
 <!--                   class="zoom-img" style="margin-left: 5px"-->
-<!--                   onclick="openPopup('https://foms.atlassian.net/wiki/external/YzNmYmE3MTkyYTFlNGU2OGIwOTY5YTEyNDFiZjcwZmE')" alt="도움말">-->
-              <a style="color: red;margin-top: 4px;margin-left: 5px;">(두께, 폭, 길이, 높이는 외부기준 mm단위로 입력)</a>
+<!--                   onclick="openPopup('https://foms.atlassian.net/wiki/external/YzNmYmE3MTkyYTFlNGU2OGIwOTY5YTEyNDFiZjcwZmE')" alt="도움말">--> 
             </div>
             <div class="button-wrap">
               <ul>
@@ -86,7 +85,7 @@
                   </label>
                 </th>
                 <td>
-                  <input type="text" id="cltnm" name="reqdate" value="" style="width: 200px" disabled>
+                  <input type="text" id="cltnm" name="reqdate" value="" style="width: 200px"  >
                 </td>
                 <th style="text-align: center">
                   <label for="reqdate">
@@ -138,7 +137,7 @@
                   <span id="guide" style="color:#999;display:none"></span>
                 </td>
               </tr>
-              <tr>
+              <!-- <tr>
                 <th style="text-align: center">
                   <label for="panel_ht">
                     두&ensp;&ensp;&ensp;&nbsp;께
@@ -171,7 +170,7 @@
                 <td>
                   <input type="number" id="panel_hh" name="panel_hh" style="width: 200px">
                 </td>
-              </tr>
+              </tr> -->
               <tr>
                 <th style="text-align: center">
                   <label for="remark">
@@ -861,10 +860,10 @@
             {binding: 'cltnm', header: '업체명', width: '*', minWidth: 105, align: 'center'},
             {binding: 'reqdate', header: '주문일자', width: '*', minWidth: 120, align: 'center'},
             {binding: 'deldate', header: '납품희망일', width: '*', minWidth: 120, align: 'center'},
-            {binding: 'panel_ht', header: '두께', width: '*', minWidth: 70, align: 'right'},
-            {binding: 'panel_hw', header: '폭', width: '*', minWidth: 70, align: 'right'},
-            {binding: 'panel_hl', header: '길이', width: '*', minWidth: 70, align: 'right'},
-            {binding: 'panel_hh', header: '높이', width: '*', minWidth: 70, align: 'right'},
+            // {binding: 'panel_ht', header: '두께', width: '*', minWidth: 70, align: 'right'},
+            // {binding: 'panel_hw', header: '폭', width: '*', minWidth: 70, align: 'right'},
+            // {binding: 'panel_hl', header: '길이', width: '*', minWidth: 70, align: 'right'},
+            // {binding: 'panel_hh', header: '높이', width: '*', minWidth: 70, align: 'right'},
             {binding: 'remark', header: '제목', width: '*', minWidth: 250, align: 'left'},
             {binding: 'downloads', header: '첨부파일', width: '*', minWidth: 105, align: 'center'},
 
@@ -915,10 +914,10 @@
                 document.getElementById('perid').value = hdRow.perid;
                 document.getElementById('postno').value = hdRow.cltzipcd;
                 document.getElementById('address1').value = hdRow.cltaddr;
-                document.getElementById('panel_ht').value = hdRow.panel_ht;
-                document.getElementById('panel_hw').value = hdRow.panel_hw;
-                document.getElementById('panel_hl').value = hdRow.panel_hl;
-                document.getElementById('panel_hh').value = hdRow.panel_hh;
+                // document.getElementById('panel_ht').value = hdRow.panel_ht;
+                // document.getElementById('panel_hw').value = hdRow.panel_hw;
+                // document.getElementById('panel_hl').value = hdRow.panel_hl;
+                // document.getElementById('panel_hh').value = hdRow.panel_hh;
                 document.getElementById('remark').value = hdRow.remark;
               }
             }else {
@@ -928,10 +927,10 @@
               document.getElementById('perid').value = item.perid;
               document.getElementById('postno').value = item.cltzipcd;
               document.getElementById('address1').value = item.cltaddr;
-              document.getElementById('panel_ht').value = item.panel_ht;
-              document.getElementById('panel_hw').value = item.panel_hw;
-              document.getElementById('panel_hl').value = item.panel_hl;
-              document.getElementById('panel_hh').value = item.panel_hh;
+              // document.getElementById('panel_ht').value = item.panel_ht;
+              // document.getElementById('panel_hw').value = item.panel_hw;
+              // document.getElementById('panel_hl').value = item.panel_hl;
+              // document.getElementById('panel_hh').value = item.panel_hh;
               document.getElementById('remark').value = item.remark;
             }
             let fileList = Array.isArray(item.hd_files) ? item.hd_files : [];
@@ -1206,10 +1205,10 @@
         formData.append('perid', $('#perid').val());
         formData.append('postno', $('#postno').val());
         formData.append('address1', $('#address1').val());
-        formData.append('panel_ht', $('#panel_ht').val());
-        formData.append('panel_hw', $('#panel_hw').val());
-        formData.append('panel_hl', $('#panel_hl').val());
-        formData.append('panel_hh', $('#panel_hh').val());
+        // formData.append('panel_ht', $('#panel_ht').val());
+        // formData.append('panel_hw', $('#panel_hw').val());
+        // formData.append('panel_hl', $('#panel_hl').val());
+        // formData.append('panel_hh', $('#panel_hh').val());
         formData.append('remark', $('#remark').val());
         formData.append('reqnum', $('#reqnum').val());
 
@@ -2284,11 +2283,11 @@
     moveFocusOnEnter("reqdate", "deldate");
     moveFocusOnEnter("deldate", "telno");
     moveFocusOnEnter("telno", "perid");
-    moveFocusOnEnter("perid", "panel_ht");
-    moveFocusOnEnter("panel_ht", "panel_hw");
-    moveFocusOnEnter("panel_hw", "panel_hl");
-    moveFocusOnEnter("panel_hl", "panel_hh");
-    moveFocusOnEnter("panel_hh", "remark");
+    moveFocusOnEnter("perid", "remark");
+    // moveFocusOnEnter("panel_ht", "panel_hw");
+    // moveFocusOnEnter("panel_hw", "panel_hl");
+    // moveFocusOnEnter("panel_hl", "panel_hh");
+    // moveFocusOnEnter("panel_hh", "remark");
     moveFocusOnEnter("remark", "hgrb");
     moveFocusOnEnter("hgrb", "qty");
     moveFocusOnEnter("qty", "panel_t");
