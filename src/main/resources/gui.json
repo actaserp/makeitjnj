@@ -7,18 +7,28 @@
   "order_dashboard":     {"name": "order_dashboard", "templates": { "default": "order_dashboard/order_dashboard_main.html"}},
   "VendorOrderStats":    {"name": "업체별 주문통계", "templates":  { "default": "order_status/VendorOrderStats.html"}},
 
+  "wm_mat_group": { "name": "품목그룹", "templates": { "default": "definition/mat_group.html" } },
+  "wm_mat": { "name": "품목정보", "templates": { "default": "definition/material.html" } },
+  "wm_bom": { "name": "BOM",    "templates": { "default": "definition/bom.html" } },
+  "wm_mat_inout": { "name": "자재입출고", "templates": { "default": "inventory/mat_inout.html" } },
+  "wm_mat_cur_stock": { "name": "재고현황", "templates": { "default": "inventory/mat_cur_stock.html" } },
+
+  "wm_balju_order": {"name": "발주등록", "templates": { "default": "balju_rp/balju_order" }},
+  "wm_balju_order_aggregate": {"name": "발주량집계", "templates": { "default": "balju_rp/balju_order_aggregate" }},
+  "wm_balju_order_list": {"name": "월별 발주량", "templates": { "default": "balju_rp/balju_order_list" }},
+
+
+  "wm_company": { "name": "거래처 정보", "templates": { "default": "definition/company.html" } },
+  "wm_house": { "name": "창고 정보", "templates": { "default": "definition/storehouse.html" } },
   "wm_user_group":          { "name": "사용자 그룹", "templates": { "default": "system/usergroup.html" }  },
   "wm_user":                { "name": "사용자 관리", "templates": { "default": "system/user_main.html" }},
   "wm_menu_log":            { "name": "로그 현황", "templates": { "default": "system/menu_log.html" } },
   "wm_code":                { "name": "공통코드 등록", "templates": { "default": "system/code_main.html" } },
   "wm_auth_list" :          { "name": "사용자 권한 신청 조회", "templates": { "default": "system/auth_list.html" } },
 
-  "wm_dashboard_plc":       { "name": "계통도",        "templates": { "default": "dashboard/dashboard_plc_main.html" }},
-  "wm_dashboard_cctv":      { "name": "CCTV 모니터링",      "templates": { "default": "dashboard/dashboard_cctv_main.html" }},
-  "wm_dashboard_robot":     { "name": "로봇 모니터링",   "templates": { "default": "dashboard/dashboard_robot_main.html" }},
 
-  "wm_equipment_search":     { "name": "장비 이력 조회",   "templates": { "default": "dashboard/equipment_search.html" }},
-  "wm_equipment_alarm":     { "name": "장비 알림 이력",   "templates": { "default": "dashboard/equipment_alarm.html" }},
+
+
 
   "wm_sale_gene":           { "name": "발전량 관리",     "templates": { "default": "sales/gene/sale_gene_main.html" }},
   "wm_sale_upload":         { "name": "매출 등록",     "templates": { "default": "sales/upload/sale_upload_main.html" }},

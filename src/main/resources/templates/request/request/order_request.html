@@ -81,7 +81,7 @@
               <tr>
                 <th style="text-align: center">
                   <label for="cltnm">
-                    업체명
+                    고객사
                   </label>
                 </th>
                 <td>
@@ -137,40 +137,6 @@
                   <span id="guide" style="color:#999;display:none"></span>
                 </td>
               </tr>
-              <!-- <tr>
-                <th style="text-align: center">
-                  <label for="panel_ht">
-                    두&ensp;&ensp;&ensp;&nbsp;께
-                  </label>
-                </th>
-                <td>
-                  <input type="number" id="panel_ht" name="panel_ht" style="width: 200px">
-                </td>
-                <th style="text-align: center">
-                  <label for="panel_hw">
-                    폭
-                  </label>
-                </th>
-                <td>
-                  <input type="number" id="panel_hw" name="panel_hw" style="width: 200px">
-                </td>
-                <th style="text-align: center">
-                  <label for="panel_hl">
-                    길&ensp;&ensp;이
-                  </label>
-                </th>
-                <td>
-                  <input type="number" id="panel_hl" name="panel_hl" style="width: 200px">
-                </td>
-                <th style="text-align: center">
-                  <label for="panel_hh">
-                    높&ensp;&ensp;이
-                  </label>
-                </th>
-                <td>
-                  <input type="number" id="panel_hh" name="panel_hh" style="width: 200px">
-                </td>
-              </tr> -->
               <tr>
                 <th style="text-align: center">
                   <label for="remark">
@@ -183,6 +149,74 @@
                   <input type="text" id="remark" name="remark" style="width: 62%">
                 </td>
               </tr>
+               <tr>
+                <th style="text-align: center">
+                  <label for="panel_ht">
+                    공급기준
+                  </label>
+                </th>
+                <td>
+                  <input type="number" id="panel_ht" name="panel_ht" style="width: 200px">
+                </td>
+                <th style="text-align: center">
+                  <label for="panel_hw">
+                    수량
+                  </label>
+                </th>
+                <td>
+                  <input type="number" id="panel_hw" name="panel_hw" style="width: 200px">
+                </td>
+                <th style="text-align: center">
+                  <label for="panel_hl">
+                    공급계
+                  </label>
+                </th>
+                <td>
+                  <input type="number" id="panel_hl" name="panel_hl" style="width: 200px">
+                </td>
+                <th style="text-align: center">
+                  <label for="panel_hh">
+                    이윤
+                  </label>
+                </th>
+                <td>
+                  <input type="number" id="panel_hh" name="panel_hh" style="width: 200px">
+                </td>
+              </tr>  
+              <tr>
+               <th style="text-align: center">
+                 <label for="panel_ht">
+                   개당이윤
+                 </label>
+               </th>
+               <td>
+                 <input type="number" id="panel_ht" name="panel_ht" style="width: 200px">
+               </td>
+               <th style="text-align: center">
+                 <label for="panel_hw">
+                   이윤율
+                 </label>
+               </th>
+               <td>
+                 <input type="number" id="panel_hw" name="panel_hw" style="width: 200px">
+               </td>
+               <th style="text-align: center">
+                 <label for="panel_hl">
+                   전체이윤
+                 </label>
+               </th>
+               <td>
+                 <input type="number" id="panel_hl" name="panel_hl" style="width: 200px">
+               </td>
+               <th style="text-align: center">
+                 <label for="panel_hh">
+                   비고
+                 </label>
+               </th>
+               <td>
+                 <input type="number" id="panel_hh" name="panel_hh" style="width: 200px">
+               </td>
+             </tr>  
               </tbody>
             </table>
           </div>
@@ -215,7 +249,7 @@
             </div>
           </div>
           <div class="table-wrap">
-            <table class="write-table">
+            <!-- <table class="write-table">
               <caption>세부사항 테이블</caption>
               <input type="hidden" id="reqseq" name="reqseq">
               <input type="hidden" id="isnew" name="isnew">
@@ -335,7 +369,7 @@
                 </td>
               </tr>
               </tbody>
-            </table>
+            </table> -->
             <div class="container-fluid">
               <p id=""></p>
               <div id="theGrid2" style="max-height: 714px; height: 300px"></div>
@@ -368,13 +402,13 @@
               <dl>
                 <dt>
                   <label for="searchComnm">
-                    업체명<span class="eq">*</span>
+                    고객사<span class="eq">*</span>
                   </label>
                 </dt>
                 <dd>
                   <div class="srch-box">
                     <input type="text" id="searchComnm" name="searchComnm" class="input-srch"
-                           placeholder="업체명" style="border-radius: 5px;" readonly>
+                           placeholder="고객사" style="border-radius: 5px;" readonly>
                     <!--                                        <a href="#a" class="btn-srch" title="검색" onclick="searchData()"></a>-->
                   </div>
                 </dd>
@@ -692,7 +726,7 @@
         document.getElementById("startDate").value = reqdate;
         document.getElementById("endDate").value = reqdate;
         // `saupnum`을 포함해서 데이터 요청
-        // 업체명 readonly 제거
+        // 고객사 readonly 제거
         document.getElementById("searchComnm").removeAttribute("readonly");
         // 신규등록버튼 제거
         document.getElementById("newdataBtn").style.display = "none";
@@ -857,7 +891,7 @@
           selectionMode: wijmo.grid.SelectionMode.Row,
           columns: [
             {binding: 'ordflag', header: '진행구분', width: '*', minWidth: 100, align: 'center'},
-            {binding: 'cltnm', header: '업체명', width: '*', minWidth: 105, align: 'center'},
+            {binding: 'cltnm', header: '고객사', width: '*', minWidth: 105, align: 'center'},
             {binding: 'reqdate', header: '주문일자', width: '*', minWidth: 120, align: 'center'},
             {binding: 'deldate', header: '납품희망일', width: '*', minWidth: 120, align: 'center'},
             // {binding: 'panel_ht', header: '두께', width: '*', minWidth: 70, align: 'right'},
