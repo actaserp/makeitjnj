@@ -358,36 +358,36 @@ $(document).ready(function () {
 });
 
 /*     cardlist 선택  */
-$(document).ready(function () {
-    // Click event to toggle 'on' class
-    $('.card-edit-wrap section').click(function () {
-        $('.card-edit-wrap section').removeClass('on');
-        $(this).addClass('on');
-    });
-
-    // Drag and drop functionality
-    $('.card-edit-wrap').sortable({
-        items: 'section',
-        placeholder: 'ui-state-highlight',
-        helper: 'clone', // Using a clone of the dragged element for better performance
-        tolerance: 'pointer', // Improves the drop detection accuracy
-        start: function (event, ui) {
-            $(".gesture-box").hide();
-        },
-        stop: function (event, ui) {
-            // When dragging stops, remove 'on' class from all sections
-            $('.card-edit-wrap section').removeClass('on');
-            // Add 'on' class to the dragged section
-            ui.item.addClass('on');
-        }
-    });
-
-    // Click event to toggle 'card-hidden' class
-    $('.btn-hidden').click(function (e) {
-        e.stopPropagation(); // Prevent the click event from bubbling up to the section
-        $(this).closest('section').toggleClass('card-hidden');
-    });
-});
+// $(document).ready(function () {
+//     // Click event to toggle 'on' class
+//     $('.card-edit-wrap section').click(function () {
+//         $('.card-edit-wrap section').removeClass('on');
+//         $(this).addClass('on');
+//     });
+//
+//     // Drag and drop functionality
+//     $('.card-edit-wrap').sortable({
+//         items: 'section',
+//         placeholder: 'ui-state-highlight',
+//         helper: 'clone', // Using a clone of the dragged element for better performance
+//         tolerance: 'pointer', // Improves the drop detection accuracy
+//         start: function (event, ui) {
+//             $(".gesture-box").hide();
+//         },
+//         stop: function (event, ui) {
+//             // When dragging stops, remove 'on' class from all sections
+//             $('.card-edit-wrap section').removeClass('on');
+//             // Add 'on' class to the dragged section
+//             ui.item.addClass('on');
+//         }
+//     });
+//
+//     // Click event to toggle 'card-hidden' class
+//     $('.btn-hidden').click(function (e) {
+//         e.stopPropagation(); // Prevent the click event from bubbling up to the section
+//         $(this).closest('section').toggleClass('card-hidden');
+//     });
+// });
 
 /*=================================================================================
  * Layout 공통
@@ -482,6 +482,12 @@ $(document).ready(function () {
                 if ($depthTarget.css('display') == 'none') {
                     _self.activeOn($this);
                     $depthTarget.slideDown(_self.speed);
+
+                    var $onlyDep2 = $depthTarget.children('li');
+                    if ($onlyDep2.length === 1) {
+                        // dep2 클릭 시 dep3가 1개면 바로 탭 열기
+                        $onlyDep2.find('a').trigger('click');
+                    }
                 } else {
                     $depthTarget.slideUp(_self.speed);
                     _self.activeOff($this);
@@ -513,6 +519,142 @@ $(document).ready(function () {
         lnbUI.click('.layout-nav li', 300);
     });
 }(jQuery));
+
+class Trie{
+    constructor() {
+        this.wordList = [];
+    }
+
+    insert(word){
+
+        this.wordList.push(word);
+    }
+
+    searchPrefix(prefix) {
+        return this.wordList.filter(word => word.includes(prefix)); // 부분 일치 검색
+    }
+
+}
+
+function initializeAutocomplete(inputId, divId, dataList) {
+    const searchInput = document.getElementById(inputId);
+    const searchBox = searchInput.closest("#" + divId);
+
+    if (!searchBox) {
+        console.log('해당 요소 없음');
+        return;
+    }
+
+    let suggestionBox = document.getElementById("autocomplete-list");
+
+    if (!suggestionBox) {
+        suggestionBox = document.createElement("div");
+        suggestionBox.setAttribute("id", "autocomplete-list");
+        suggestionBox.style.position = "absolute";
+        suggestionBox.style.background = "white";
+        suggestionBox.style.border = "1px solid #ccc";
+        suggestionBox.style.width = searchInput.offsetWidth + "px";
+        suggestionBox.style.zIndex = "1000";
+        suggestionBox.style.display = "none";
+        suggestionBox.style.maxHeight = "200px";
+        suggestionBox.style.overflowY = "auto";
+
+        document.body.appendChild(suggestionBox);
+    }
+
+    const trie = new Trie();
+    dataList.forEach(name => trie.insert(name));
+
+    let currentIndex = -1;
+
+    searchInput.addEventListener("input", function () {
+        const query = searchInput.value.trim();
+        suggestionBox.innerHTML = "";
+        currentIndex = -1;
+
+        if (query.length === 0) {
+            suggestionBox.style.display = "none";
+            return;
+        }
+
+        const matches = trie.searchPrefix(query);
+
+        if (matches.length === 0) {
+            suggestionBox.style.display = "none";
+            return;
+        }
+
+        matches.forEach((name) => {
+            const item = document.createElement("div");
+            item.textContent = name;
+            item.classList.add("autocomplete-item");
+            item.style.padding = "10px";
+            item.style.cursor = "pointer";
+            item.style.borderBottom = "1px solid #eee";
+            item.style.fontSize = "14px";
+
+            item.addEventListener("click", function () {
+                searchInput.value = name;
+                suggestionBox.style.display = "none";
+            });
+
+            suggestionBox.appendChild(item);
+        });
+
+        // 위치를 검색창 아래로 조정**
+        const rect = searchInput.getBoundingClientRect();
+        suggestionBox.style.top = `${window.scrollY + rect.bottom}px`;
+        suggestionBox.style.left = `${window.scrollX + rect.left}px`;
+        suggestionBox.style.width = `${rect.width}px`;
+
+        suggestionBox.style.display = "block";
+    });
+
+    searchInput.addEventListener("keydown", function (e) {
+        const items = suggestionBox.getElementsByClassName("autocomplete-item");
+
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            if (currentIndex < items.length - 1) {
+                currentIndex++;
+                updateSelection(items);
+            }
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateSelection(items);
+            }
+        } else if (e.key === "Enter") {
+            e.preventDefault();
+            if (currentIndex >= 0 && currentIndex < items.length) {
+                searchInput.value = items[currentIndex].textContent;
+                suggestionBox.style.display = "none";
+            }
+        }
+    });
+
+    function updateSelection(items) {
+        Array.from(items).forEach(item => item.style.background = "white");
+
+        if (currentIndex >= 0 && currentIndex < items.length) {
+            const selectedItem = items[currentIndex];
+            selectedItem.style.background = "#f0f0f0";
+
+            // 여기 추가! 선택된 항목이 안 보이면 자동 스크롤
+            selectedItem.scrollIntoView({
+                block: "nearest", // 보여지는 범위 내에서 최소한으로 스크롤
+                behavior: "smooth" // 부드럽게 이동 (선택)
+            });
+        }
+    }
+
+    document.addEventListener("click", function (event) {
+        if (!searchBox.contains(event.target)) {
+            suggestionBox.style.display = "none";
+        }
+    });
+}
 
 
 /*      Battery       */

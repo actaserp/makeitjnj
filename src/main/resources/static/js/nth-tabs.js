@@ -5,20 +5,22 @@
  */
 (function ($) {
     $.fn.nthTabs = function (options) {
+        // 플러그인의 40은 기본 왼쪽 여백입니다.
         var nthTabs = this;
         var delflag = false;
 
         var defaults = {
-            allowClose: true,
-            active: true,
-            location: true,
-            fadeIn: true,
-            rollWidth: nthTabs.width() - 120
+            allowClose: true, // 새 탭 (종료 허용 여부), 기본적으로 활성화 됨
+            active: true, // 새 탭, 활성 상태, 기본적으로 활성화 됨
+            location: true, //새 탭, 자동으로 위치 여부, 기본적으로 사용 가능
+            fadeIn: true, // 새 탭, 페이드 인 효과, 기본적으로 활성화 됨
+            rollWidth: nthTabs.width() - 120 // 스크롤 가능 영역 너비, 120은 3 개의 조작 버튼의 너비입니다.
         };
 
         var settings = $.extend({}, defaults, options);
 
         var handler = [];
+
         var frameName = 0;
 
         var template =
@@ -30,16 +32,25 @@
             '</div>' +
             '</div>' +
             '<a href="#" class="roll-nav roll-nav-right"><span class="fa fa-angle-right"></span><span class="hidden">TAB move right</span></a>' +
+            //'<div class="dropdown roll-nav right-nav-list">' +
+            //'<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="hidden">TAB MENU</span>' +
+            //'<span class="tab-down"></span></a>' +
             '<ul id="contextTabMenu" class="dropdown-menu tabmenus animated flipInX">' +
             '<li><a href="#" class="tab-open-current">새창으로 열기</a></li>' +
             '<li><a href="#" class="tab-close-current otherAuthmaintab">현재 탭 닫기</a></li>' +
             '<li role="separator" class="divider"></li>' +
             '<li><a href="#" class="tab-close-other otherAuthtab otherAuthmaintab">다른 탭 닫기</a></li>' +
             '<li><a href="#" class="tab-close-all">모든 탭 닫기</a></li>' +
+            //'<li class="divider"></li>' +
+            //'<li class="scrollbar-outer tab-list-scrollbar">' +
+            //'<div class="tab-list-container"><ul class="tab-list"></ul></div>' +
+            //'</li>' +
             '</ul>' +
+            //'</div>' +
             '</div>' +
             '<div class="tab-content"></div>';
 
+        // 플러그인 사용
         var run = function () {
             nthTabs.html(template);
             event.onWindowsResize().onTabClose().onTabRollLeft().onTabRollRight().onTabList()
@@ -47,7 +58,10 @@
             return methods;
         };
 
+        // 방법 목록
         var methods = {
+
+            // 모든 탭 너비 가져 오기
             getAllTabWidth: function () {
                 var sum_width = 0;
                 nthTabs.find('.nav-tabs li').each(function () {
@@ -56,14 +70,17 @@
                 return sum_width;
             },
 
+            // 왼쪽 및 오른쪽 슬라이딩 단계 값 가져 오기
             getMarginStep: function () {
                 return settings.rollWidth / 2;
             },
 
+            // 현재 활성 상태 탭 ID 가져 오기
             getActiveId: function () {
                 return nthTabs.find('li[class="active"]').find("a").attr("href").replace('#', '');
             },
 
+            // 모든 탭 가져 오기
             getTabList: function () {
                 var tabList = [];
                 nthTabs.find('.nav-tabs li a').each(function () {
@@ -72,22 +89,19 @@
                 return tabList;
             },
 
+            // 새 단일 탭 만들기
             addTab: function (options) {
-               // console.log("🔹 addTab() 호출됨 - options:", options);
+                // nav-tab
                 var tab = [];
                 var active = options.active == undefined ? settings.active : options.active;
                 var allowClose = options.allowClose == undefined ? settings.allowClose : options.allowClose;
-                var location = options.location == undefined ? settings.location : options.location;    //탭 위치 관련설정
-                var fadeIn = options.fadeIn == undefined ? settings.fadeIn : options.fadeIn;    //애니메이션 효과를 적용할지 여부
-                var url = options.url == undefined ? "" : options.url;                            //탭 내부에 포함할 URL (iframe 사용)
-                var ismanual = options.ismanual == undefined ? 'false' : options.ismanual;        //매뉴얼 버튼 표시 여부
-                var isbookmark = options.isbookmark == undefined ? 'false' : options.isbookmark;    //북마크 여부
+                var location = options.location == undefined ? settings.location : options.location;
+                var fadeIn = options.fadeIn == undefined ? settings.fadeIn : options.fadeIn;
+                var url = options.url == undefined ? "" : options.url;
+                var ismanual = options.ismanual == undefined ? 'false' : options.ismanual;
+                var isbookmark = options.isbookmark == undefined ? 'false' : options.isbookmark;
                 var objid = options.id;
 
-                //console.log("🛠️ 생성된 탭 ID:", objid);
-               // console.log("🛠️ 생성된 URL:", url);
-
-                // tab.push('<li data-title="' + options.title + '" ' + (allowClose ? '' : 'not-allow-close') + '>');
                 tab.push('<li data-title="' + options.title + '" data-isbookmark="' + isbookmark + '"' + (allowClose ? '' : 'not-allow-close') + '>');
                 tab.push('<a href="#' + options.id + '" data-toggle="tab" data-optionurl="' + options.url + '">');
                 tab.push('<span>' + options.title + '</span>');
@@ -96,7 +110,7 @@
                 allowClose ? tab.push('<i class="icon nth-icon-close-mini tab-close"></i>') : '';
                 tab.push('</li>');
                 nthTabs.find(".nav-tabs").append(tab.join(''));
-
+                //tab-content
                 var tabContent = [];
                 tabContent.push('<div class="tab-pane ' + (fadeIn ? 'animation-fade' : '') + '" id="' + options.id + '" ' + (allowClose ? '' : 'not-allow-close') + '>');
                 if (url.length > 0) {
@@ -106,34 +120,26 @@
                     tabContent.push('<div class="nth-tabs-content">' + options.content + "</div>");
                 }
                 tabContent.push('</div>');
-
-               // console.log("📌 생성된 탭 HTML:", tab.join(''));
-
                 nthTabs.find(".tab-content").append(tabContent.join(''));
                 active && this.setActTab(options.id);
                 location && this.locationTab(options.id);
 
-                // console.log("🔹 setActTab() 호출됨 - 활성화할 탭 ID:", options.id);
-                // console.log("🔹 locationTab() 호출됨 - 이동할 탭 ID:", options.id);
-
                 // 탭 로드 후 북마크 이벤트 바인딩
                 this.bindBookmarkEvent(objid, isbookmark);
 
-                // ✅ sortable이 존재하는 경우에만 실행
-                if (typeof sortable !== 'undefined') {
-                    sortable('#tabdragdrop', { forcePlaceholderSize: true });
-                } else {
-                   // console.warn("⚠️ sortable이 정의되지 않았습니다. 드래그 기능이 비활성화됩니다.");
-                }
+                // 탭 이동가능 기능추가 - 31라인 ul태그에 아이디 추가 <ul class="nav nav-tabs" id="tabdragdrop"></ul>
+                sortable('#tabdragdrop', {
+                    forcePlaceholderSize: true
+                });
 
+                // 매뉴얼 오픈
                 $('.tab-question').bind('click', function (e) {
                     Ax5Modal.open({ url: '/modal/manual', width: 800, height: 600, callbackfn: 'setPopUpManualResult', params: { objId: $(this).data('objid') } });
                 });
-
-               // console.log("✅ nthTabs.addTab() 실행 완료!");
                 return this;
             },
 
+            // 여러 개의 새 탭 만들기
             addTabs: function (tabsOptions) {
                 for (var index in tabsOptions) {
                     this.addTab(tabsOptions[index]);
@@ -176,6 +182,7 @@
                                     },
                                     success: function (response) {
                                         if (response.success) {
+
                                             if (!isBookmarked) { // 북마크를 추가하는 경우
 
                                                 // 탭의 data-isbookmark 속성 업데이트
@@ -213,34 +220,39 @@
                 }
             },
 
+            // 위치 지정 탭
             locationTab: function (tabId) {
                 tabId = tabId == undefined ? methods.getActiveId() : tabId;
                 tabId = tabId.indexOf('#') > -1 ? tabId : '#' + tabId;
-                var navTabOpt = nthTabs.find("[href='" + tabId + "']");
-
+                var navTabOpt = nthTabs.find("[href='" + tabId + "']"); // 현재 작동중인 탭 객체
+                // 현재 활성 탭 앞에있는 모든 형제 탭의 너비 합계를 계산하십시오
                 var beforeTabsWidth = 0;
                 navTabOpt.parent().prevAll().each(function () {
                     beforeTabsWidth += $(this).width();
                 });
-
+                // 탭 컨테이너 객체 가져 오기
                 var contentTab = navTabOpt.parent().parent().parent();
-
-                var margin_left_total = 40;
-                if (beforeTabsWidth > settings.rollWidth) {
+                // 사례 1 : 이전 형제 탭의 너비 합계가 탭 표시 영역보다 작습니다.
+                if (beforeTabsWidth <= settings.rollWidth) {
+                    margin_left_total = 40;
+                }
+                // 사례 2 : 이전 형제 탭의 너비 합계가 탭의 표시 영역보다 큰 경우 여백은 왼쪽으로 정수 배만큼 간격 띄우기입니다.
+                else {
                     margin_left_total = 40 - Math.floor(beforeTabsWidth / settings.rollWidth) * settings.rollWidth;
                 }
-
                 contentTab.css("margin-left", margin_left_total);
                 return this;
             },
 
+            // 단일 탭 삭제
             delTab: function (tabId) {
                 tabId = tabId == undefined ? methods.getActiveId() : tabId;
                 tabId = tabId.indexOf('#') > -1 ? tabId : '#' + tabId;
                 var navTabA = nthTabs.find("[href='" + tabId + "']");
                 if (navTabA.parent().attr('not-allow-close') != undefined) return false;
-
+                // 꺼짐이 활성 탭인 경우
                 if (navTabA.parent().attr('class') == 'active') {
+                    // 탭 활성화, 그 뒤에 활성화가 있으면 탭 활성화, 그렇지 않으면 정면 활성화
                     var activeNavTab = navTabA.parent().next();
                     var activeTabContent = $(tabId).next();
                     if (activeNavTab.length < 1) {
@@ -250,11 +262,11 @@
                     activeNavTab.addClass('active');
                     activeTabContent.addClass('active');
                 }
-
+                // 이전 탭 제거
                 navTabA.parent().remove();
                 $(tabId).remove();
 
-                var $delTabObj = $('#menu').find('a[data-objid="' + tabId.replace('#', '') + '"]').closest('li.has_sub');
+                var $delTabObj = $('#left-menu').find('a[data-objid="' + tabId.replace('#', '') + '"]').closest('li.has_sub');
                 $delTabObj.removeClass('open');
                 $delTabObj.children('ul').hide();
 
@@ -262,7 +274,8 @@
                 return this;
             },
 
-            openNewWindow: function (_targetObjId) {
+            // 새창열기
+            openNewWindow: function (_targetObjId, isbookmark) {
                 var navTabA = nthTabs.find("[href='" + _targetObjId + "']");
                 this.openWindowTab(navTabA.data('optionurl'), {
                     width: 1280,
@@ -270,11 +283,10 @@
                     winname: 'newTabWindow-' + _targetObjId,
                     hideBookmark: true,  // 플래그 추가
                     params: { wintitle: encodeURI(navTabA.closest('li').data('title'))
-                               }
+                    }
                 });
                 return this;
             },
-
             openWindowTab: function (url, options) {
                 if (!options) {
                     options = {};
@@ -333,6 +345,7 @@
                 return newWindow;
 
             },
+            // 다른 탭 삭제
             delOtherTab: function () {
                 nthTabs.find(".nav-tabs li").not('[class="active"]').not('[not-allow-close]').remove();
                 nthTabs.find(".tab-content div.tab-pane").not('[not-allow-close]').not('[class$="active"]').remove();
@@ -340,12 +353,14 @@
                 return this;
             },
 
+            // 모든 탭 삭제
             delAllTab: function () {
                 this.delOtherTab();
                 this.delTab();
                 return this;
             },
 
+            // 활동 탭 설정
             setActTab: function (tabId) {
                 tabId = tabId == undefined ? methods.getActiveId() : tabId;
                 tabId = tabId.indexOf('#') > -1 ? tabId : '#' + tabId;
@@ -355,29 +370,34 @@
                 return this;
             },
 
+            // 스위치 탭
             toggleTab: function (tabId) {
                 this.setActTab(tabId).locationTab(tabId);
                 return this;
             },
 
+            // 탭의 존재 여부 지정
             isExistsTab: function (tabId) {
                 tabId = tabId.indexOf('#') > -1 ? tabId : '#' + tabId;
                 return nthTabs.find(tabId).length > 0;
             },
 
+            // 탭 스위치 이벤트 핸들러
             tabToggleHandler: function (func) {
                 handler["tabToggleHandler"] = func;
             }
         };
 
+        // 이벤트 처리
         var event = {
+            // 창 변경
             onWindowsResize: function () {
                 $(window).resize(function () {
                     settings.rollWidth = nthTabs.width() - 120;
                 });
                 return this;
             },
-
+            // 위치 지정 탭
             onLocationTab: function () {
                 nthTabs.on("click", '.tab-location', function () {
                     methods.locationTab();
@@ -385,18 +405,25 @@
                 return this;
             },
 
+            // 탭 닫기 버튼
             onTabClose: function () {
                 nthTabs.on("click", '.tab-close', function () {
                     var tabId = $(this).parent().find("a").attr('href');
-                    var navTabOpt = nthTabs.find("[href='" + tabId + "']");
+                    // 현재 작업의 레이블 너비
+                    var navTabOpt = nthTabs.find("[href='" + tabId + "']"); // 현재 작업 탭 객체
+                    // 현재 탭 뒤에 탭이 있으면 처리되지 않으며, 그렇지 않으면 탭이 왼쪽으로 전체적으로 옵셋됩니다.
                     if (navTabOpt.parent().next().length == 0) {
+                        // 현재 작업 탭 앞에있는 모든 형제 탭의 너비 합계를 계산합니다.
                         var beforeTabsWidth = 0;
                         navTabOpt.parent().prevAll().each(function () {
                             beforeTabsWidth += $(this).width();
                         });
+                        // 현재 작업 탭의 너비
                         var optTabWidth = navTabOpt.parent().width();
-                        var margin_left_total = 40;
+                        var margin_left_total = 40; // 기본 오프셋 (전체 너비가 스크롤 영역을 초과하지 않음)
+                        // 탭 컨테이너 객체 가져 오기
                         var contentTab = navTabOpt.parent().parent().parent();
+                        // 이 상황을 만족 시키려면 전체 왼쪽 오프셋 처리를 수행해야합니다.
                         if (beforeTabsWidth > settings.rollWidth) {
                             var margin_left_origin = contentTab.css('marginLeft').replace('px', '');
                             margin_left_total = parseFloat(margin_left_origin) + optTabWidth + 40;
@@ -408,6 +435,7 @@
                 return this;
             },
 
+            // 현재 탭 작업 닫기
             onTabCloseOpt: function () {
                 nthTabs.on("click", '.tab-close-current', function (e) {
                     e.preventDefault();
@@ -418,6 +446,7 @@
                 return this;
             },
 
+            // 현재 탭 새창으로 열기
             onTabNewWindow: function () {
                 nthTabs.on("click", '.tab-open-current', function (e) {
                     e.preventDefault();
@@ -430,6 +459,7 @@
                 return this;
             },
 
+            // 다른 탭 닫기
             onTabCloseOther: function () {
                 nthTabs.on("click", '.tab-close-other', function (e) {
                     e.preventDefault();
@@ -438,6 +468,7 @@
                 return this;
             },
 
+            // 모든 탭 닫기
             onTabCloseAll: function () {
                 nthTabs.on("click", '.tab-close-all', function (e) {
                     e.preventDefault();
@@ -446,11 +477,13 @@
                 return this;
             },
 
+            // 왼쪽 슬라이드 탭
             onTabRollLeft: function () {
                 nthTabs.on("click", '.roll-nav-left', function () {
                     var contentTab = $(this).parent().find('.content-tabs-container');
                     var margin_left_total;
                     if (methods.getAllTabWidth() <= settings.rollWidth) {
+                        // 눈에 보이는 영역을 넘어서 보이지 않고 미끄러질 수 없음
                         margin_left_total = 40;
                     } else {
                         var margin_left_origin = contentTab.css('marginLeft').replace('px', '');
@@ -461,60 +494,78 @@
                 return this;
             },
 
+            // 오른쪽 슬라이드 탭
             onTabRollRight: function () {
                 nthTabs.on("click", '.roll-nav-right', function () {
-                    if (methods.getAllTabWidth() <= settings.rollWidth) return false;
+                    if (methods.getAllTabWidth() <= settings.rollWidth) return false; // 눈에 보이는 영역을 넘어서 보이지 않고 미끄러질 수 없음
                     var contentTab = $(this).parent().find('.content-tabs-container');
                     var margin_left_origin = contentTab.css('marginLeft').replace('px', '');
                     var margin_left_total = parseFloat(margin_left_origin) - methods.getMarginStep();
-                    if (methods.getAllTabWidth() - Math.abs(margin_left_origin) <= settings.rollWidth) return false;
+                    if (methods.getAllTabWidth() - Math.abs(margin_left_origin) <= settings.rollWidth) return false; // 숨김이없고 스크롤 할 필요가 없습니다.
                     contentTab.css("margin-left", margin_left_total);
                 });
                 return this;
             },
 
+            // 탭 목록
             onTabList: function () {
+                /*
+                nthTabs.on("click", '.right-nav-list', function () {
+                  var tabList = methods.getTabList();
+                  var html = [];
+                  $.each(tabList, function (key, val) {
+                      html.push('<li class="toggle-tab" data-id="' + val.id + '">' + val.title + '</li>');
+                  });
+                  nthTabs.find(".tab-list").html(html.join(''));
+                });
+                nthTabs.find(".tab-list-scrollbar").scrollbar();
+                this.onTabListToggle();
+                */
                 return this;
             },
 
+            // 목록 아래의 탭 전환
             onTabListToggle: function () {
                 nthTabs.on("click", '.toggle-tab', function () {
                     var tabId = $(this).data("id");
                     methods.setActTab(tabId).locationTab(tabId);
                 });
+                // 탭 목록 스크롤 막대를 클릭하여 다른 탭을 닫지 마세요.
                 nthTabs.on('click', '.scroll-element', function (e) {
                     e.stopPropagation();
                 });
                 return this;
             },
 
+            // 탭 전환 이벤트
             onTabToggle: function () {
                 nthTabs.on("click", '.nav-tabs li', function () {
                     $('.gnb ul li a').removeClass('on');
                     $('li.has_sub2').removeClass('open');
                     $('li.has_sub2 > ul').slideUp(200);
                     if (delflag == false) {
+                        // 이전에 열려있던 대메뉴 닫기
                         var _objIdPrev = methods.getActiveId();
-                        var $parentPrev = $('#menu').find('a[data-objid="' + _objIdPrev + '"]').closest('li.has_sub');
+                        var $parentPrev = $('#left-menu').find('a[data-objid="' + _objIdPrev + '"]').closest('li.has_sub');
                         $parentPrev.removeClass('open');
                         $parentPrev.children('ul').hide();
-
+                        // 현재선택한 탭이 포함된 대메뉴 열기
                         var _objId = $(this).children('a').prop('hash').replace('#', '');
-                        var $parentLi = $('#menu').find('a[data-objid="' + _objId + '"]').closest('li.has_sub');
+                        var $parentLi = $('#left-menu').find('a[data-objid="' + _objId + '"]').closest('li.has_sub');
                         $parentLi.addClass('open');
                         $parentLi.children('ul').show();
-                        $('#menu').find('a[data-objid="' + _objId + '"]').addClass('on');
-
-                        var $parentLisub = $('#menu').find('a[data-objid="' + _objId + '"]').closest('li.has_sub2');
+                        $('#left-menu').find('a[data-objid="' + _objId + '"]').addClass('on');
+                        // 3단계 메뉴일경우 상위메뉴 열기
+                        var $parentLisub = $('#left-menu').find('a[data-objid="' + _objId + '"]').closest('li.has_sub2');
                         if ($parentLisub.length > 0) {
                             $parentLisub.addClass('open');
                             $parentLisub.children('ul').slideDown(200);
                         }
                     } else {
-                        var $parentLi = $('#menu').find('a[data-objid="' + methods.getActiveId() + '"]').closest('li.has_sub');
+                        var $parentLi = $('#left-menu').find('a[data-objid="' + methods.getActiveId() + '"]').closest('li.has_sub');
                         $parentLi.addClass('open');
                         $parentLi.children('ul').show();
-                        $('#menu').find('a[data-objid="' + methods.getActiveId() + '"]').addClass('on');
+                        $('#left-menu').find('a[data-objid="' + methods.getActiveId() + '"]').addClass('on');
                     }
                     delflag = false;
 

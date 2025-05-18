@@ -256,10 +256,11 @@ var Alert = {
                 "ok": i18n.getCommonText("확인"),
                 "cancel": i18n.getCommonText("취소")
             },
-            theme: 'danger',
+            theme: 'default',
             buttons: [
-                {key: "cancel", label: i18n.getCommonText("취소")},  // 취소 버튼을 먼저
-                {key: "ok", label: i18n.getCommonText("확인")}       // 확인 버튼을 나중에
+                {key: "ok", label: i18n.getCommonText("확인")},       // 확인 버튼을 나중에
+                {key: "cancel", label: i18n.getCommonText("취소")}  // 취소 버튼을 먼저
+
             ],
             onStateChanged: function () {
                 if (this.state === 'open') {
@@ -292,13 +293,13 @@ var Alert = {
 
                     // 버튼 순서를 변경하는 로직
                     const buttonWrap = document.querySelector('.ax-button-wrap');
-                    const cancelButton = buttonWrap.querySelector('[data-dialog-btn="cancel"]');
                     const okButton = buttonWrap.querySelector('[data-dialog-btn="ok"]');
+                    const cancelButton = buttonWrap.querySelector('[data-dialog-btn="cancel"]');
 
                     // 기존 버튼 순서를 교체
                     if (cancelButton && okButton) {
-                        buttonWrap.appendChild(cancelButton); // 취소 버튼을 먼저 추가
                         buttonWrap.appendChild(okButton);    // 확인 버튼을 뒤에 추가
+                        buttonWrap.appendChild(cancelButton); // 취소 버튼을 먼저 추가
                     }
                 }
                 else if (this.state === 'close') {
@@ -386,8 +387,8 @@ var Notify = {
 var Ax5Modal = {
     open: function (_config) {
         var defaultconfig = {
-            width: 700,
-            height: 500,
+            width: 1200,
+            height: 900,
             method: 'get',
             url: '',
             callbackfn: 'setPopUpResult'

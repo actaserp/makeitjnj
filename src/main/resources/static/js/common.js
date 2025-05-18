@@ -2,25 +2,7 @@
 // 공통콤보, validatin 등
 
 'use strict';
-//랜덤문자열 생성 50(랜덤문자열 42자리 + 오늘날짜 )자리로
-function generateRandomStringWithDate(length = 32) {
-    // 오늘 날짜를 "YYYYMMDD" 형식으로 가져오기
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1 필요
-    const dd = String(today.getDate()).padStart(2, '0');
-    const formattedDate = `${yyyy}${mm}${dd}`;
 
-    // 지정된 길이의 랜덤 문자열 생성
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let randomString = '';
-    for (let i = 0; i < length; i++) {
-        randomString += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-
-    // 랜덤 문자열과 날짜를 결합하여 반환
-    return `${randomString}${formattedDate}`;
-}
 
 var JQuery = {
     extends: function () {
@@ -90,7 +72,7 @@ var JQuery = {
 
 var Ajax = {
     defaults: {
-        progressBarText: '레플러스 MES...'
+        progressBarText: '엑타스 MES...'
     },
     setProgressBarText: function (text) {
         Ajax.defaults.progressBarText = text;
@@ -246,6 +228,12 @@ var CommonUtil = {
             d.getMinutes() +
             d.getSeconds();
         return s;
+    },
+    getHourMin: function () {
+        var d = new Date();
+        var hours = String(d.getHours()).padStart(2, '0');
+        var minutes = String(d.getMinutes()).padStart(2, '0');
+        return hours + ':' + minutes;
     },
     addDays: function (date, days) {
         var result = new Date(date);
@@ -580,6 +568,9 @@ let FormUtil = {
             values[val] = $form.find('#' + val).val();
         });
 
+        values['invatyn'] = $form.find('#invatyn').is(':checked') ? 'Y' : 'N';
+        values['spjangcd'] = sessionStorage.getItem('spjangcd');
+
         return values;
     },
     // serialize시에 disabled값도 포함하여 serialize 리턴
@@ -635,7 +626,12 @@ let FormUtil = {
                     $radioCtl.attr('checked', true);
                 } else {
                     if ($.isNumeric(value) || value === null) {
-                        $frmCtl.val(value);
+                        let numberFields = ['unitPrice', 'vat', 'price', 'totalAmount']; // 포맷 대상 필드 목록
+                        if (numberFields.includes(key)) {
+                            $frmCtl.val(Number(value).toLocaleString()); // 천단위 콤마 추가
+                        } else {
+                            $frmCtl.val(value);
+                        }
                     } else {
                         $frmCtl.val(value.replace('&amp;', '&'));
                     }
@@ -649,8 +645,121 @@ let FormUtil = {
                 }
             }
         });
+    },
+    BindInvoiceDataForm: function (_resultSet, $form) {
+        $.each(_resultSet, function (key, value) {
+            // 빈스트링으로 오는 값은 반드시 null 값으로 치환한다. 또는 json 에서 null 로 넘겨준다
+            // 치환하지 않고 빈스트링값('') 으로 처리하면 input[value=] 이렇게 되어 오류 발생함.
+            if (key === '') value = null;
+            if (value === '') value = null;
+
+            var $frmCtl = $form.find('[name=' + key + ']');
+
+            if ($frmCtl.length === 0)
+                return true;
+            let object = $frmCtl[0];
+            var tagName = object === undefined ? '' : object.tagName.toUpperCase();
+            var tagClassName = object === undefined ? '' : object.className.toUpperCase();
+            let type_name = object.type;
+
+            if (tagName === 'SELECT') {
+
+                if ($frmCtl.is(':disabled')) { $frmCtl.removeAttr('disabled'); }
+                $frmCtl.val(value);
+            } else if (tagName === 'INPUT' || tagName === 'TEXTAREA') {
+
+                if ($frmCtl.is(':disabled')) { $frmCtl.removeAttr('disabled'); }
+                if (type_name === 'checkbox') {
+                    let checkValue = $frmCtl.val();
+                    if (checkValue !== undefined)
+                        $frmCtl.prop('checked', value === checkValue);
+                    else
+                        $frmCtl.prop('checked', value);
+                    //$frmCtl.attr('checked', value);
+                } else if (type_name === 'radio') {
+                    console.log('라디오 바인딩 시도:', key, value);
+                    $frmCtl.removeAttr('checked');
+                    let escapedValue = value.replace(/"/g, '\\"');
+                    var $radioCtl = $('input:radio[name=' + key + ']:input[value=' + escapedValue + ']');
+                    $radioCtl.prop('checked', true);
+                    $radioCtl.attr('checked', true);
+                } else {
+                    if ($.isNumeric(value) || value === null) {
+                        let biznumFields = ['InvoicerCorpNum', 'InvoiceeCorpNum'];
+                        let phoneFields = ['InvoicerTEL', 'InvoiceeTEL1'];
+                        let numberFields = ['unitPrice', 'vat', 'price', 'totalAmount', 'SupplyCostTotal', 'TaxTotal', 'TotalAmount', 'Cash', 'ChkBill', 'Note', 'Credit'];
+
+                        if (biznumFields.includes(key)) {
+                            let raw = (value || '').replace(/[^\d]/g, '');
+                            if (raw.length === 10) {
+                                $frmCtl.val(raw.replace(/(\d{3})(\d{2,3})(\d{5})/, '$1-$2-$3'));
+                            } else {
+                                $frmCtl.val(raw);
+                            }
+                        } else if (phoneFields.includes(key)) {
+                            let raw = (value || '').replace(/[^\d]/g, '');
+                            if (raw.startsWith('02')) {
+                                $frmCtl.val(raw.replace(/(\d{2})(\d{3,4})(\d{4})/, '$1-$2-$3'));
+                            } else {
+                                $frmCtl.val(raw.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3'));
+                            }
+                        } else if (numberFields.includes(key)) {
+                            $frmCtl.val(Number(value).toLocaleString());
+                        } else {
+                            $frmCtl.val(value);
+                        }
+                    } else {
+                        $frmCtl.val(value.replace('&amp;', '&'));
+                    }
+                }
+            } else if (tagName === 'SPAN') {
+                if (tagClassName === 'DATE') {
+                    var ddspan = new Date(value);
+                    $frmCtl.text(ddspan.toLocaleString());
+                } else {
+                    $frmCtl.text(value);
+                }
+            }
+        });
+        // 상세 품목 바인딩
+        if (Array.isArray(_resultSet.detailList)) {
+            for (let i = 0; i < _resultSet.detailList.length; i++) {
+                let item = _resultSet.detailList[i];
+
+                // 만약 행이 부족하면 동적으로 행 추가
+                let $row = $('#detailList' + i + '\\.ItemName').closest('tr');
+                if ($row.length === 0) {
+                    // 행이 없으면 행 추가 함수 호출 (행 추가 버튼 트리거 또는 함수 직접 호출)
+                    $('#btnAddDetailRow').click(); // 또는 initializeDetailRows(i+1); 등 사용
+                    $row = $('#detailList' + i + '\\.ItemName').closest('tr');
+                }
+
+                // 각 필드에 값 채우기
+                $row.find('[name="detailList[' + i + '].ItemId"]').val(item.ItemId);
+                $row.find('[name="detailList[' + i + '].ItemName"]').val(item.ItemName);
+                $row.find('[name="detailList[' + i + '].Spec"]').val(item.Spec);
+                $row.find('[name="detailList[' + i + '].Qty"]').val(item.Qty);
+                $row.find('[name="detailList[' + i + '].UnitCost"]').val(
+                    item.UnitCost != null ? Number(item.UnitCost).toLocaleString() : ''
+                );
+                $row.find('[name="detailList[' + i + '].SupplyCost"]').val(
+                    item.SupplyCost != null ? Number(item.SupplyCost).toLocaleString() : ''
+                );
+                $row.find('[name="detailList[' + i + '].Tax"]').val(
+                    item.Tax != null ? Number(item.Tax).toLocaleString() : ''
+                );
+
+                $row.find('[name="detailList[' + i + '].Remark"]').val(item.Remark);
+                if (item.PurchaseDT?.length === 4) {
+                    $row.find('[name="detailList[' + i + '].PurchaseDT1"]').val(item.PurchaseDT.substring(0, 2));
+                    $row.find('[name="detailList[' + i + '].PurchaseDT2"]').val(item.PurchaseDT.substring(2, 4));
+                }
+            }
+        }
+
     }
 };
+
 
 let AjaxUtil = {
     failureCallback: function (req, status, error) {
@@ -778,6 +887,90 @@ let AjaxUtil = {
             }
         });
     },
+    postJsonData: function (url, param_data, fn_success, fn_failure) {
+        let csrf = $('[name=_csrf]').val();
+
+        $.ajax({
+            async: true,
+            dataType: 'json',
+            type: 'POST',
+            url: url,
+            data: JSON.stringify(param_data), // JSON 형식으로 변환
+            contentType: 'application/json',  // 반드시 설정
+            headers: {
+                'X-CSRF-TOKEN': csrf
+            },
+            success: function (res) {
+                if (typeof fn_success === 'function') {
+                    fn_success(res);
+                }
+            },
+            error: function (req, status, error) {
+                if (typeof fn_failure === 'function') {
+                    fn_failure(req, status, error);
+                } else {
+                    AjaxUtil.failureCallback(req, status, error);
+                }
+            }
+        });
+    },
+    postJsonAsyncData: function (url, data, fn_success, fn_failure) {
+        let result = null;
+
+        let csrf = $('[name=_csrf]').val();
+
+        $.ajax({
+            async: true,
+            dataType: 'json',
+            type: 'POST',
+            url: url,
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('X-CSRF-TOKEN', csrf); // 헤더로 명시적 전달
+            },
+            success: function (res) {
+                fn_success(res);
+            },
+            error: function (req, status, error) {
+                if (typeof fn_failure !== 'undefined') {
+                    fn_failure(req, status, error);
+                } else {
+
+                    AjaxUtil.failureCallback(req, status, error);
+                }
+            }
+        });
+    },
+    postJsonSyncData: function (url, data, fn_failure) {
+        let result = null;
+
+        let csrf = $('[name=_csrf]').val();
+
+        $.ajax({
+            async: false,
+            dataType: 'json',
+            type: 'POST',
+            url: url,
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('X-CSRF-TOKEN', csrf); // 헤더로 명시적 전달
+            },
+            success: function (res) {
+                result = res;
+            },
+            error: function (req, status, error) {
+                if (typeof fn_failure !== 'undefined') {
+                    fn_failure(req, status, error);
+                } else {
+
+                    AjaxUtil.failureCallback(req, status, error);
+                }
+            }
+        });
+        return result;
+    },
     postFileSyncData: function (url, form_data, fn_failure) {
         let result = null;
 
@@ -856,10 +1049,10 @@ let AjaxUtil = {
     getSelectDataWithNull: function (combo_type, null_option, condition1, condition2, condition3) {
         let ret = AjaxUtil.getSelectData(combo_type, condition1, condition2, condition3);
         let text = null_option;
-        if (null_option == 'choose') {
+        if (null_option === 'choose') {
             text = i18n.getCommonText('선택');//'선택하세요(Choose)';
         }
-        else if (null_option == 'all') {
+        else if (null_option === 'all') {
             text = i18n.getCommonText('전체'); //'전체(All
         }
         else {
@@ -1648,3 +1841,79 @@ var dynamicLinkCssPage = function (src) {
     document.head.appendChild(linkContent);
 };
 
+////////////////////////////////////////////////////////////////////////////////
+$(document).ready(function () {
+
+    // 다국어 처리 대상
+    let _msg_resource = {
+        'valid.msg.required': '필수 항목입니다.',
+        'valid.msg.remote': '항목을 수정하세요',
+        'valid.msg.email': '유효하지 않은 E-Mail주소입니다',
+        'valid.msg.url': '유효하지 않은 URL입니다',
+        'valid.msg.date': '올바른 날짜를 입력하세요',
+        'valid.msg.dateISO': '올바른 날짜를 입력하세요',
+        'valid.msg.number': '유효한 숫자가 아닙니다',
+        'valid.msg.digits': '숫자만 입력 가능합니다',
+        'valid.msg.creditcard': '신용카드 번호가 바르지 않습니다',
+        'valid.msg.equalTo': '같은 값을 다시 입력하세요',
+        'valid.msg.extension': '올바른 확장자가 아닙니다',
+        'valid.msg.maxlength': '{0}자를 넘을 수 없습니다',
+        'valid.msg.minlength': '{0} 이상의 값을 입력하세요',
+        'valid.msg.rangelength': '문자 길이가 {0} 에서 {1} 사이의 값을 입력하세요',
+        'valid.msg.range': '{0} 에서 {1} 사이의 값을 입력하세요',
+        'valid.msg.max': '{0} 이하의 값을 입력하세요',
+        'valid.msg.min': '{0} 이상의 값을 입력하세요',
+        'valid.msg.validrange': '{0}가 {1}보다 높습니다.',
+    };
+
+    $.extend(
+        $.validator.messages,
+        {
+            required: ' ' + _msg_resource['valid.msg.required']
+            , remote: ' ' + _msg_resource['valid.msg.remote']
+            , email: ' ' + _msg_resource['valid.msg.email']
+            , url: ' ' + _msg_resource['valid.msg.url']
+            , date: ' ' + _msg_resource['valid.msg.date']
+            , dateISO: ' ' + _msg_resource['valid.msg.dateISO']
+            , number: ' ' + _msg_resource['valid.msg.number']
+            , digits: ' ' + _msg_resource['valid.msg.digits']
+            , creditcard: ' ' + _msg_resource['valid.msg.creditcard']
+            , equalTo: ' ' + _msg_resource['valid.msg.equalTo']
+            , extension: ' ' + _msg_resource['valid.msg.extension']
+            , maxlength: ' ' + $.validator.format(_msg_resource['valid.msg.maxlength'])
+            , minlength: ' ' + $.validator.format(_msg_resource['valid.msg.minlength'])
+            , rangelength: ' ' + $.validator.format(_msg_resource['valid.msg.rangelength'])
+            , range: ' ' + $.validator.format(_msg_resource['valid.msg.range'])
+            , max: ' ' + $.validator.format(_msg_resource['valid.msg.max'])
+            , min: ' ' + $.validator.format(_msg_resource['valid.msg.min'])
+            , validrange: ' ' + $.validator.format(_msg_resource['valid.msg.validrange'])
+        }
+    );
+
+    $.validator.setDefaults({
+        onkeyup: false,
+        onclick: false,
+        onfocusout: false,
+        focusInvalid: false,
+        showErrors: function (errorMap, errorList) {
+            if (this.numberOfInvalids()) {
+                Alert.alert('', '[' + errorList[0].message + ']' + eval('$.validator.messages.' + errorList[0].method), function () {
+                    errorList[0].element.focus();
+                });
+            }
+        }
+    });
+
+    JQuery.extends();
+    Ajax.enableErrorHandler();
+    Ajax.enableProgressBar();
+
+
+    //다국어 설정
+    if (userinfo.login_id != '') {
+        i18n.initialize();
+    }
+
+
+
+});

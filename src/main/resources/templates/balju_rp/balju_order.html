@@ -1,0 +1,899 @@
+<html layout:decorate="~{layout_page}">
+
+<th:block layout:fragment="content">
+
+  <div class="layout-contents">
+    <div class="page-title-wrap">
+      <div class="left">
+        <h2>발주 등록(개별)</h2>
+        <a title="북마크" class="bookmark toggle">
+          내 메뉴
+        </a>
+      </div>
+      <ul class="page-navi">
+        <li><img src="/images/icon/ico-nav-home.svg" alt="홈아이콘"></li>
+        <li>발주/수불관리</li>
+        <li>발주 등록</li>
+      </ul>
+    </div>
+
+    <section class="section">
+      <div class="section-top">
+        <div class="search-wrap">
+          <input type="hidden" id="spjangcdHidden" name="spjangcd"/>
+          <dl>
+            <dt>
+              <label for="cboDateKind">
+                검색 구분<span class="eq"></span>
+              </label>
+            </dt>
+            <dd>
+              <div class="srch-box">
+                <select id="cboDateKind" name="cboDateKind">
+                  <option value="sales">발주일</option>
+                  <option value="delivery">납기일</option>
+                </select>
+              </div>
+            </dd>
+          </dl>
+          <dl>
+            <dt>
+              조회기간<span class="eq">*</span>
+            </dt>
+            <dd>
+              <ul class="date-box">
+                <li>
+                  <input type="date" id="srchStartDt" name="srchStartDt">
+                  <label for="srchStartDt" class="hide">시작일</label>
+                </li>
+                <li>
+                  <input type="date" id="srchEndDt" name="srchEndDt">
+                  <label for="srchEndDt" class="hide">종료일</label>
+                </li>
+              </ul>
+            </dd>
+          </dl>
+
+          <dl>
+            <dt>&nbsp;</dt>
+            <dd>
+              <li>
+                <a class="btn btn-delete" title="검색" id="btnSearch">
+                  <!--                                        class 쓰이는 곳 찾고 없으면 클래스명 수정하기-->
+                  <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
+                  검색
+                </a>
+              </li>
+            </dd>
+          </dl>
+        </div>
+        <div class="button-wrap">
+          <ul>
+            <li>
+              <a class="btn btn-excell" title="등록" id="btnAddNew">
+                <img src="/images/icon/ico-plus.svg" alt="등록 아이콘">
+                등록
+              </a>
+            </li>
+            <li>
+              <a class="btn btn-delete" title="삭제" id="btnDelete">
+                <img src="/images/icon/ico-delete.svg" alt="삭제 아이콘">
+                삭제
+              </a>
+            </li>
+            <li>
+              <a class="btn btn-edit" title="수정" id="btnEdit">
+                <img src="/images/icon/ico-edit.svg" alt="수정 아이콘">
+                수정
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="container-fluid">
+        <div id="theGrid" style="height: 730px;" ></div>
+      </div>
+      <!--        <div class="grid_box">-->
+
+      <!--            <div class="h-640" data-ax5grid="sujuGrid" ></div>-->
+      <!--        </div>-->
+    </section>
+  </div>
+  <script type="text/x-tmpl" id="baljuTemplate">
+    <div class="content_wrap popup" id="div_excel_upload">
+        <div class="table-wrap">
+        <form id="baljuForm">
+            <table class="write-table">
+                <caption>주문등록 테이블</caption>
+                <input type="hidden" id="id" name="id">
+                <input type="hidden" id="spjangcdHidden" name="spjangcd"/>
+                <tbody>
+                    <tr>
+                        <th style="text-align: center">
+                            <label for="JumunDate">발주일</label>
+                        </th>
+                        <td>
+                            <input type="date" id="JumunDate" name="JumunDate">
+                        </td>
+                        <th style="text-align: center">
+                            <label for="DueDate">납기예정일</label>
+                        </th>
+                        <td>
+                            <input type="date" id="DueDate" name="DueDate">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center">
+                            <label for="cboCompany">구매처*</label>
+                        </th>
+                        <td colspan="3">
+                            <input id="cboCompany" name="Company_id" type="hidden">
+                            <input class="form-control2" type="text" id="CompanyName" name="CompanyName"
+                             placeholder="검색버튼을 클릭하여 구매처를 검색하세요" readonly/>
+                            &nbsp;
+                            <a class="btn btn-delete" title="검색" id="btnCompanySearch">
+                                <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
+                                구매처 검색
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center">
+                            <label for="MaterialGroupName">제품그룹</label>
+                        </th>
+                        <td>
+                            <input type="text" id="MaterialGroupName" name="MaterialGroupName" readonly>
+                        </td>
+                        <th style="text-align: center">
+                            <label for="product_code">품목코드</label>
+                        </th>
+                        <td>
+                            <input type="text" id="product_code" name="product_code" readonly>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center">
+                            <label for="txtProductName">품목명</label>
+                        </th>
+                        <td colspan="3">
+                            <input type="text" id="txtProductName" name="product_name"
+                                   placeholder="검색버튼을 클릭하여 제품을 검색하세요" readonly>
+                            <input type="hidden" id="Material_id" name="Material_id">
+                            &nbsp;
+                            <a class="btn btn-delete" title="검색" id="btnProductSearch">
+                                <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
+                                제품 검색
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center">
+                            <label for="SujuQty">발주량*</label>
+                        </th>
+                        <td>
+                            <input class="form-control2 tar" type="text" id="SujuQty" name="SujuQty" onkeyup="numberSujuQty(this.value)">
+                        </td>
+                        <th style="text-align: center">
+                            <label for="cboBaljuType">발주구분</label>
+                        </th>
+                        <td>
+                            <select id="cboBaljuType" name="SujuType"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center">
+                            <label for="BaljuUnitPrice">단가 *</label>
+                        </th>
+                        <td style="display: flex; align-items: center; gap: 10px;">
+                            <input class="form-control2 tar" type="text" id="BaljuUnitPrice" name="BaljuUnitPrice"
+                                   onkeyup="numberUnitPrice(this.value)" style="width:50%;">
+                            <label style="margin: 0; display: flex; align-items: center;">
+                              <input type="checkbox" id="VatIncluded" name="VatIncluded" checked>
+                              <span style="margin-left: 5px;">부가세 포함</span>
+                            </label>
+                          </td>
+                        <th style="text-align: center">
+                            <label for="BaljuPrice"> 공급가액</label>
+                        </th>
+                        <td>
+                            <input class="form-control2 tar" type="text" id="BaljuPrice" name="BaljuPrice" onkeyup="numberBaljuQty(this.value)" >
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center">
+                            <label for="BaljuVat">부가세액</label>
+                        </th>
+                        <td>
+                            <input class="form-control2 tar" type="text" id="BaljuVat" name="BaljuVat" onkeyup="numberBaljuQty(this.value)" readonly>
+                            <input type="hidden" id="VatExempt" name="VatExempt" value="false">
+                       </td>
+                        <th style="text-align: center">
+                            <label for="BaljuTotalPrice">총액(발주액)</label>
+                        </th>
+                        <td>
+                            <input class="form-control2 tar" type="text" id="BaljuTotalPrice" name="BaljuTotalPrice" onkeyup="tTotalBaljuPrice(this.value)">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center">
+                            <label for="description">비고</label>
+                        </th>
+                        <td colspan="3">
+                            <textarea id="description" name="Description"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center">
+                            <label for="unit">단위</label>
+                        </th>
+                        <td>
+                            <input type="text" id="unit" name="unit" readonly>
+                        </td>
+                        <th style="text-align: center">
+                            <label for="StateName">상태</label>
+                        </th>
+                        <td>
+                            <input type="text" id="StateName" name="StateName" readonly disabled>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </form>
+        </div>
+
+        <div class="popup-button">
+                <button type="button" class="btn-popup y_write_auth" id="btnPopBaljuStop">중지</button>
+                <button type="button" class="btn-popup y_write_auth" id="btnPopBaljuSave">저장</button>
+                <button type="button" class="btn-popup" id="modal-close-button">닫기</button>
+        </div>
+    </div>
+  </script>
+
+</th:block>
+
+<th:block layout:fragment="scripts">
+  <!--<th:block th:replace="/common/columns_setting :: columns_setting"></th:block>-->
+  <th:block th:replace="/common/multiform_material :: multiform_material"></th:block>
+  <th:block th:replace="/common/popup_company :: popup_company"></th:block>
+
+  <script type="text/javascript">
+    function formatNumberInput(inputValue, targetSelector) {
+      let cleaned = inputValue.replace(/[^0-9]/g, '').replace(/,/g, '');// 숫자만 남기기
+      let formatted = cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ',');// 쉼표 넣기
+      $(targetSelector).val(formatted);// 값 넣기
+    }
+    // 수량 또는 단가가 입력되었을 때 → 공급가/부가세/총액 계산
+    function updateBaljuPrice() {
+      const qtyStr = $('#SujuQty').val().replace(/,/g, '');
+      const unitStr = $('#BaljuUnitPrice').val().replace(/,/g, '');
+      const isVatIncluded = $('#VatIncluded').is(':checked');
+      const isVatExempt = $('#VatExempt').val() === 'Y';
+
+      const qty = parseFloat(qtyStr || 0);
+      const unitPrice = parseFloat(unitStr || 0);
+      const supplyPrice = qty * unitPrice;
+
+      let vat = 0;
+      let totalPrice = supplyPrice;
+
+      if (isVatExempt) {
+        $('#BaljuVat')
+          .val('면세')
+          .prop('readonly', true)
+          .css({ 'background-color': '', 'color': '' });
+        totalPrice = supplyPrice;
+      } else {
+        if (isVatIncluded) {
+          vat = Math.round(supplyPrice * 10 / 110);
+          totalPrice = supplyPrice;
+        } else {
+          vat = Math.round(supplyPrice * 0.1);
+          totalPrice = supplyPrice + vat;
+        }
+
+        $('#BaljuVat')
+          .val(vat.toLocaleString())
+          .prop('readonly', true)
+          .css({ 'background-color': '', 'color': '', 'text-align': '' });
+      }
+
+      $('#BaljuPrice').val(supplyPrice.toLocaleString());
+      $('#BaljuTotalPrice').val(totalPrice.toLocaleString());
+    }
+    // 총액이 입력된 경우 → 공급가/부가세를 역산
+    function calculateFromTotalPrice() {
+      const totalStr = $('#BaljuTotalPrice').val().replace(/,/g, '');
+      const total = parseFloat(totalStr || 0);
+
+      const isVatIncluded = $('#VatIncluded').is(':checked');
+      const isVatExempt = $('#VatExempt').val() === 'Y';
+
+      let supply = total;
+      let vat = 0;
+
+      if (isVatExempt) {
+        vat = '면세';
+        supply = total;
+      } else {
+        if (isVatIncluded) {
+          // 총액이 부가세 포함된 금액일 경우 → 공급가 역산
+          supply = Math.round(total / 1.1);
+          vat = total - supply;
+        } else {
+          // 총액 = 공급가 + 부가세 (부가세 별도이므로 역산 필요)
+          supply = Math.round(total / 1.1);
+          vat = total - supply;
+        }
+      }
+
+      $('#BaljuPrice').val(supply.toLocaleString());
+      $('#BaljuVat').val(
+        isVatExempt ? '면세' : vat.toLocaleString()
+      );
+
+      // 선택사항: 총액 필드 보정
+      // $('#BaljuTotalPrice').val((supply + vat).toLocaleString());
+    }
+    // 공급가 입력 시 → 총액 및 부가세 계산
+    function calculateFromSupplyPrice() {
+      const supplyStr = $('#BaljuPrice').val().replace(/,/g, '');
+      const isVatExempt = $('#VatExempt').val() === 'Y';
+      const isVatIncluded = $('#VatIncluded').is(':checked');
+
+      const supplyPrice = parseFloat(supplyStr || 0);
+
+      let vat = 0;
+      let totalPrice = supplyPrice;
+
+      if (isVatExempt) {
+        // 면세일 경우
+        $('#BaljuVat')
+          .val('면세')
+          .prop('readonly', true)
+          .css({ 'background-color': '', 'color': '' });
+
+        totalPrice = supplyPrice; // 총액은 공급가 그대로
+      } else {
+        if (isVatIncluded) {
+          // 부가세 포함 → 공급가 = 총액, 부가세를 역산
+          vat = Math.round(supplyPrice * 10 / 110); // 공급가의 10/110 계산
+          totalPrice = supplyPrice; // 총액은 입력한 공급가 그대로
+        } else {
+          // 부가세 별도 → 공급가에 부가세 추가
+          vat = Math.round(supplyPrice * 0.1);
+          totalPrice = supplyPrice + vat;
+        }
+
+        $('#BaljuVat')
+          .val(vat.toLocaleString())
+          .prop('readonly', true)
+          .css({ 'background-color': '', 'color': '', 'text-align': '' });
+      }
+
+      // $('#BaljuTotalPrice').val(totalPrice.toLocaleString());
+    }
+    // 수량 변경 시 → 단가 × 수량 → 공급가 계산
+    function numberSujuQty(x) {
+      formatNumberInput(x, "#SujuQty");
+      updateBaljuPrice();
+    }
+
+    // 단가 변경 시 → 단가 × 수량 → 공급가 계산
+    function numberUnitPrice(x) {
+      formatNumberInput(x, "#BaljuUnitPrice");
+      updateBaljuPrice();
+    }
+
+    // 공급가 변경 시 → 부가세/총액 계산
+    function numberBaljuQty(x) {
+      formatNumberInput(x, "#BaljuPrice");
+      calculateFromSupplyPrice();
+    }
+
+    // 총액 변경 시 → 공급가/부가세 역산
+    function tTotalBaljuPrice(x) {
+      formatNumberInput(x, "#BaljuTotalPrice");
+      calculateFromTotalPrice();
+    }
+
+    class SujuUploadPage {
+      constructor() {
+        this.url = '/api/balju/balju_order';
+        this.grid = null;
+        this.$btnEdit = $('#btnEdit');
+        this.$btnAddNew = $('#btnAddNew');
+        this.spjangcd = $('#spjangcdHidden');
+        this.viewData = new wijmo.collections.CollectionView();
+        this.init();
+      }
+
+      init() {
+        let _this = this;
+        this.grid = new wijmo.grid.FlexGrid('#theGrid', {
+          selectionMode: wijmo.grid.SelectionMode.Row,
+          headersVisibility: wijmo.grid.HeadersVisibility.Column,
+          autoGenerateColumns: false,
+          showMarquee: true,
+          isReadOnly: true,
+          formatItem: (sender, e) => {
+            if (e.panel.cellType === wijmo.grid.CellType.ColumnHeader) {
+              e.cell.style.textAlign = 'center';
+            }
+          },
+          columns: [
+            {binding: 'CompanyName', header: '구매처', width: 120},
+            {binding: 'BaljuTypeName', header: '구분', width: 70, align: 'center'},
+            {binding: 'JumunDate', header: '발주일', width: 120, align: 'center'},
+            {binding: 'MaterialGroupName', header: '제품그룹', width: 100},
+            {binding: 'product_code', header: '제품코드', width: 100},
+            {binding: 'product_name', header: '제품명', width: 100},
+            {binding: 'unit', header: '단위', width: 60, align: 'center'},
+            {binding: 'SujuQty', header: '수량', width: 60, align: 'right', format: 'n0'},
+            {binding: 'BaljuUnitPrice', header: '단가', width: 100, align: 'right'},
+            {binding: 'BaljuPrice', header: '공급가', width: 100, align: 'right'},
+            {binding: 'BaljuVat', header: '부과세', width: 100, align: 'right'},
+            {binding: 'BaljuTotalPrice', header: '발주액', width: 100, align: 'right'},
+            {binding: 'StateName', header: '상태', width: 80, align: 'center'},
+            {binding: 'SujuQty2', header: '기입고수량', width: 100, align: 'right'},
+            {binding: 'SujuQty3', header: '미입고수량', width: 100, align: 'right'},
+            {binding: 'ShipmentStateName', header: '납품장소', width: 100, align: 'center'},
+            {binding: 'DueDate', header: '납기예정일', width: 120, align: 'center'},
+            {binding: 'Description', header: '비고', width: 200}
+          ],
+          itemsSource: this.viewData, // 데이터를 설정할 배열
+        });
+
+        new FlexGridContextMenu(this.grid);
+        this.grid.downloadFileName = '발주 등록';
+
+        this.grid.hostElement.addEventListener('dblclick', function (e) {
+          let items = _this.grid.selectedItems;
+          if (items.length === 0) {
+            return false;
+          }
+          _this.$btnEdit.trigger('click');
+        });
+
+        let nowDate = CommonUtil.getYYYYMMDD();
+        let dueDate = CommonUtil.getYYYYMMDD(10);
+
+        //발주등록 클릭
+        this.$btnAddNew.click(function (e) {
+          let defaultData = {
+            id: '',
+            mode: 'new',
+            JumunDate: nowDate,
+            DueDate: dueDate,
+            State: 'draft',
+            spjangcd: _this.spjangcd.val()
+          };
+          _this.showBaljuForm(defaultData);
+        });
+
+        // 발주 수정 클릭
+        this.$btnEdit.click(function (e) {
+          let selectedItems = _this.grid.selectedItems;
+
+          if (selectedItems.length === 1) {
+
+            let data = {
+              id: selectedItems[0].id,
+              action: 'detail'
+            };
+            let fnsuccess = function (result) {
+              result.data['mode'] = 'edit';
+
+              _this.showBaljuForm(result.data);
+            };
+            AjaxUtil.getAsyncData(_this.url + '/detail', data, fnsuccess);
+          } else if (items.length > 1) {
+            Alert.alert('', '데이터를 하나만 선택하세요.');
+          } else {
+            Alert.alert('', '선택된 데이터가 없습니다.');
+          }
+
+        });
+
+        // 삭제 버튼
+        $('#btnDelete').click(function (e) {
+          let items = _this.grid.selectedItems;
+          if (items.length > 0) {
+            Alert.confirm('', '삭제하시겠습니까?',
+              function () {
+                let id = items[0].id;
+                let state = items[0].State;
+
+                _this.deleteSujuData(id, state);
+              },
+              function () {
+              }
+            );
+          } else {
+            Alert.alert('', '삭제할 항목을 선택해주세요.', function () {
+              $(this).focus();
+            });
+          }
+        });
+
+        // 엔터키 검색
+        $('#keyword').on('keypress', function (e) {
+          if (e.keyCode === 13) {
+            _this.searchMainData();
+          }
+        });
+      }
+
+      showBaljuForm(data) {
+        //baljuTemplate
+        let _this = this;
+        let content = tmpl('baljuTemplate', data);
+        let $content = $(content);
+
+        let modalContainer = null;
+        if (data.mode === 'new') {
+          modalContainer = new PopupDraggable('발주 등록');
+        } else {
+          modalContainer = new PopupDraggable('발주 수정');
+        }
+
+        modalContainer.open({width: 1050, height: 630, $content});
+        $('#popSrchDt1').ax5DatePicker({direction: 'top'});
+        $('#popSrchDt2').ax5DatePicker({direction: 'top'});
+
+        // 제품검색
+        let $btnProductSearch = $content.find('#btnProductSearch');
+        let $btnCompanySearch = $content.find('#btnCompanySearch');
+        let $MaterialGroupName = $content.find('#MaterialGroupName');
+        let $product_code = $content.find('#product_code');
+        let $txtProductName = $content.find('#txtProductName');
+        let $Material_id = $content.find('#Material_id');
+
+        let $baljuForm = $content.find('#baljuForm');
+
+        let $cboBaljuType = $content.find('#cboBaljuType');
+        let $cboMaterial = $content.find('#cboMaterial');
+        let $JumunDate = $content.find('#JumunDate');
+        let $DueDate = $content.find('#DueDate');
+
+        let $AvailableStock = $('#AvailableStock');
+        let $unit = $('#unit');
+        let $cboCompany = $('#cboCompany');
+        let $CompanyName = $('#CompanyName');
+        let $quantity = $('#quantity');
+        let $SujuQty = $('#SujuQty');
+        let $BaljuUnitPrice = $content.find('#BaljuUnitPrice');
+        let $BaljuPrice = $content.find('#BaljuPrice');
+        let $BaljuVat = $content.find('#BaljuVat');
+        let $isVatExempt = false;
+        let $BaljuTotalPrice = $content.find('#BaljuTotalPri');
+        let $vatCheck = $content.find('#VatIncluded');
+
+        $content.find('#spjangcdHidden').val(data.spjangcd || '');
+
+        if (data.mode === 'new') {
+          $btnProductSearch.removeAttr('disabled');
+
+        }
+        $vatCheck.change(function () {
+          updateBaljuPrice();
+          calculateFromTotalPrice();
+          calculateFromSupplyPrice();
+        });
+
+        $btnProductSearch.click(function (e) {
+          let pop = new PopMatComponent();
+          pop.material_type = 'product,sangpum';
+          pop.show(function (item) {
+            console.log('$btnProductSearch', item);
+            $txtProductName.val(item.Name);
+            $Material_id.val(item.id);
+            $product_code.val(item.Code);
+            $MaterialGroupName.val(item.group_name);
+            $isVatExempt = item.VatExemptionYN === 'Y';
+            // 부가세 UI 처리
+            if (item.VatExemptionYN === 'Y') {
+              $BaljuVat.prop('readonly', true).val('면세').css({ 'background-color': '', 'color': ''});
+              $('#VatExempt').val('Y');
+            } else {
+              $BaljuVat.prop('readonly', true).val('')
+                .css({ 'background-color': '', 'color': '', 'text-align': '' });
+              $('#VatExempt').val('N');
+            }
+
+            if ($Material_id.val() && $cboCompany.val()) {
+              tryShowBaljuPrice();
+            }
+          });
+          pop.searchDataBind();
+        });
+
+        $content.find('#btnCompanySearch').click(function () {
+          let poppage = new PopCompComponent();
+          let $poppage = $(poppage);
+          let searchcallback = function (items) {
+            console.log('btnCompanySearch', items);
+            $content.find('#cboCompany').val(items.id);
+            $content.find('#CompanyName').val(items.compname);
+            $isVatExempt = items.VatExemptionYN === 'Y';
+            if (items.VatExemptionYN === 'Y') {
+              $BaljuVat.prop('readonly', true).val('면세').css({ 'background-color': '', 'color': ''});
+              $('#VatExempt').val('Y');
+            } else {
+              $BaljuVat.prop('readonly', true).val('')
+                .css({ 'background-color': '', 'color': '', 'text-align': '' });
+              $('#VatExempt').val('N');
+            }
+
+            if ($Material_id.val() && $cboCompany.val()) {
+              tryShowBaljuPrice();
+            }
+          };
+
+          poppage.show(searchcallback);
+        });
+
+        let originalUnitPrice = null;
+
+        //단가 검색
+        function tryShowBaljuPrice() {
+          const mat_pk = $content.find('#Material_id').val();
+          const company_id = $content.find('#cboCompany').val();
+          const JumunDate = $content.find('#JumunDate').val();
+          let url = _this.url + '/price';
+
+          if (!mat_pk || !company_id || !JumunDate) return;
+
+          let data = {
+            'mat_pk': mat_pk,
+            'company_id': company_id,
+            'JumunDate': JumunDate
+          };
+
+          AjaxUtil.getAsyncData(url, data, function (result) {
+            //console.log('[Ajax 응답 데이터]', result);
+            if (result && result.data && result.data.length > 0) {
+              const item = result.data[0];
+              const unitPrice = item.UnitPrice || 0;
+              const vat = item.vat || 0;
+              const supplyPrice = unitPrice * 1;
+
+              $content.find('#unitPrice').prop('readonly', true).val(unitPrice);
+              originalUnitPrice = unitPrice;
+
+              // 나머지 값 세팅
+              $BaljuUnitPrice.val(unitPrice);
+              $BaljuPrice.val(supplyPrice);
+            } else {
+              // 데이터 없을 때 초기화
+              $content.find('#unitPrice').val('0');
+              originalUnitPrice = '0';
+
+              $BaljuUnitPrice.val('');
+              $BaljuPrice.val('');
+              $BaljuVat.val('').prop('readonly', true); // 상태 원복
+            }
+          });
+        }
+
+
+        // 저장버튼
+        let $btnPopBaljuSave = $('#btnPopBaljuSave');
+        let $btnPopBaljuStop = $('#btnPopBaljuStop');
+        if (data.mode === 'new') {
+          $btnProductSearch.removeAttr('disabled');
+          $btnPopBaljuStop.hide();  // 등록 모드 → 중지 버튼 숨김
+        } else {
+          $btnPopBaljuStop.show();  // 수정 모드 → 중지 버튼 보이기
+          if (data.State && data.State !== 'draft') {
+            $btnPopBaljuSave.hide();
+            $BaljuUnitPrice.prop('readonly', true);
+          }
+        }
+
+        // 상태가 '중지'면 버튼 텍스트를 '중지취소'로 변경
+        if (data.State === 'canceled') {
+          $btnPopBaljuStop.text('중지취소');
+        } else {
+          $btnPopBaljuStop.text('중지');
+        }
+        //발주구분
+        AjaxUtil.fillSelectOptions($cboBaljuType, 'system_code', 'choose', null, 'Balju_type');
+
+        //팝업타이틀 설정
+        let $popTitle = $content.find('#popTitle');
+        if (data.mode === 'new') {
+          $popTitle.text('발주 등록');
+        } else {
+          // 발주 수정시 제품그룹과 제품을 수정하게 할 것 인지?
+          $popTitle.text('발주 수정');
+
+          if (data.Company_id) {
+            $CompanyName.attr('readonly', true);
+          }
+          originalUnitPrice = parseFloat(data.BaljuUnitPrice || '0');
+        }
+        FormUtil.BindDataForm(data, $baljuForm);
+
+
+        if (data.SujuQty > 0) {
+          $SujuQty.val(data.SujuQty.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        }
+
+
+        // 팝업 중지버튼 클릭
+        $btnPopBaljuStop.click(function (e) {
+          // 현재 버튼 텍스트로 상태 판단 (중지 / 중지취소)
+          const isCanceled = $btnPopBaljuStop.text() === '중지취소';
+          const confirmMsg = isCanceled ? '중지취소 하시겠습니까?' : '중지 하시겠습니까?';
+          const notifyMsg = isCanceled ? '발주가 중지취소 되었습니다.' : '발주가 중지 되었습니다.';
+
+          Alert.confirm('', confirmMsg, function () {
+            let url = _this.url + '/balju_stop';
+
+            console.log("📤 전송될 발주정지 데이터:", data);
+
+            let fnSaveSuccess = function (result) {
+              Notify.success(notifyMsg);
+              _this.searchMainData();
+              modalContainer.close();
+            };
+
+            AjaxUtil.postAsyncData(url, data, fnSaveSuccess);
+          });
+        });
+
+        // 발주등록 팝업 저장버튼 클릭
+        $btnPopBaljuSave.click(function (e) {
+
+          //발주일, 납기일 체크?
+          let data = FormUtil.extractForm($baljuForm);
+          const isVat = $('#VatIncluded').is(':checked');
+          data.invatyn = isVat ? 'Y' : 'N';
+
+          if ((data.Material_id == null) || (data.Material_id === '')) {
+            Alert.alert('', '제품을 선택하세요.');
+            return;
+          }
+
+          if (($CompanyName.val() == null) || ($CompanyName.val() === '')) {
+            Alert.alert('', '구매처를 선택하세요.');
+            return;
+          }
+
+          if ($SujuQty.val() === '') {
+            Alert.alert('', '발주량을 입력하세요.');
+            return;
+          }
+          let currentUnitPrice = $content.find('#BaljuUnitPrice').val().replace(/,/g, '');  // 발주 단가 필드 ID 확인 필수
+          let unitPriceChanged = originalUnitPrice != null &&
+            parseFloat($content.find('#BaljuUnitPrice').val().replace(/,/g, '')) !== originalUnitPrice;
+          console.log('부가세 적용 여부:', isVat);
+
+          Alert.confirm('', '저장하시겠습니까?', function () {
+
+            // 발주 저장 함수 정의
+            let doSave = function () {
+              let url = _this.url + '/manual_save';
+
+              // 숫자 포맷 제거
+              data.SujuQty = data.SujuQty.replace(/,/g, '');
+              data.BaljuPrice = data.BaljuPrice.replace(/,/g, '');
+              data.BaljuUnitPrice = data.BaljuUnitPrice.replace(/,/g, '');
+              data.BaljuVat = (data.BaljuVat === '면세') ? '0' : data.BaljuVat.replace(/,/g, '');
+              // data.BaljuVat = data.BaljuVat.replace(/,/g, '');
+              data.BaljuTotalPrice = data.BaljuTotalPrice.replace(/,/g, '');
+              data.spjangcd = $('#spjangcdHidden').val();
+
+              console.log("📤 전송될 발주 데이터:", data);
+
+              AjaxUtil.postAsyncData(url, data, function (result) {
+                Notify.success("저장되었습니다.");
+                _this.searchMainData();
+                modalContainer.close();
+              });
+            };
+
+            // 단가 변경이 있는 경우 → 단가 먼저 저장
+            if (unitPriceChanged) {
+              let now = new Date();
+              let hh = String(now.getHours()).padStart(2, '0');
+              let mm = String(now.getMinutes()).padStart(2, '0');
+              let ss = String(now.getSeconds()).padStart(2, '0');
+
+              let applyStartDate = `${data.JumunDate}T${hh}:${mm}:${ss}`;
+
+              let priceData = {
+                Material_id: data.Material_id,
+                Company_id: data.Company_id,
+                UnitPrice: currentUnitPrice,
+                ApplyStartDate: applyStartDate,  // ✅ 수정된 값 사용!
+                type: '01',
+                ChangerName: userinfo.username,
+                spjangcd: _this.spjangcd.val()
+              };
+
+              AjaxUtil.postAsyncData('/api/definition/material/savePrice', priceData, function (res) {
+                if (res.success) {
+                  console.log('✅ 단가 저장 성공');
+                  doSave();
+                } else {
+                  Alert.alert('단가 저장 실패', res.message || '알 수 없는 오류');
+                }
+              });
+            } else {
+              // 단가 변경 없으면 발주 저장 바로 실행
+              doSave();
+            }
+          });
+        });
+      }
+
+      deleteSujuData(id, state) {
+        let _this = this;
+        let url = _this.url + '/delete';
+        let data = {'id':id, 'State': state}
+        let fnsuccess = function (res) {
+          if (res.success) {
+            Notify.success('삭제되었습니다.');
+            _this.searchMainData();
+          } else {
+            Alert.alert('', res.message);
+          }
+        };
+
+        AjaxUtil.postAsyncData(url, data, fnsuccess);
+      }
+
+      searchMainData() {
+        let _this = this;
+        let date_kind = $('#cboDateKind').val();  //발주구분
+        let start = $('#srchStartDt').val();  //시작일
+        let end = $('#srchEndDt').val();      //종료일
+        let url = this.url + '/read';
+
+        let data = {
+          'date_kind': date_kind,
+          'start': start,
+          'end': end,
+          'action': 'read',
+          spjangcd: this.spjangcd.val()
+        };
+
+        let fnsuccess = function (result) {
+          if (result != null) {
+            _this.viewData.sourceCollection = result.data;
+          }
+        };
+        AjaxUtil.getAsyncData(url, data, fnsuccess);
+      }
+    }
+
+    let page = null;
+    var picker = new ax5.ui.picker();
+
+    $(document).ready(function (e) {
+
+      const spjangcd = sessionStorage.getItem('spjangcd');
+      if (spjangcd) {
+        $('#spjangcdHidden').val(spjangcd);  // hidden input이 있어야 함
+      }
+
+      page = new SujuUploadPage();
+
+//        $('#divDate').ax5DatePicker({ direction: 'top' });
+      $('#srchStartDt').val(CommonUtil.getYYYYMMDD(-7));
+      $('#srchEndDt').val(CommonUtil.getYYYYMMDD());
+
+      page.searchMainData();
+
+      // 검색
+      $('#btnSearch').click(function (e) {
+        page.searchMainData();
+      });
+
+    });
+  </script>
+
+</th:block>
+<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+</html>

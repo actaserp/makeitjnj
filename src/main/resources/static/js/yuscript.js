@@ -260,3 +260,18 @@ var dynamicLinkCssPage = function (src) {
 
     });
 })(jQuery);
+
+$(document).on("click", ".tab-links a", function (event) {
+    event.preventDefault();
+
+    // 클릭된 탭 링크의 href 속성 값을 가져옴
+    var tabId = $(this).attr("href");
+
+    // 해당 탭을 보여주고 활성화
+    $(".tab-item").hide(); // 모든 탭 숨김
+    $(tabId).show(); // 선택된 탭만 표시
+
+    // 현재 활성화된 탭을 나타내기 위해 클래스 추가/제거
+    $(".tab-links li").removeClass("active");
+    $(this).parent().addClass("active");
+});

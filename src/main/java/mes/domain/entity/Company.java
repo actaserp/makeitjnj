@@ -126,5 +126,10 @@ public class Company extends AbstractAuditModel {
 	String paymentCondition;
 	
 	@Column(name="\"ManageRemark\"")
-	String manageRemark;	
+	String manageRemark;
+
+
+	@Column(name="\"Relyn\"")
+	String Relyn;
+
 }

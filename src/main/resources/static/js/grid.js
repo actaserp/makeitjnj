@@ -1,63 +1,63 @@
 let GridUtil = {
-    changeOrder: function (val, $grid) {
-        // val : U,D
-        let _this = this;
-        if ($grid.getList("selected").length == 0) {
+    changeOrder: function (val, grid) {
+        if (!grid || !grid.selectedItems || grid.selectedItems.length === 0) {
             Alert.alert('', '순서를 변경할 Row 를 선택하세요.');
             return;
         }
 
-        if (val == "U") {
-            let items = $grid.getList("selected");
-            //for (let i = 0; i < selected.length; i++) {
-            $.each(items, function (index, self_item) {
-                let self_index = self_item.__index;
+        let collectionView = grid.collectionView;
+        if (!collectionView || !collectionView.items) {
+            console.error("CollectionView가 정의되지 않았습니다.");
+            return;
+        }
+
+        if (val === "U") {
+            let items = grid.selectedItems;
+            items.forEach((item) => {
+                let self_index = collectionView.items.indexOf(item);
                 let upper_index = self_index - 1;
-                if (upper_index == - 1) {
+                if (upper_index < 0) {
                     Alert.alert('', "첫번째 Row가 선택되었습니다.");
                     return;
                 }
-                let upper_item = $grid.list[upper_index];
 
-                upper_item.__index = self_index;
-                self_item.__index = upper_index;
+                // ✅ 배열에서 항목 위치 변경
+                [collectionView.items[self_index], collectionView.items[upper_index]] =
+                    [collectionView.items[upper_index], collectionView.items[self_index]];
 
-                $grid.updateRow(self_item, upper_index);
-                $grid.updateRow(upper_item, self_index);
-                $grid.select(self_index, { selected: false });
-                $grid.select(upper_index, { selected: true });
+                collectionView.refresh();
+                grid.select(new wijmo.grid.CellRange(upper_index, 0)); // ✅ 수정
             });
         } else {
-            let items = $grid.getList("selected");
+            let items = grid.selectedItems;
             items.reverse(); // 아래로 내릴 때는 역순으로 루프를 돌려야 한다.
-            $.each(items, function (index, self_item) {
-                let self_index = self_item.__index;
+            items.forEach((item) => {
+                let self_index = collectionView.items.indexOf(item);
                 let under_index = self_index + 1;
-                if ($grid.list.length <= under_index) {
+                if (under_index >= collectionView.items.length) {
                     Alert.alert('', "마지막 Row가 선택되었습니다.");
                     return;
                 }
-                let under_item = $grid.list[under_index];
 
-                under_item.__index = self_index;
-                self_item.__index = under_index;
+                // ✅ 배열에서 항목 위치 변경
+                [collectionView.items[self_index], collectionView.items[under_index]] =
+                    [collectionView.items[under_index], collectionView.items[self_index]];
 
-                $grid.updateRow(self_item, under_index);
-                $grid.updateRow(under_item, self_index);
-
-                $grid.select(self_index, { selected: false });
-                $grid.select(under_index, { selected: true });
-
-
+                collectionView.refresh();
+                grid.select(new wijmo.grid.CellRange(under_index, 0)); // ✅ 수정
             });
         }
     },
-    adjustHeight: function (grid_config, rows_len) {
-    //let grid_config = _this.grid_config;
-    let height = grid_config.header.columnHeight + 3 + (grid_config.body.columnHeight + 3) * (rows_len + 2);
-    if (height < 150)
-        height = 150;
 
-    grid_config.target.css('height', height + 'px');
-    },
+    adjustHeight: function (grid, rows_len) {
+        if (!grid || !grid.hostElement) {
+            console.error("Grid가 정의되지 않았습니다.");
+            return;
+        }
+        let rowHeight = grid.rows.defaultSize;
+        let headerHeight = grid.columnHeaders.rows.defaultSize;
+        let height = headerHeight + (rowHeight * (rows_len + 2));
+        if (height < 150) height = 150;
+        grid.hostElement.style.height = height + 'px';
+    }
 };

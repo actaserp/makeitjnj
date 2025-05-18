@@ -48,27 +48,27 @@ class FlexGridContextMenu {
             itemsSource: [
                 {
                     header: 'Sort', items: [
-                        { header: 'Ascending', cmd: 'SRT_ASC' },
-                        { header: 'Descending', cmd: 'SRT_DESC' },
-                        { header: 'No Sort', cmd: 'SRT_NONE' },
-                        { header: '-' },
-                        { header: 'Clear All Sorts', cmd: 'SRT_CLR' }
+                        {header: 'Ascending', cmd: 'SRT_ASC'},
+                        {header: 'Descending', cmd: 'SRT_DESC'},
+                        {header: 'No Sort', cmd: 'SRT_NONE'},
+                        {header: '-'},
+                        {header: 'Clear All Sorts', cmd: 'SRT_CLR'}
                     ]
                 },
-                { header: '-' },
-                { header: 'Pin/Unpin', cmd: 'PIN' },
-                { header: '-' },
-                { header: 'AutoSize', cmd: 'ASZ' },
-                { header: 'AutoSize All', cmd: 'ASZ_ALL' },
-                { header: '-' },
-                { header: 'Group/Ungroup', cmd: 'GRP' },
-                { header: 'Clear All Groups', cmd: 'GRP_CLR' },
-                { header: '-' },
+                {header: '-'},
+                {header: 'Pin/Unpin', cmd: 'PIN'},
+                {header: '-'},
+                {header: 'AutoSize', cmd: 'ASZ'},
+                {header: 'AutoSize All', cmd: 'ASZ_ALL'},
+                {header: '-'},
+                {header: 'Group/Ungroup', cmd: 'GRP'},
+                {header: 'Clear All Groups', cmd: 'GRP_CLR'},
+                {header: '-'},
                 {
                     header: 'Export', items: [
-                        { header: 'CSV', cmd: 'X_CSV' },
-                        { header: 'XLSX', cmd: 'X_XLSX' },
-                        { header: 'PDF', cmd: 'X_PDF' },
+                        {header: 'CSV', cmd: 'X_CSV'},
+                        {header: 'XLSX', cmd: 'X_XLSX'},
+                        {header: 'PDF', cmd: 'X_PDF'},
                     ]
                 }
             ],
@@ -99,8 +99,9 @@ class FlexGridContextMenu {
                 },
                 // execute menu commands
                 executeCommand: (cmd) => {
-                    let view = grid.collectionView, cols = grid.columns, col = cols[grid.selection.col], sd = view.sortDescriptions, gd = view.groupDescriptions;
-                    let downloadFileName = window.downloadFileName || 'FlexGrid';
+                    let view = grid.collectionView, cols = grid.columns, col = cols[grid.selection.col],
+                        sd = view.sortDescriptions, gd = view.groupDescriptions;
+                    let downloadFileName = grid.downloadFileName || 'FlexGrid';
 
                     switch (cmd) {
                         case 'SRT_ASC':
@@ -108,8 +109,7 @@ class FlexGridContextMenu {
                         case 'SRT_NONE':
                             if (grid.allowSorting != wijmo.grid.AllowSorting.MultiColumn) {
                                 sd.clear();
-                            }
-                            else {
+                            } else {
                                 for (let i = 0; i < sd.length; i++) {
                                     if (sd[i].property == col.binding) {
                                         sd.removeAt(i);
@@ -129,8 +129,7 @@ class FlexGridContextMenu {
                             if (col.index >= fCols) { // pinning
                                 cols.moveElement(col.index, fCols, false);
                                 cols.frozen++;
-                            }
-                            else { // unpinning
+                            } else { // unpinning
                                 cols.moveElement(col.index, fCols - 1, false);
                                 cols.frozen--;
                             }
@@ -157,24 +156,38 @@ class FlexGridContextMenu {
                             break;
                         // export
                         case 'X_CSV':
-                            let rng = new wijmo.grid.CellRange(0, 0, grid.rows.length - 1, grid.columns.length - 1), csv = grid.getClipString(rng, wijmo.grid.ClipStringOptions.CSV, true, false);
-                            wijmo.saveFile(csv, downloadFileName +'.csv');
+                            let rng = new wijmo.grid.CellRange(0, 0, grid.rows.length - 1, grid.columns.length - 1),
+                                csv = grid.getClipString(rng, wijmo.grid.ClipStringOptions.CSV, true, false);
+                            wijmo.saveFile(csv, downloadFileName + '.csv');
                             break;
                         case 'X_XLSX':
-                            wijmo.grid.xlsx.FlexGridXlsxConverter.saveAsync(grid, null, downloadFileName +'.xlsx').catch(err => console.error('Error exporting to Excel:', err));
+                            wijmo.grid.xlsx.FlexGridXlsxConverter.saveAsync(grid, null, downloadFileName + '.xlsx').catch(err => console.error('Error exporting to Excel:', err));
                             break;
                         case 'X_PDF':
-                            wijmo.grid.pdf.FlexGridPdfConverter.export(grid, downloadFileName +'.pdf', {
+                            wijmo.grid.pdf.FlexGridPdfConverter.export(grid, downloadFileName + '.pdf', {
                                 maxPages: 10,
                                 scaleMode: wijmo.grid.pdf.ScaleMode.PageWidth,
                                 documentOptions: {
                                     compress: true,
                                     header: { declarative: { text: '\t&[Page] of &[Pages]' } },
                                     footer: { declarative: { text: '\t&[Page] of &[Pages]' } },
-                                    info: { author: 'MESCIUS', title: downloadFileName  }
+                                    info: { author: 'MESCIUS', title: downloadFileName }
                                 },
+                                embeddedFonts: [
+                                    {
+                                        source: '/font/NotoSansKR-Regular.ttf',  // 폰트 파일 경로
+                                        name: 'NotoSansKR',
+                                        style: 'normal',
+                                        weight: 'normal',
+                                        sansSerif: true
+                                    }
+                                ],
                                 styles: {
-                                    cellStyle: { backgroundColor: '#ffffff', borderColor: '#c6c6c6' },
+                                    cellStyle: {
+                                        backgroundColor: '#ffffff',
+                                        borderColor: '#c6c6c6',
+                                        font: { family: 'NotoSansKR' }  // 스타일에서 폰트 지정
+                                    },
                                     altCellStyle: { backgroundColor: '#f9f9f9' },
                                     groupCellStyle: { backgroundColor: '#dddddd' },
                                     headerCellStyle: { backgroundColor: '#eaeaea' }

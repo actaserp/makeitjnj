@@ -33,10 +33,10 @@ textarea {
 input[readonly],
 select[readonly],
 textarea[readonly] {
-    background-color: #EDEFF5 !important;
+    background-color: #EDEFF5;
     border: 1px solid #D5D7DC !important;
-    color: #333333 !important;
-    cursor: not-allowed;
+    color: #333333;
+    /*cursor: not-allowed;*/
 }
 
 input[type="text"]:disabled,
@@ -46,8 +46,9 @@ input[type="tel"]:disabled,
 input[type="email"]:disabled,
 input[type="number"]:disabled,
 input[type="date"]:disabled,
+input[type="month"]:disabled,
 textarea:disabled {
-    background-color: #f5f5f5;
+    background-color: #EDEFF5;
 }
 
 input[type="text"]::placeholder,
@@ -133,7 +134,9 @@ select {
 }
 
 .write-table select:disabled {
-    background-color: #f5f5f5;
+    color: #1d1d1d !important;
+    background-color: #EDEFF5;
+    opacity: 1;
 }
 
 .select-open {
@@ -223,7 +226,7 @@ input[type="radio"]:disabled:checked:after {
     align-items: center;
     background-color: #fff;
     border: 1px solid #D5D7DC;
-    border-radius: 6px; 
+    border-radius: 6px;
 }
 .radio-select li{
     width: 50%;
@@ -236,15 +239,15 @@ input[type="radio"]:disabled:checked:after {
 }
 .radio-select label {
     display: block;
-    width: 70px; 
-    height: 30px; 
+    width: 70px;
+    height: 30px;
     text-align: center;
     line-height: 30px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
 }
 .radio-select input[type="radio"]:checked + label {
-    background-color: #06C194; 
+    background-color: #06C194;
     height: 26px;
     line-height: 26px;
     color: #fff;
@@ -290,6 +293,10 @@ input[type="checkbox"]:before {
     vertical-align: text-bottom;
 }
 
+#btnToggle:before {
+    border:none;
+}
+
 input[type="checkbox"]:checked:before {
     /* 체크박스를 체크했을때 */
     content: ' ';
@@ -307,48 +314,48 @@ input[type="checkbox"]:disabled:checked:before {
 }
 
 /* Switch */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 48px;
-    height: 22px;
-}
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #858585;
-    transition: .4s;
-    border-radius: 34px;
-}
+/*.switch {*/
+/*    position: relative;*/
+/*    display: inline-block;*/
+/*    width: 48px;*/
+/*    height: 22px;*/
+/*}*/
+/*.switch input {*/
+/*    opacity: 0;*/
+/*    width: 0;*/
+/*    height: 0;*/
+/*}*/
+/*.slider {*/
+/*    position: absolute;*/
+/*    cursor: pointer;*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    right: 0;*/
+/*    bottom: 0;*/
+/*    background-color: #858585;*/
+/*    transition: .4s;*/
+/*    border-radius: 34px;*/
+/*}*/
 
-.slider:before {
-    position: absolute;
-    content: "";
-    width: 18px;
-    height: 18px;
-    left: 2px;
-    bottom: 2px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-}
-input:checked + .slider {
-    background-color: #0481F9;
-}
+/*.slider:before {*/
+/*    position: absolute;*/
+/*    content: "";*/
+/*    width: 18px;*/
+/*    height: 18px;*/
+/*    left: 2px;*/
+/*    bottom: 2px;*/
+/*    background-color: white;*/
+/*    transition: .4s;*/
+/*    border-radius: 50%;*/
+/*}*/
+/*input:checked + .slider {*/
+/*    background-color: #0481F9;*/
+/*}*/
 
-/* Move the slider to the right */
-input:checked + .slider:before {
-    transform: translateX(26px);
-}
+/*!* Move the slider to the right *!*/
+/*input:checked + .slider:before {*/
+/*    transform: translateX(26px);*/
+/*}*/
 
 /* Date */
 .date-box {
@@ -388,7 +395,7 @@ input[type=text].input-date {
     margin-left: 5px;
 }
 .srch-box select {
-    border-radius: 5px 0 0 5px;
+    border-radius: 5px;
 }
 
 /* File box*/
@@ -401,7 +408,7 @@ input[type=text].input-date {
     width: 100%;
     padding: 16px;
     background-color: #F5F6FA;
-    border: 1px solid #E3E2EB;
+    /*border: 1px solid #E3E2EB;*/
     border-radius: 5px;
     gap: 10px;
 }
@@ -410,7 +417,7 @@ input[type=text].input-date {
     background-color: #e3f2fd;
 }
 .upload-filebox p {
-    font-size: 13px; 
+    font-size: 13px;
     color: #9291A1;
 }
 .upload-filebox input[type="file"] {
@@ -528,7 +535,7 @@ input[type=text].input-date {
  * Progressbar Type
  =================================================================================*/
  .time-progress-bar {
-    display: flex; 
+    display: flex;
     align-items: center;
     width: 520px;
     padding: 0 20px;
@@ -540,12 +547,12 @@ input[type=text].input-date {
     width: 100%;
     height: 6px;
     background-color: #fff;
-    border-radius: 30px; 
+    border-radius: 30px;
     overflow: hidden;
 }
 .progress {
-    height: 100%; 
-    background-color: #345FF1; 
+    height: 100%;
+    background-color: #345FF1;
     border-radius: 30px;
     transition: width 0.3s ease-in-out;
 }
@@ -592,12 +599,12 @@ input[type=text].input-date {
     font-weight: 500;
     line-height: 1;
 }
-.charging-indicator {    
+.charging-indicator {
     display: none;
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 20px; 
+    width: 20px;
     height: 20px;
     background: url('../images/icon/ico-charging.svg')no-repeat center;
     background-size: 100%;
@@ -617,9 +624,9 @@ input[type=text].input-date {
  * Button
  =================================================================================*/
 .btn-wrap {display: flex; justify-content: center; align-items: center; gap: 6px;}
- button, .btn {display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 4px 18px; line-height: 36px; background-color: #fff; font-weight: 500; color: #4D4D4D; border: 1px solid #B3B3B3; border-radius: 5px; font-weight: 700; white-space: nowrap; transition: all .3s; opacity: 1;}
+ button, .btn {display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 4px 18px; line-height: 36px; background-color: #fff; font-weight: 500; border: 1px solid #B3B3B3; border-radius: 5px; font-weight: 700; white-space: nowrap; transition: all .3s; opacity: 1;}
 /*button:hover, .btn:hover {background-color: #F5F6FA; border: 1px solid #4D4D4D;}*/
-button:disabled, .btn:disabled {background-color: #fff; border: 1px solid #B3B3B3; color: #B3B3B3;}
+/*button:disabled, .btn:disabled {background-color: #fff; border: 1px solid #B3B3B3; color: #B3B3B3;}*/
 button img, .btn img {margin-right: 10px;}
 .btn-navy {background-color: #03428E; color: #fff;}
 .btn-navy:hover {background-color: #033777;}
@@ -655,20 +662,25 @@ button img, .btn img {margin-right: 10px;}
 }
 
 .ax5-ui-dialog .ax-dialog-body .ax-dialog-msg{
-    padding-bottom: 20px;
+    /*padding-bottom: 20px;*/
+    padding : 15px 40px 20px 40px;
 }
 
 .ax5-ui-dialog .ax-dialog-header{
     display: none;
 }
 
-.btn-default, .btn-danger{
+.ax5-ui-toast-container {
+    bottom: 40px !important;
+}
+
+.btn-default{
     background-color: #03428E;
     color: #FFFFFF;
     font-weight: 700;
     font-size: 16px;
-    width: 124px;
-    height: 48px;
+    width: 85px;
+    height: 36px;
     border: 0;
     border-right: 3px;
 }
@@ -678,10 +690,9 @@ button img, .btn img {margin-right: 10px;}
     color: #03428E;
     font-weight: 700;
     font-size: 16px;
-    width: 124px;
-    height: 48px;
+    width: 85px;
+    height: 36px;
     border: 1px solid #03428E;
-    margin-right: 8px !important;
 }
 
 .btn-default:hover{
@@ -779,3 +790,11 @@ button img, .btn img {margin-right: 10px;}
 /*.chart-wrap canvas {*/
 /*    pointer-events: none; !* 차트 내의 canvas도 클릭 이벤트를 받음 *!*/
 /*}*/
+
+.card-header{
+    background-color: #EDEFF5;
+}
+
+.card-body select {
+    width: 120px;
+}

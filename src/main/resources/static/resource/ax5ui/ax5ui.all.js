@@ -7844,13 +7844,13 @@ ax5.ui = function () {
                 item = jQuery.extend(true, pickerConfig, cfg, item);
 
                 if (!item.target) {
-                    console.log(ax5.info.getError("ax5picker", "401", "bind"));
+                    // console.log(ax5.info.getError("ax5picker", "401", "bind"));
                     return this;
                 }
                 item.$target = jQuery(item.target);
 
                 if (!item.$target.get(0)) {
-                    console.log(ax5.info.getError("ax5picker", "401", "bind"));
+                    // console.log(ax5.info.getError("ax5picker", "401", "bind"));
                     return this;
                 }
 
