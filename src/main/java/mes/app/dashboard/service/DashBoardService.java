@@ -139,7 +139,7 @@ public class DashBoardService {
 			left join job_res jr on jrd."JobResponse_id" = jr.id
 			left join material m on jr."Material_id"  = m.id
 			left join mat_grp mg on m."MaterialGroup_id"  = mg.id
-			where FORMAT(jr."ProductionDate",'YYYY') = FORMAT(current_date,'YYYY')
+			where FORMAT(jr."ProductionDate",'YYYY') = FORMAT(GETDATE(),'YYYY')
 			group by mg."Name" , m."Name" , m."UnitPrice"
 			having coalesce(sum(jrd."DefectQty"),0) > 0
 			order by coalesce(sum(jr."DefectQty") * m."UnitPrice",0) desc
@@ -177,7 +177,7 @@ public class DashBoardService {
 				from suju s
 				inner join material m on m.id = s."Material_id" 
 				inner join mat_grp mg on mg.id = m."MaterialGroup_id" 
-				where FORMAT(s."JumunDate", 'YYYY') = FORMAT(current_date, 'YYYY') 
+				where FORMAT(s."JumunDate", 'YYYY') = FORMAT(GETDATE(), 'YYYY') 
 				group by m."Name" , mg."Name" ,m."UnitPrice", m."Code" , mg."MaterialType"
 				having coalesce(sum(s."SujuQty") * m."UnitPrice" ,0) > 0
 				order by sujup desc
@@ -198,9 +198,9 @@ public class DashBoardService {
 				""";
 		
 		if (dateType.equals("Year")) {
-			sql += " where FORMAT(cc.\"CheckDate\",'YYYY') = FORMAT(current_date,'YYYY') ";
+			sql += " where FORMAT(cc.\"CheckDate\",'YYYY') = FORMAT(GETDATE(),'YYYY') ";
 		} else if (dateType.equals("Mon")) {
-			sql += " where FORMAT(cc.\"CheckDate\",'YYYY-MM') = FORMAT(current_date,'YYYY-MM') ";
+			sql += " where FORMAT(cc.\"CheckDate\",'YYYY-MM') = FORMAT(GETDATE(),'YYYY-MM') ";
 		}
 		
 		sql += """
@@ -221,9 +221,9 @@ public class DashBoardService {
 				""";
 		
 		if (dateType.equals("Year")) {
-			sql += " where FORMAT(cc.\"CheckDate\",'YYYY') = FORMAT(current_date,'YYYY') ";
+			sql += " where FORMAT(cc.\"CheckDate\",'YYYY') = FORMAT(GETDATE(),'YYYY') ";
 		} else if (dateType.equals("Mon")) {
-			sql += " where FORMAT(cc.\"CheckDate\",'YYYY-MM') = FORMAT(current_date,'YYYY-MM') ";
+			sql += " where FORMAT(cc.\"CheckDate\",'YYYY-MM') = FORMAT(GETDATE(),'YYYY-MM') ";
 		}
 		
 		sql += """
@@ -259,7 +259,7 @@ public class DashBoardService {
 		
 		sql += """
 				from cust_complain cc
-				where FORMAT(cc."CheckDate", 'YYYY') = FORMAT(current_date, 'YYYY') 
+				where FORMAT(cc."CheckDate", 'YYYY') = FORMAT(GETDATE(), 'YYYY') 
 				group by cc."Type" 
 				""";
 		

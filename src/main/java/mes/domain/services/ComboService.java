@@ -184,11 +184,11 @@ public class ComboService {
 	
 	ComboDataFunction data_year=(String cond1, String cond2, String cond3) -> {
 		String sql = """
-				select FORMAT(current_date, 'YYYY') as value , FORMAT(current_date,'YYYY') as text  
+				select FORMAT(GETDATE(), 'YYYY') as value , FORMAT(GETDATE(),'YYYY') as text  
 				union all
-				select FORMAT((current_date -  interval '1 year'), 'YYYY') as value , FORMAT(current_date-  interval '1 year','YYYY') as text  
+				select FORMAT((current_date -  interval '1 year'), 'YYYY') as value , FORMAT(GETDATE()-  interval '1 year','YYYY') as text  
 				union all
-				select FORMAT((current_date -  interval '2 year'), 'YYYY') as value , FORMAT(current_date-  interval '2 year','YYYY') as text  
+				select FORMAT((current_date -  interval '2 year'), 'YYYY') as value , FORMAT(GETDATE()-  interval '2 year','YYYY') as text  
 				""";
 		MapSqlParameterSource dicParam = new MapSqlParameterSource();
         dicParam.addValue("cond1", cond1);

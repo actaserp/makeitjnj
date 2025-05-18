@@ -40,7 +40,11 @@ public class BaljuOrderService {
           , m."Name" as product_name
           , u."Name" as unit
           , b."SujuQty" as "SujuQty"
-          , GREATEST((b."SujuQty" - b."SujuQty2"), 0) as "SujuQty3"
+          , CASE 
+              WHEN (b.SujuQty - b.SujuQty2) > 0 
+              THEN (b.SujuQty - b.SujuQty2) 
+              ELSE 0 
+            END AS SujuQty3  
           , FORMAT(b."JumunDate", 'yyyy-mm-dd') as "JumunDate"
           , FORMAT(b."DueDate", 'yyyy-mm-dd') as "DueDate"
           , b."CompanyName"
@@ -66,8 +70,8 @@ public class BaljuOrderService {
           inner join material m on m.id = b."Material_id" and m.spjangcd = b.spjangcd
           inner join mat_grp mg on mg.id = m."MaterialGroup_id" and mg.spjangcd = b.spjangcd
           left join unit u on m."Unit_id" = u.id and u.spjangcd = b.spjangcd
-          left join company c on c.id= b."Company_id" 
-          left join store_house sh ON sh.id::varchar = b."ShipmentState" and sh.spjangcd = b.spjangcd
+          left join company c on c.id= b."Company_id"  
+          LEFT JOIN store_house sh ON CAST(sh.id AS VARCHAR) = b.ShipmentState and sh.spjangcd = b.spjangcd
           where 1 = 1
 			""";
 

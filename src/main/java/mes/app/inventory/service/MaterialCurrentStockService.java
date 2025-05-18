@@ -30,7 +30,7 @@ public class MaterialCurrentStockService {
             , m."UnitPrice" as unit_price 
             , u."Name" as unit_name
             , m."CurrentStock" * m."UnitPrice" as stock_price
-            , case when m."PackingUnitQty" >0 then round((m."CurrentStock" / m."PackingUnitQty")::numeric, 0)
+            , case when m."PackingUnitQty" >0 then ROUND(CAST(m.CurrentStock * 1.0 / m.PackingUnitQty AS NUMERIC), 0)
                 else null end as box_qty
             , m."AvailableStock" as avail_stock
             , m."ReservationStock" as reserve_stock
@@ -54,11 +54,15 @@ public class MaterialCurrentStockService {
 		if (mat_grp_pk != null) sql +=" and mg.\"id\" = :mat_grp_pk ";
 		if (StringUtils.isEmpty(mat_name)==false) sql +=" and (m.\"Name\" like concat('%%',:mat_name,'%%') or m.\"Code\" like concat('%%',:mat_name,'%%') ) ";
 		if (store_house_id != null) sql +=" and mh.\"StoreHouse_id\" =:store_house_id ";
+		//sql += " GROUP BY   m.id,  m.code,   mg.[MaterialType],   mg.[Name],    u.[Name],  sh.[Name],  mh.[CurrentStock],    m.[SafetyStock],   m.[LotUseYN]";
+        sql += " GROUP BY  m.id,   m.Code, m.Name, m.UnitPrice, m.PackingUnitQty, m.AvailableStock, m.ReservationStock,   ";
+        sql += "           m.CurrentStock,   m.SafetyStock,  m.LotUseYN,  m.spjangcd, mg.MaterialType,  mg.Name,  u.Name, sh.Name,   mh.CurrentStock " ;
+
+		//sql += " group by m.id,m.code,mg.\"MaterialType\" ,mg.\"Name\" ,u.\"Name\" ,sh.\"Name\" , mh.\"CurrentStock\", m.\"SafetyStock\", m.\"LotUseYN\"  ";
+		sql += " ORDER BY   mg.[MaterialType],  mg.[Name],  m.[Code],  m.[Name],  m.id,  sh.[Name] ";
+		//sql += " order by mg.\"MaterialType\", mg.\"Name\", m.\"Code\", m.\"Name\", m.id, sh.\"Name\" ";
 		
-		sql += " group by m.id,mg.\"MaterialType\" ,mg.\"Name\" ,u.\"Name\" ,sh.\"Name\" , mh.\"CurrentStock\", m.\"SafetyStock\", m.\"LotUseYN\"  ";
-		
-		sql += " order by mg.\"MaterialType\", mg.\"Name\", m.\"Code\", m.\"Name\", m.id, sh.\"Name\" ";
-		
+
 		List<Map<String, Object>> items = this.sqlRunner.getRows(sql, paramMap);
 		
 		return items;

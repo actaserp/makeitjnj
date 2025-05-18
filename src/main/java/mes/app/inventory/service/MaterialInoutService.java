@@ -30,14 +30,14 @@ public class MaterialInoutService {
 
 		String sql = """
 					select distinct mi.id as mio_pk
-                    , fn_code_name('inout_type', mi."InOut") as inout
+                    , dbo.fn_code_name('inout_type', mi."InOut") as inout
                     , mi."Material_id"
                     , mi."InputType" 
                     , mi."OutputType" 
-                    , case when mi."InOut" = 'in' then fn_code_name('input_type', mi."InputType") 
-	                    when mi."InOut" = 'out' then fn_code_name('output_type', mi."OutputType") end as inout_type
-                    , to_char(mi."InoutDate",'yyyy-mm-dd ') as "InoutDate"
-                    , to_char(mi."InoutTime", 'hh24:mi') as "InoutTime"
+                    , case when mi."InOut" = 'in' then dbo.fn_code_name('input_type', mi."InputType") 
+	                    when mi."InOut" = 'out' then dbo.fn_code_name('output_type', mi."OutputType") end as inout_type
+                    , format(mi."InoutDate",'yyyy-mm-dd ') as "InoutDate"
+                    , format(mi."InoutTime", 'hh24:mi') as "InoutTime"
                     , sh."Name" as "store_house_name"
                     , m."Code" as "material_code"
                     , m."Name" as "material_name"
@@ -52,7 +52,7 @@ public class MaterialInoutService {
                     , coalesce(mi."OutputQty", 0) as "OutputQty"
                     , u2."Name" as "unit_name"
                     , mi."Description" 
-                    , fn_code_name('mat_type', mg."MaterialType") as material_type
+                    , dbo.fn_code_name('mat_type', mg."MaterialType") as material_type
                     --, coalesce(lot_cnt.lot_count,0) as lot_count
                     , (select count(ml."LotNumber") as lot_count 
                         from mat_lot ml 
@@ -60,7 +60,7 @@ public class MaterialInoutService {
                         and ml."SourceDataPk" = mi.id
                         )  as lot_count 
                     , coalesce(mi."PotentialInputQty",0) as "potentialInputQty"
-                    , fn_code_name('inout_state', mi."State" ) as "inout_state"
+                    , dbo.fn_code_name('inout_state', mi."State" ) as "inout_state"
                     , var."StateName" as "state_name"
                     , tir."JudgeCode" as judge_code
                     , m."LotUseYN" as lot_use
@@ -117,8 +117,8 @@ public class MaterialInoutService {
             , m."Thickness"
             , m."Width"
             , m."Length"
-            , to_char(ml."InputDateTime",'yyyy-MM-dd hh24:mi:ss') as "InputDateTime"
-            , to_char(ml."EffectiveDate",'yyyy-MM-dd') as "EffectiveDate"
+            , format(ml."InputDateTime",'yyyy-MM-dd hh24:mi:ss') as "InputDateTime"
+            , format(ml."EffectiveDate",'yyyy-MM-dd') as "EffectiveDate"
             , ml."Description"
             , ml."StoreHouse_id" as store_house_id
             from mat_lot ml  
@@ -235,7 +235,7 @@ public class MaterialInoutService {
           , b."Material_id" as "Material_id"
           , mg."Name" as "MaterialGroupName"
           , mg.id as "MaterialGroup_id"
-          , fn_code_name('mat_type', mg."MaterialType") as "MaterialTypeName"
+          , dbo.fn_code_name('mat_type', mg."MaterialType") as "MaterialTypeName"
           , m.id as "Material_id"
           , m."Code" as product_code
           , m."Name" as product_name
@@ -246,15 +246,15 @@ public class MaterialInoutService {
           , b."CompanyName"
           , b."Company_id"
           , b."SujuType"
-          , fn_code_name('Balju_type', b."SujuType") as "BaljuTypeName"
+          , dbo.fn_code_name('Balju_type', b."SujuType") as "BaljuTypeName"
           , to_char(b."ProductionPlanDate", 'yyyy-mm-dd') as production_plan_date
           , to_char(b."ShipmentPlanDate", 'yyyy-mm-dd') as shiment_plan_date
           , b."Description"
           , b."AvailableStock" as "AvailableStock"
           , b."ReservationStock" as "ReservationStock"
           , b."SujuQty2" as "SujuQty2"
-          , fn_code_name('balju_state', b."State") as "StateName"
-          , fn_code_name('shipment_state', b."ShipmentState") as "ShipmentStateName"
+          , dbo.fn_code_name('balju_state', b."State") as "StateName"
+          , dbo.fn_code_name('shipment_state', b."ShipmentState") as "ShipmentStateName"
           , b."State"
           , to_char(b."_created", 'yyyy-mm-dd') as create_date
           , case b."PlanTableName" when 'prod_week_term' then '주간계획' when 'bundle_head' then '임의계획' else b."PlanTableName" end as plan_state

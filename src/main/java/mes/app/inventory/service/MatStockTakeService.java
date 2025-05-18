@@ -63,7 +63,13 @@ public class MatStockTakeService {
         sql += """
         		), B as (
                     select A.id
-                    , max(FORMAT(st."TakeDate" + st."TakeTime",'yy.mm.dd hh24:mi')||st."State") as last_take
+                    , MAX(
+                        FORMAT(
+                            CAST(st.TakeDate AS DATETIME) 
+                            + CAST(st.TakeTime AS DATETIME), 
+                            'yy.MM.dd HH:mm'
+                        ) + st.State
+                    ) as last_take
                     from A 
                     inner join stock_take st on st."Material_id" = A.id
                     and st."StoreHouse_id" = A.house_pk

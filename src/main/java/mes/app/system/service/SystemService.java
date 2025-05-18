@@ -392,7 +392,7 @@ public class SystemService {
     public List<Map<String, Object>> getGridColumnList(String moduleName, String templateName, String gridName, String langCode) {
 
         String sql = """
-                          select gc.Index as index2, gc.Key as key
+                          select gc.[Index] AS index2,  gc.[Key] AS [key]
                           , gc.Label as src_label
                           , gc.Width as width
                           , case when gc.Hidden = 'Y' then 'true' else 'false' end as hidden
@@ -404,7 +404,7 @@ public class SystemService {
                        where gc.ModuleName = :module_name
                        and gc.TemplateKey = :template_name
                        and gc.GridName = :grid_name
-                       order by gc.Index
+                       order by  gc.[Index]
                 """;
 
         MapSqlParameterSource dicParam = new MapSqlParameterSource();

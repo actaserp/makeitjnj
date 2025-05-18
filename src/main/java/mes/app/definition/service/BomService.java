@@ -62,10 +62,10 @@ public class BomService {
 				, dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type
 				, u."Name" as unit
 				, row_number() over (partition by b."BOMType", b."Material_id" order by b."StartDate" desc) as g_idx
-				, case when FORMAT(current_date, 'yyyy-mm-dd') between FORMAT(b."StartDate", 'yyyy-mm-dd') and FORMAT(b."EndDate", 'yyyy-mm-dd') then 'current'
+				, case when FORMAT(GETDATE(), 'yyyy-mm-dd') between FORMAT(b."StartDate", 'yyyy-mm-dd') and FORMAT(b."EndDate", 'yyyy-mm-dd') then 'current'
 				    when b."StartDate" is null or b."EndDate" is null then 'error'
-					when FORMAT(current_date, 'yyyy-mm-dd') > FORMAT(b."EndDate", 'yyyy-mm-dd') then 'past' 
-					when FORMAT(current_date, 'yyyy-mm-dd') < FORMAT(b."StartDate", 'yyyy-mm-dd') then 'future'
+					when FORMAT(GETDATE(), 'yyyy-mm-dd') > FORMAT(b."EndDate", 'yyyy-mm-dd') then 'past' 
+					when FORMAT(GETDATE(), 'yyyy-mm-dd') < FORMAT(b."StartDate", 'yyyy-mm-dd') then 'future'
 					else 'error' end as current_flag
 				from bom b 
 				left join material m on b."Material_id" = m.id 
