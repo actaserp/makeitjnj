@@ -479,8 +479,9 @@
             let data = {
               id: selectedItems[0].id,
               action: 'detail'
-            };
+            }; 
             let fnsuccess = function (result) {
+              console.log(result)
               result.data['mode'] = 'edit';
 
               _this.showBaljuForm(result.data);
