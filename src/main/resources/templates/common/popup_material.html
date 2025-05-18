@@ -1,5 +1,5 @@
-<th:block th:fragment="popup_material_multi">
-<script type="text/x-tmpl" id="materialMultiSearchTemplate">
+<th:block th:fragment="popup_material">
+<script type="text/x-tmpl" id="materialSearchTemplate">
 
     <div class="content_wrap popup" id="mpopup">
 
@@ -54,7 +54,6 @@
     </section>
 
         <div class="popup-button">
-            <button type="button" class="btn-popup" id="btnMaterialSelect" ><span data-commonCd="선택">선택</span></button>
             <button type="button" class="btn-popup" id="modal-close-button"><span data-commonCd="닫기">닫기</span></button>
             <button type="button" class="btn-popup" id="btnTest"><span data-commonCd="새로고침">새로고침</span></button>
         </div>
@@ -114,7 +113,7 @@
 
             this.callback = callback;
 
-            let content = tmpl('materialMultiSearchTemplate', {});
+            let content = tmpl('materialSearchTemplate', {});
             let $content = $(content);
             this.modalContainer.open({ width: 640, height: 510, $content });
 
@@ -136,13 +135,7 @@
                 ],
                 itemsSource: this.viewData,
             });
-            this.grid.select(-1, -1);
-
-            let selector = new wijmo.grid.selector.Selector(this.grid, {
-                itemChecked: function () {
-
-                }
-            })
+            this.grid.rowHeaders.columns.splice(0, 1);
             new FlexGridContextMenu(this.grid);
             this.grid.downloadFileName = '품목 내역';
 

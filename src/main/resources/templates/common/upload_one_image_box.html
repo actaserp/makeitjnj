@@ -1,9 +1,13 @@
 <th:block th:fragment="upload_one_image_box">
 <script type="text/x-tmpl" id="uploadImageTemplate">
     <input type="file" class="btn-default" style="display:none;" id ="{%=o.btnAddFile%}" form="uploadfile" value="파일선택" >
-    <button class="btn btn-default" id ="{%=o.btnUpload%}" form="uploadfile" > 파일선택...</button>
-    <button class="btn btn-default" id ="{%=o.btnRemoveFile%}" form="uploadfile" > 파일삭제</button>
-    <input type="hidden" id="{%=o.attachFileId%}" name="{%=o.attachFileId%}" form="uploadfile">
+    <div style="text-align: center; margin-bottom: 5px;">
+        <button class="btn" id ="{%=o.btnUpload%}" form="uploadfile" > 파일선택...</button>
+        <button class="btn" id ="{%=o.btnRemoveFile%}" form="uploadfile" > 파일삭제</button>
+    </div>
+    <div>
+        <input type="hidden" id="{%=o.attachFileId%}" name="{%=o.attachFileId%}" form="uploadfile">
+    <div>
                                     
     <img id="{%=o.imgPhoto%}" src="" width="{%=o.image_width%}" height="{%=o.image_height%}" />
 </script>

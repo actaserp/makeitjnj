@@ -7,27 +7,30 @@
             <div class="table_box sub" name="select-user-code-manual">
                 <div class="row">
                     <div class="col-12">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text fit_box_t4" data-commonCd="직접입력">직접입력</span>
-                            </div>
-                            <input class="form-control2" type="text" value="" name="select-user-code-manual-input" />
-                        </div>
+                        <table class="write-table">
+                            <tbody>
+                            <tr>
+                                <th style="text-align: center">
+                                    <label for="">직접입력</label>
+                                </th>
+                                <td>
+                                    <input style="width:100%;" type="text" value="" name="select-user-code-manual-input" />
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
             <div class="grid_box">
-                <div class="h-220" data-ax5grid="select-user-code-grid" ></div>
+                <div id="select-user-code-grid" style="height: 200px;"></div>
             </div>
         </section>
 
-        <section class="popupcontent" >
-            <div class="align_left">
+        <div class="popup-button">
                 <button type="button" class="btn-popup" name="btn-select-user-code"><span data-commonCd="선택">선택</span></button>
                 <button type="button" class="btn-popup" name="btn-close-user-code"><span data-commonCd="닫기">닫기</span></button>
-            </div>
-        </section>
-
+        </div>
     </div>
 </script>
 
@@ -41,12 +44,12 @@
                 'infoData': [],
                 'showManual': true,
                 'popupWidth': 850,
-                'popupHeight': 400,
+                'popupHeight': 500,
                 'selectBtnLabel': '선택',
                 'gridColumns': [
-                    { key: 'id', label: 'ID', width: 0 },
-                    { key: 'Code', label: '코드', width: '15%', align: 'center', sortable: false, hidden: true },
-                    { key: 'Value', label: '코드명', width: '85%', align: 'left', sortable: false },
+                    { binding: 'id', header: 'ID', width: 0, visible: false },
+                    { binding: 'Code', header: '코드', width: '*', align: 'center', visible: false },
+                    { binding: 'Value', header: '코드명', width: '*', align: 'left' }
                 ],
                 'gridShowCode': false,
                 'gridCodeLabel': '',
@@ -58,23 +61,23 @@
 
             let _this = this;
             if (this.option.gridShowCode) {
-                $.each(this.option.gridColumns, function (index, item) {
-                    if (item.key == 'Code') {
-                        item.hidden = false;
+                this.option.gridColumns.forEach(col => {
+                    if (col.binding === 'Code') {
+                        col.visible = true;
                     }
                 });
             }
-            if (this.option.gridCodeLabel != '') {
-                $.each(this.option.gridColumns, function (index, item) {
-                    if (item.key == 'Code') {
-                        item.label = _this.option.gridCodeLabel;
+            if (this.option.gridCodeLabel) {
+                this.option.gridColumns.forEach(col => {
+                    if (col.binding === 'Code') {
+                        col.header = this.option.gridCodeLabel;
                     }
                 });
             }
-            if (this.option.gridValueLabel != '') {
-                $.each(this.option.gridColumns, function (index, item) {
-                    if (item.key == 'Value') {
-                        item.label = _this.option.gridValueLabel;
+            if (this.option.gridValueLabel) {
+                this.option.gridColumns.forEach(col => {
+                    if (col.binding === 'Value') {
+                        col.header = this.option.gridValueLabel;
                     }
                 });
             }
@@ -94,7 +97,7 @@
             let $content = $(content);
             this.modalContainer.open({ width: this.option.popupWidth, height: this.option.popupHeight, $content });
 
-            if (this.option.infoHtml == '') {
+            if (this.option.infoHtml === '') {
                 $($content.find('[name=select-user-code-info]:eq(0)')).hide();
             } else {
                 $($content.find('[name=select-user-code-info]:eq(0)')).show();
@@ -115,19 +118,21 @@
                     let o = {
                         'label': '-',
                         'value': '-',
-                        'width': '6',
+                        'width': '12',
                     }
 
                     $.extend(o, item);
 
                     let html = '<div class="col-' + o.width + '">'
-                    html += '   <div class="input-group">'
-                    html += '      <div class="input-group-prepend">'
-                    html += '          <span class="input-group-text fit_box_t4" data-commonCd="' + o.label + '">' + o.label + '</span>'
-                    html += '      </div>'
-                    html += '      <input class="form-control2" type="text" value="' + o.value + '" disabled />'
-                    html += '   </div>'
-                    html += '</div>';
+                    html += '   <table class="write-table">'
+                    html += '      <tbody>'
+                    html += '          <tr>'
+                    html += '              <th style="text-align: center"> ' + o.label + ' </th>'
+                    html += '              <td><input class="form-control2" type="text" value="' + o.value + '" disabled /></td>'
+                    html += '          </tr>'
+                    html += '      </tbody>';
+                    html += '   </table>';
+                    html += '   </div>';
 
                     $row.append($(html));
                 });
@@ -145,40 +150,22 @@
                 _this.close();
             });
 
-            let config = {
-                target: $('[data-ax5grid="select-user-code-grid"]'),
-                sortable: true,
-                frozenColumnIndex: 0, // 열 고정
-                frozenRowIndex: 0,    // 행 고정
-                showLineNumber: false, // 열의 번호 보이기 여부
-                showRowSelector: false,  // checkbox(선택) 보이기 여부
-                multipleSelect: false, // 여러행 선택 가능 여부 (false시 단독 선택)
-                sortable: true, // 모든 컬럼에 정렬 아이콘 표시 (columns에서 컬럼별 소팅여부 재설정 가능)
-                multiSort: true, // 다중 정렬 여부
-                header: {
-                    align: 'center',  // 헤더의 기본 정렬
-                    columnHeight: 30  // 헤더 높이
+            this.grid = new wijmo.grid.FlexGrid('#select-user-code-grid', {
+                autoGenerateColumns: false,
+                selectionMode: wijmo.grid.SelectionMode.Row,
+                frozenColumns: 0,
+                frozenRows: 0,
+                allowSorting: true,
+                isReadOnly: true,
+                headersVisibility: wijmo.grid.HeadersVisibility.Column,
+                itemsSource: new wijmo.collections.CollectionView([]),
+                formatItem: (s, e) => {
+                    if (e.panel.cellType === wijmo.grid.CellType.ColumnHeader) {
+                        e.cell.style.textAlign = 'center';
+                    }
                 },
-                body: {
-                    columnHeight: 25, // body의 기본 높이
-                    onClick: function () {
-                        _this.grid.select(this.dindex);
-                        _this.selectedItem = this.item;
-                    },
-                    onDBLClick: function () {
-                        _this.grid.select(this.dindex);
-                        _this.selectedItem = this.item;
-                        _this.select();
-                    },
-                },
-                page: {
-                    display: false,  // 페이징 보이기 여부
-                    statusDisplay: true,
-                },
-                columns: this.option.gridColumns,
-            };
-
-            this.grid = new ax5.ui.grid(config);
+                columns: this.option.gridColumns
+            });
 
             let url = '/api/popup/search_user_code/read';
             let data = {
@@ -187,34 +174,31 @@
 
             let result = AjaxUtil.getSyncData(url, data);
             if (result != null) {
-                _this.grid.setData({
-                    list: result,
-                    page: {
-                        display: true,
-                        totalElements: result.length,
-                    }
-                });
+                this.grid.itemsSource.sourceCollection = result;
+                this.grid.refresh();
             }
             //setTimeout(function(){_this.grid.align();}, 1000);
         }
 
         select() {
+            const selectedItems = this.grid.selectedItems[0];
+
             if (this.option.showManual) {
-                let $input = $($('[name=select-user-code-manual-input]:eq(0)'));
-                if (this.selectedItem == null && $input.val() == '') {
+                const $input = document.querySelector('[name=select-user-code-manual-input]:nth-of-type(1)');
+                if ((!selectedItems || selectedItems.length === 0) && (!$input || $input.value.trim() === '')) {
                     Alert.alert('', '직접입력 및 선택된 항목이 없습니다.');
                 } else {
-                    this.callback({ 'selected': this.selectedItem, 'input': $input.val() });
-                    if (this.option.closeManual == false) {
+                    this.callback({ 'selected': selectedItems, 'input': $input ? $input.value : '' });
+                    if (!this.option.closeManual) {
                         this.close();
                     }
                 }
             } else {
-                if (this.selectedItem == null) {
+                if (!selectedItems || selectedItems.length === 0) {
                     Alert.alert('', '선택된 항목이 없습니다.');
                 } else {
-                    this.callback({ 'selected': this.selectedItem, 'input': '' });
-                    if (this.option.closeManual == false) {
+                    this.callback({ 'selected': selectedItems, 'input': '' });
+                    if (!this.option.closeManual) {
                         this.close();
                     }
                 }

@@ -6,12 +6,50 @@
             <div class="popup_close_box"><button class="btn_popup_close" id="material-search-close"><i class="fas fa-times"></i></button></div>
         </header>-->
 
-    <section class="pt-2">
 
+
+        <div class="table-wrap">
+          <table class="write-table">
+             <caption>주문등록 테이블</caption>
+                 <tbody>
+                    <tr>
+                        <th style="text-align: center">
+                           <label for="cboEquipmentGroup">설비그룹</label>
+                        </th>
+                        <td>
+                           <select class="form-control2" id='cboEquipmentGroup' name="cboEquipmentGroup" ></select>
+                        </td>
+
+                        <th style="text-align: center">
+                           <label for="keyword">설비명</label>
+                        </th>
+                        <td>
+                           <input class="form-control2" type="text" id="keyword" name="keyword" />
+                        </td>
+                        <td>
+                           <!--<button type="button" class="btn btn-delete" id="btnEquipmentSearch" title="조회">-->
+                                <button type="button" class="btn-default" id="btnEquipmentSearch" title="검색">검색</button>
+                        </td>
+                    </tr>
+                 </tbody>
+          </table>
+                <div class="grid_box" style="margin-top: 10px;">
+                    <!--<div class="h-300" data-ax5grid="equipment-search-grid" ></div>-->
+                     <div id="equipment-search-grid" style="height: 300px; max-height: 300px;"></div>
+                </div>
+        </div>
+
+        <div class="popup-button">
+          <button type="button" class="btn-popup y_write_auth" id="btnEquipmentSelect" ><span data-labelCd="선택">선택</span></button>
+          <button type="button" class="btn-popup" id="btn-material-search-close"><span data-labelCd="닫기">닫기</span></button>
+          <button type="button" class="btn-popup" id="btnTest"><span data-labelCd="새로고침">새로고침</span></button>
+        </div>
+
+   <!-- <section class="pt-2">
         <div class="table_box search">
                 <div class="row">
 
-                    <div class="col-6">
+                    <div class="col-5">
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text fit_box_t4" data-commonCd="설비그룹">설비그룹</span>
@@ -29,8 +67,9 @@
                         </div>
                     </div>
                     
-                    <div class="col-1" >
-                            <button type="button" class="btn-default" id="btnEquipmentSearch" title="조회"><i class="fas fa-search"></i></button>
+                    <div class="col-2">
+                            <button type="button" class="btn btn-delete" id="btnEquipmentSearch" title="조회">
+                            <img src="/images/icon/btn-srch.svg" alt="검색 아이콘"></button>
                     </div> 
 
                 </div>
@@ -39,17 +78,14 @@
             <div class="grid_box">
                     <div class="h-300" data-ax5grid="equipment-search-grid" ></div>
             </div>
-
     </section>
-
-
-    <section class="popupcontent" >
+    <section class="popupcontent" style="height:45px;">
         <div class="popup_button_group bottom align_left">
-            <button type="button" class="btn-popup" id="btnEquipmentSelect" ><span data-commonCd="선택">선택</span></button>
+            <button type="button" class="btn-popup" id="btnEquipmentSelect"><span data-commonCd="선택">선택</span></button>
             <button type="button" class="btn-popup" id="btn-material-search-close"><span data-commonCd="닫기">닫기</span></button>
             <button type="button" class="btn-popup" id="btnTest"><span data-commonCd="새로고침">새로고침</span></button>
         </div>
-    </section>
+    </section>-->
 
 </div>
 </script>
@@ -64,6 +100,7 @@
             this.grid = null;
             this.selectedItem = null;
             this.callback = null;
+            this.viewData = new wijmo.collections.CollectionView();
             this.modalContainer = new PopupDraggable('설비 선택');
             this.$cboEquipmentGroup = null;
             this.$keyword = null;
@@ -79,9 +116,9 @@
 
             let content = tmpl('equipmentSearchTemplate', {});
             let $content = $(content);
-            this.modalContainer.open({ width: 650, height: 430, $content });
+            this.modalContainer.open({ width: 1115, height: 470, $content });
 
-            let config = {
+            /*let config = {
                 target: $('[data-ax5grid="equipment-search-grid"]'),
                 sortable: true,
                 frozenColumnIndex: 0, // 열 고정
@@ -116,9 +153,29 @@
                     { key: 'Code', label: '설비코드', width: 150, align: 'left', sortable: false },
                     { key: 'Name', label: '설비명', width: 220, align: 'left', sortable: false },
                 ]
-            };
+            };*/
 
-            this.grid = new ax5.ui.grid(config);
+            this.grid = new wijmo.grid.FlexGrid('#equipment-search-grid', {
+                selectionMode: wijmo.grid.SelectionMode.Row,
+                headersVisibility: wijmo.grid.HeadersVisibility.Column,
+                autoGenerateColumns: false,
+                showMarquee: true,
+                isReadOnly: true,
+                formatItem: (sender, e) => {
+                    if (e.panel.cellType === wijmo.grid.CellType.ColumnHeader) {
+                        e.cell.style.textAlign = 'center';
+                    }
+                },
+                columns: [
+                    { binding: 'EquipmentTypeName', header: '설비구분', width: 120, align: 'left'  },
+                    { binding: 'group_name', header: '설비그룹', width: 150, align: 'left'},
+                    { binding: 'Code', header: '설비코드', width: 200, align: 'left'},
+                    { binding: 'Name', header: '설비명', width: '*', align: 'left'},
+                ],
+                itemsSource: this.viewData, // 데이터를 설정할 배열
+            });
+
+            /*this.grid = new ax5.ui.grid(config);*/
             this.$btnEquipmentSearch = $content.find('#btnEquipmentSearch');
             this.$cboEquipmentGroup = $content.find('#cboEquipmentGroup');
             this.$keyword = $content.find('#keyword');
@@ -131,13 +188,15 @@
             });
 
             this.$btnEquipmentSelect.click(function (e) {
-                // 그리드에서 현재 선택된 item을 찾아서 호출한다.
-                let items = _this.grid.getList("selected");
-                if (items.length == 0) {
+                let sel = _this.grid.selection;
+                if (!sel || sel.row < 0) {
                     return false;
                 }
-                _this.selectData(items[0]);
+
+                let item = _this.grid.rows[sel.row].dataItem;
+                _this.selectData(item);
             });
+
 
             this.$keyword.on('keypress', function (e) {
                 if (event.keyCode == 13) {
@@ -169,14 +228,15 @@
 
             let result = AjaxUtil.getSyncData(url, data);
             if (result != null) {
-                let recordsTotal = result.data.length;
+                /*let recordsTotal = result.data.length;
                 _this.grid.setData({
                     list: result.data,
                     page: {
                         display: true,
                         totalElements: recordsTotal,
                     }
-                });
+                });*/
+                _this.viewData.sourceCollection = result.data;
             }
 
             //검색버튼을 누르고 초기화한다

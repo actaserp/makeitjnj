@@ -18,57 +18,77 @@
             <div class="popup_close_box"><button class="btn_popup_close" id="material-search-close"><i class="fas fa-times"></i></button></div>
         </header>-->
 
-    <section class="pt-2">
+    <section class="section" style="padding-top: 10px;">
 
-        <div class="table_box search">
-                <div class="row">
+        <div class="section-top">
+            <div class="search-wrap" style="text-align: left;">
+                <dl>
+                    <dt>
+                        <label for="cboMaterialType">
+                            품목구분<span class="eq"></span>
+                        </label>
+                    </dt>
+                    <dd>
+                        <div class="srch-box">
+                            <select id="cboMaterialType" name="cboMaterialType">
 
-                    <div class="col-6">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text fit_box_t4" data-commonCd="품목구분">품목구분</span>
-                            </div>
-                             <select class="form-control2" id='cboMaterialType' name="cboMaterialType" ></select>
+                            </select>
                         </div>
-                    </div>
-
-                    <div class="col-6">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text fit_box_t4" data-commonCd="품목그룹">품목그룹</span>
-                            </div>
-                             <select class="form-control2" id='cboMaterialGrp' name="cboMaterialGrp" ></select>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>
+                        <label for="cboMaterialGrp">
+                            품목그룹<span class="eq"></span>
+                        </label>
+                    </dt>
+                    <dd>
+                        <div class="srch-box">
+                            <select id='cboMaterialGrp' name="cboMaterialGrp" ></select>
                         </div>
-                    </div>
+                    </dd>
+                </dl>
 
-                    <div class="col-6">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text fit_box_t4" data-commonCd="품목명">품목명</span>
-                            </div>
-                             <input class="form-control2" type="text" id="keyword" name="keyword" />
+                <dl>
+                    <dt>
+                        <label for="keyword">
+                            품목명<span class="eq"></span>
+                        </label>
+                    </dt>
+                    <dd>
+                        <div class="srch-box">
+                            <input class="form-control2" type="text" id="keyword" name="keyword" />
                         </div>
-                    </div>
-                    
-                    <div class="col-1" >
-                            <button type="button" class="btn-default" id="btnMaterialSearch" title="조회"><i class="fas fa-search"></i></button>
-                    </div> 
+                    </dd>
+                </dl>
 
-                </div>
-        </div>
-        <div class="grid_box">
-                <div class="h-300" data-ax5grid="material-search-grid" ></div>
+                <dl>
+                    <dt>&nbsp;</dt>
+                    <dd>
+                        <li>
+                            <a class="btn btn-delete" title="검색" id="btnMaterialSearch">
+                                <!--                                        class 쓰이는 곳 찾고 없으면 클래스명 수정하기-->
+                                <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
+                                검색
+                            </a>
+                        </li>
+                    </dd>
+                </dl>
+            </div>
+            <div class="container-fluid">
+                <div id="theGrid2" style="height: 300px;"></div>
+            </div>
         </div>
 
     </section>
 
-    <section class="popupcontent" >
-        <div class="align_left">
+
+        <div class="popup-button">
             <button type="button" class="btn-popup" id="btnMaterialSelect" ><span data-commonCd="선택">선택</span></button>
             <button type="button" class="btn-popup" id="btn-material-search-close"><span data-commonCd="닫기">닫기</span></button>
             <button type="button" class="btn-popup" id="btnTest"><span data-commonCd="새로고침">새로고침</span></button>
         </div>
-    </section>
+
 
 </div>
 </script>
@@ -96,10 +116,11 @@
             $('#' + selector_id).html(mat_html);
 
             this.init();
+
         }
         init() {
             let _this = this;
-            if (_this.type == 'combobox') {
+            if (_this.type === 'combobox') {
                let null_option = 'all';
                 let selected_value = '';
                 let condition1 = '';
@@ -109,7 +130,7 @@
                 if (_this.option) {
                     null_option = this.option.null_option;
                     selected_value = this.option.selected_value;
-                    
+
                     condition1 = this.option.condition1;
                     condition2 = this.option.condition2;
                     if (this.option.condition3)
@@ -120,13 +141,13 @@
                     AjaxUtil.fillSelectOptions($('#' + _this.element_id), 'material', null_option, selected_value, condition1, condition2, condition3);
                 else {
                     let text = null_option;
-                   if (null_option == 'choose') {
+                   if (null_option === 'choose') {
                         text = i18n.getCommonText('선택');//'선택하세요(Choose)';
                     }
-                    else if (null_option == 'all') {
+                    else if (null_option === 'all') {
                         text = i18n.getCommonText('전체'); //'전체(All
                     }
- 
+
                     let combo_option = $('<option>',
                     {
                         value: '',
@@ -136,7 +157,7 @@
 
                 }
             }
-            if (_this.type == 'popup') {
+            if (_this.type === 'popup') {
                 $('#' + _this.button_id).click(function (e) {
                     let searchcallback = function (items) {
                         let row = items;
@@ -154,12 +175,16 @@
                     poppage.show(searchcallback);
                 });
             }
+
         }
     }
+
+
 
     class PopMatComponent {
         constructor() {
             this.grid = null;
+            this.viewData = new wijmo.collections.CollectionView();
             this.selectedItem = null;
             this.callback = null;
             this.modalContainer = new PopupDraggable('품목 선택');
@@ -181,14 +206,7 @@
 
             let result = AjaxUtil.getSyncData(url, data);
             if (result.success) {
-                let recordsTotal = result.length;
-                _this.grid.setData({
-                    list: result.data,
-                    page: {
-                        display: true,
-                        totalElements: recordsTotal,
-                    }
-                });
+                _this.viewData.sourceCollection = result.data;
             }
 
             //검색버튼을 누르고 초기화한다
@@ -209,49 +227,26 @@
 
             let content = tmpl('mult_matSearchTemplate', {});
             let $content = $(content);
-            this.modalContainer.open({ width: 760, height: 480, $content });
+            this.modalContainer.open({ width: 800, height: 500, $content });
 
-            let config = {
-                target: $('[data-ax5grid="material-search-grid"]'),
-                sortable: true,
-                frozenColumnIndex: 0, // 열 고정
-                frozenRowIndex: 0,    // 행 고정
-                showLineNumber: false, // 열의 번호 보이기 여부
-                showRowSelector: false,  // checkbox(선택) 보이기 여부
-                multipleSelect: false, // 여러행 선택 가능 여부 (false시 단독 선택)
-                sortable: true, // 모든 컬럼에 정렬 아이콘 표시 (columns에서 컬럼별 소팅여부 재설정 가능)
-                multiSort: true, // 다중 정렬 여부
-                header: {
-                    align: 'center',  // 헤더의 기본 정렬
-                    columnHeight: 30  // 헤더 높이
-                },
-                body: {
-                    columnHeight: 25, // body의 기본 높이
-                    onClick: function () {
-                        _this.grid.select(this.dindex);
-                    },
-                    onDBLClick: function () {
-                        _this.grid.select(this.dindex);
-                        _this.selectData(this.item);
-                        _this.selectedItem = this.item;
-                    },
-                },
-                page: {
-                    display: true,  // 페이징 보이기 여부
-                    statusDisplay: true,
-                },
+            this.grid = new wijmo.grid.FlexGrid('#theGrid2', {
+                selectionMode: wijmo.grid.SelectionMode.Row,
+                autoGenerateColumns: false,
+                showMarquee: true,
+                isReadOnly: true,
                 columns: [
-                    //{ key: 'id', label: '품목번호', width: 50, align: 'right', sortable: false },
-                    { key: 'MaterialTypeName', label: '품목구분', width: 80, align: 'center', sortable: false },
-                    { key: 'group_name', label: '품목그룹', width: 120, align: 'left', sortable: false },
-                    { key: 'Code', label: '품목코드', width: 150, align: 'center', sortable: false },
-                    { key: 'Name', label: '품목명', width: 300, align: 'left', sortable: false },
-                    { key: 'unit_name', label: '단위', width: 60, align: 'center', sortable: false },
-                    //{ key: 'Description', label: '설명', width: 250, align: 'center', sortable: false },
-                ]
-            };
+                    { binding: 'MaterialTypeName', header: '품목구분', width: 120, align: 'center' },
+                    { binding: 'group_name', header: '품목그룹', width: 120, align: 'left' },
+                    { binding: 'Code', header: '품목코드', width: 150, align: 'center' },
+                    { binding: 'Name', header: '품목명', width: 300, align: 'left' },
+                    { binding: 'unit_name', header: '단위', width: 60, align: 'center' }
+                ],
+                itemsSource: this.viewData,
+            });
+            this.grid.rowHeaders.columns.splice(0, 1);
+            new FlexGridContextMenu(this.grid);
+            this.grid.downloadFileName = '품목 내역';
 
-            this.grid = new ax5.ui.grid(config);
             this.$btnMaterialSearch = $content.find('#btnMaterialSearch');
             this.$cboMaterialType = $content.find('#cboMaterialType');
             this.$cboMaterialGrp = $content.find('#cboMaterialGrp');
@@ -276,15 +271,15 @@
 
             this.$btnMaterialSelect.click(function (e) {
                 // 그리드에서 현재 선택된 item을 찾아서 호출한다.
-                let items = _this.grid.getList("selected");
-                if (items.length == 0) {
+                let items = _this.grid.selectedItems;
+                if (items.length === 0) {
                     return false;
                 }
                 _this.selectData(items[0]);
             });
 
             this.$keyword.on('keypress', function (e) {
-                if (event.keyCode == 13) {
+                if (event.keyCode === 13) {
                     _this.searchDataBind();
                 }
             });
@@ -296,10 +291,16 @@
             });
 
             //새로고침
-            let $btnTest = $('#btnTest');
+            $('#btnTest').click(function (e) {
+                _this.grid.collectionView.refresh(); // Wijmo 그리드 새로고침
+            });
 
-            $btnTest.click(function (e) {
-                _this.grid.init().repaint();
+            this.grid.hostElement.addEventListener('dblclick', function (e) {
+                let items = _this.grid.selectedItems;
+                if (items.length === 0) {
+                    return false;
+                }
+                _this.selectData(items[0]); // btnMaterialSelect 클릭과 동일한 동작
             });
         }
 
@@ -307,4 +308,5 @@
             this.modalContainer.close();
         }
     }
+
 </script>
