@@ -37,7 +37,7 @@ public class DasConfigService {
                   dc."Server_id" ,
                   --case when dc.is_active is true then 'Y' else 'N' end as is_active,
                   dc.is_active,
-                  to_char(dc._created ,'yyyy-mm-dd hh24:mi:ss') as created,
+                  FORMAT(dc._created ,'yyyy-mm-dd hh24:mi:ss') as created,
                   ds."Name" as server_name
                 from das_config dc
                     left outer join das_server ds on dc."Server_id" = ds.id 
@@ -81,7 +81,7 @@ public class DasConfigService {
                   dc."Server_id" ,
                   --case when dc.is_active is true then 'Y' else 'N' end as is_active,
                   dc.is_active,
-                  to_char(dc._created ,'yyyy-mm-dd hh24:mi:ss') as created,
+                  FORMAT(dc._created ,'yyyy-mm-dd hh24:mi:ss') as created,
                   ds."Name" as server_name
                 from das_config dc
                     left outer join das_server ds on dc."Server_id" = ds.id 

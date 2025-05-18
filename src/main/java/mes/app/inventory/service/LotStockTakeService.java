@@ -65,7 +65,7 @@ public class LotStockTakeService {
         select
         distinct 
         m.id as mat_id
-        , fn_code_name('mat_type', mg."MaterialType") as mat_type
+        , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type
         , mg."Name" as mat_grp
         , mg.id as mg_id
         , m."Code" as mat_code
@@ -148,7 +148,7 @@ public class LotStockTakeService {
 		sql+="""
 		), B as (
 		SELECT A.ml_id, A.storehouse_id 
-		, max(concat(to_char(slt."TakeDate",'yy.mm.dd'),' ', to_char(slt."TakeTime",'HH24:MM'), slt."State")) as last_take 
+		, max(concat(FORMAT(slt."TakeDate",'yy.mm.dd'),' ', FORMAT(slt."TakeTime",'HH24:MM'), slt."State")) as last_take 
 		from A 
 		inner join stock_lot_take slt on slt."MaterialLot_id" = A.ml_id and slt."StoreHouse_id" = A.storehouse_id 
 		group by A.ml_id, A.storehouse_id 
@@ -210,7 +210,7 @@ public class LotStockTakeService {
         select 
         A.ml_id
         , A.storehouse_id 
-        , max(concat(to_char(slt."TakeDate",'yy.mm.dd'),' ',to_char(slt."TakeTime",'HH24:MM'), slt."State")) as last_take 
+        , max(concat(FORMAT(slt."TakeDate",'yy.mm.dd'),' ',FORMAT(slt."TakeTime",'HH24:MM'), slt."State")) as last_take 
         from A 
         inner join stock_lot_take slt on slt."MaterialLot_id" = A.ml_id and slt."StoreHouse_id" = A.storehouse_id 
         group by A.ml_id, A.storehouse_id 
@@ -238,7 +238,7 @@ public class LotStockTakeService {
 
 		String sql = """
         select slt.id 
-        , fn_code_name('mat_type', mg."MaterialType") as mat_type
+        , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type
         , m.id mat_id
         , ml.id ml_id
         , mg."Name" as mat_grp_name
@@ -253,7 +253,7 @@ public class LotStockTakeService {
         , ml."LotNumber"
         , m."UnitPrice" as unit_price
         , m."UnitPrice" * slt."Gap" as gap_money
-        , concat(to_char(slt."TakeDate",'yy-mm-dd'),' ', to_char(slt."TakeTime",'HH24:MM')) take_date_time
+        , concat(FORMAT(slt."TakeDate",'yy-mm-dd'),' ', FORMAT(slt."TakeTime",'HH24:MM')) take_date_time
         , case slt."State" when 'taked' then '조사' else '확인' end state 
         , slt."Description" description
         from stock_lot_take slt 
@@ -298,7 +298,7 @@ public class LotStockTakeService {
 		String sql = """
         select slt.id  
         , sh."Name" as house_name
-        , fn_code_name('mat_type', mg."MaterialType") as mat_type_name	
+        , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name	
         , mg."Name" mat_grp_name
         , m."Code" as mat_code
         , m."Name" as mat_name
@@ -311,9 +311,9 @@ public class LotStockTakeService {
         , slt."Gap" * m."UnitPrice" as gap_price 
         , slt."Description" as description
         , up."Name" taker_name
-        , concat(to_char(slt."TakeDate", 'yyyy-mm-dd'),' ', to_char(slt."TakeTime", 'HH24:MM')) take_date_time
+        , concat(FORMAT(slt."TakeDate", 'yyyy-mm-dd'),' ', FORMAT(slt."TakeTime", 'HH24:MM')) take_date_time
         , up2."Name" confirmer_name
-        , to_char(slt."ConfirmDateTime", 'yyyy-mm-dd HH24:MM') confirm_date_time
+        , FORMAT(slt."ConfirmDateTime", 'yyyy-mm-dd HH24:MM') confirm_date_time
         , case slt."State" when 'taked' then '조사' else '확인' end state
         from stock_lot_take slt 
         inner join store_house sh on sh.id = slt."StoreHouse_id" 

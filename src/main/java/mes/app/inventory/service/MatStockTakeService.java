@@ -28,7 +28,7 @@ public class MatStockTakeService {
         String sql = """
         		with A as (
                     select m.id as id
-                        , fn_code_name('mat_type', mg."MaterialType") as mat_type
+                        , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type
                         , m."ManagementLevel" as manage_level
                         , mg."Name" as mat_grp_name
                         , m."Code" as mat_code, m."Name" as mat_name, u."Name" as unit_name
@@ -63,7 +63,7 @@ public class MatStockTakeService {
         sql += """
         		), B as (
                     select A.id
-                    , max(to_char(st."TakeDate" + st."TakeTime",'yy.mm.dd hh24:mi')||st."State") as last_take
+                    , max(FORMAT(st."TakeDate" + st."TakeTime",'yy.mm.dd hh24:mi')||st."State") as last_take
                     from A 
                     inner join stock_take st on st."Material_id" = A.id
                     and st."StoreHouse_id" = A.house_pk

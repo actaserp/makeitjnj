@@ -76,7 +76,7 @@ public class TestMasterService {
 	                where "TestMaster_id" = :master_id
                 ), B as (
 	                select A.mat_id as id
-	                , fn_code_name('mat_type', min(mg."MaterialType")) as mat_type
+	                , dbo.fn_code_name('mat_type', min(mg."MaterialType")) as mat_type
 	                , min(mg."Name") as mat_grp
 	                , min(m."Code") as mat_code
 	                , min(m."Name") as mat_name  

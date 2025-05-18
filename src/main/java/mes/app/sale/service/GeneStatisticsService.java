@@ -98,11 +98,11 @@ public class GeneStatisticsService {
 		sql.append("SELECT ");
 		
 		if ("분기별".equals(periodType)) {
-			sql.append("TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY') || '-Q' || TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'Q') as period, ");
+			sql.append("FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY') || '-Q' || FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'Q') as period, ");
 		} else if ("반기별".equals(periodType)) {
-			sql.append("TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY') || '-H' || CASE WHEN EXTRACT(MONTH FROM TO_DATE(t.standdt, 'YYYYMMDD')) <= 6 THEN '1' ELSE '2' END as period, ");
+			sql.append("FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY') || '-H' || CASE WHEN EXTRACT(MONTH FROM TO_DATE(t.standdt, 'YYYYMMDD')) <= 6 THEN '1' ELSE '2' END as period, ");
 		} else {
-			sql.append("TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), '" + dateFormat + "') as period, ");
+			sql.append("FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), '" + dateFormat + "') as period, ");
 		}
 		
 		sql.append("t.powerid, t.powernm, t.mevalue ");
@@ -133,7 +133,7 @@ public class GeneStatisticsService {
 	// 월별 데이터 계산 로직
 	private List<Map<String, Object>> getMonthlyData(String startDate, String endDate, String powerid) {
 		StringBuilder sql = new StringBuilder(
-				"SELECT TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM') as month, " +
+				"SELECT FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM') as month, " +
 				"t.powernm, SUM(t.mevalue) as totalValue " +
 				"FROM tb_rp320 t " +
 				"WHERE t.standdt BETWEEN :startDate AND :endDate ");
@@ -147,7 +147,7 @@ public class GeneStatisticsService {
 			params.addValue("powerid", powerid);
 		}
 
-		sql.append("GROUP BY TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM'), t.powernm " +
+		sql.append("GROUP BY FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM'), t.powernm " +
 				   "ORDER BY month, t.powernm");
 
 		return sqlRunner.getRows(sql.toString(), params);
@@ -220,12 +220,12 @@ public class GeneStatisticsService {
 	// YoY 데이터 계산 로직
 	private List<Map<String, Object>> getYoYData(String startDate, String endDate, String powerid) {
 		String sql = "WITH yearly_data AS (" +
-					 "  SELECT TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY') as year, " +
+					 "  SELECT FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY') as year, " +
 					 "         t.powerid, t.powernm, SUM(t.mevalue) as totalValue " +
 					 "  FROM tb_rp320 t " +
 					 "  WHERE TO_DATE(t.standdt, 'YYYYMMDD') BETWEEN TO_DATE(:startDate, 'yyyyMMdd') AND TO_DATE(:endDate, 'yyyyMMdd') " +
 					 (powerid != null && !powerid.equals("all") ? "  AND t.powerid = :powerid " : "") +
-					 "  GROUP BY TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY'), t.powerid, t.powernm" +
+					 "  GROUP BY FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY'), t.powerid, t.powernm" +
 					 ") " +
 					 "SELECT d.year, d.powerid, d.powernm, " +
 					 "  COALESCE((d.totalValue - LAG(d.totalValue) OVER (PARTITION BY d.powerid ORDER BY d.year)), 0) / " +
@@ -248,14 +248,14 @@ public class GeneStatisticsService {
 	// QoQ 데이터 계산 로직
 	private List<Map<String, Object>> getQoQData(String startDate, String endDate, String powerid) {
 		String sql = "WITH quarterly_data AS (" +
-					 "  SELECT TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY') as year, " +
-					 "         'Q' || TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'Q') as quarter, " +
+					 "  SELECT FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY') as year, " +
+					 "         'Q' || FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'Q') as quarter, " +
 					 "         t.powerid, t.powernm, SUM(t.mevalue) as totalValue " +
 					 "  FROM tb_rp320 t " +
 					 "  WHERE TO_DATE(t.standdt, 'YYYYMMDD') BETWEEN TO_DATE(:startDate, 'yyyyMMdd') AND TO_DATE(:endDate, 'yyyyMMdd') " +
 					 (powerid != null && !powerid.equals("all") ? "  AND t.powerid = :powerid " : "") +
-					 "  GROUP BY TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY'), " +
-					 "           'Q' || TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'Q'), t.powerid, t.powernm" +
+					 "  GROUP BY FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY'), " +
+					 "           'Q' || FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'Q'), t.powerid, t.powernm" +
 					 ") " +
 					 "SELECT d.year, d.quarter, d.powerid, d.powernm, " +
 					 "  (d.totalValue - LAG(d.totalValue) OVER (PARTITION BY d.powerid ORDER BY d.year, d.quarter)) / LAG(d.totalValue) OVER (PARTITION BY d.powerid ORDER BY d.year, d.quarter) * 100 as qoq_change " +
@@ -275,12 +275,12 @@ public class GeneStatisticsService {
 	// MoM 데이터 계산 로직
 	private List<Map<String, Object>> getMoMData(String startDate, String endDate, String powerid) {
 		String sql = "WITH monthly_data AS (" +
-					 "  SELECT TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM') as month, " +
+					 "  SELECT FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM') as month, " +
 					 "         t.powerid, t.powernm, SUM(t.mevalue) as totalValue " +
 					 "  FROM tb_rp320 t " +
 					 "  WHERE TO_DATE(t.standdt, 'YYYYMMDD') BETWEEN TO_DATE(:startDate, 'yyyyMMdd') AND TO_DATE(:endDate, 'yyyyMMdd') " +
 					 (powerid != null && !powerid.equals("all") ? "  AND t.powerid = :powerid " : "") +
-					 "  GROUP BY TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM'), t.powerid, t.powernm" +
+					 "  GROUP BY FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM'), t.powerid, t.powernm" +
 					 ") " +
 					 "SELECT d.month, d.powerid, d.powernm, " +
 					 "  (d.totalValue - LAG(d.totalValue) OVER (PARTITION BY d.powerid ORDER BY d.month)) / LAG(d.totalValue) OVER (PARTITION BY d.powerid ORDER BY d.month) * 100 as mom_change " +
@@ -300,12 +300,12 @@ public class GeneStatisticsService {
 	// YTD 데이터 계산 로직
 	private List<Map<String, Object>> getYTDData(String startDate, String endDate, String powerid) {
 		String sql = "WITH ytd_data AS (" +
-					 "  SELECT TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM') as month, " +
+					 "  SELECT FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM') as month, " +
 					 "         t.powerid, t.powernm, SUM(t.mevalue) as totalValue " +
 					 "  FROM tb_rp320 t " +
 					 "  WHERE TO_DATE(t.standdt, 'YYYYMMDD') BETWEEN TO_DATE(:startDate, 'yyyyMMdd') AND TO_DATE(:endDate, 'yyyyMMdd') " +
 					 (powerid != null && !powerid.equals("all") ? "  AND t.powerid = :powerid " : "") +
-					 "  GROUP BY TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM'), t.powerid, t.powernm" +
+					 "  GROUP BY FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM'), t.powerid, t.powernm" +
 					 ") " +
 					 "SELECT d.month, d.powerid, d.powernm, " +
 					 "  SUM(d.totalValue) OVER (PARTITION BY d.powerid, EXTRACT(YEAR FROM TO_DATE(d.month, 'YYYY-MM')) ORDER BY d.month) as cumulativeValue " +

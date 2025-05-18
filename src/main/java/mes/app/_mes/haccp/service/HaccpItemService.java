@@ -27,9 +27,9 @@ public class HaccpItemService {
 	            , hi."Code" as item_code
 	            , hi."Name" as item_name
 	            , hi."ResultType"
-	            , fn_code_name('haccp_result_type', hi."ResultType") as "ResultTypeName"
+	            , dbo.fn_code_name('haccp_result_type', hi."ResultType") as "ResultTypeName"
 	            , hi."Unit_id"
-	            , to_char(hi."_created",'YYYY-MM-DD HH24:MI:SS') as "_created" 
+	            , FORMAT(hi."_created",'YYYY-MM-DD HH24:MI:SS') as "_created" 
 	            , u."Name" as unit_name
 	            FROM haccp_item hi
 	            left join unit u on u.id = hi."Unit_id" 
@@ -58,9 +58,9 @@ public class HaccpItemService {
             , hi."Code" as item_code
             , hi."Name" as item_name
             , hi."ResultType"
-            , fn_code_name('haccp_result_type', hi."ResultType") as "ResultTypeName"
+            , dbo.fn_code_name('haccp_result_type', hi."ResultType") as "ResultTypeName"
             , hi."Unit_id"
-            , to_char(hi."_created",'YYYY-MM-DD HH24:MI:SS') as "_created" 
+            , FORMAT(hi."_created",'YYYY-MM-DD HH24:MI:SS') as "_created" 
             , u."Name" as unit_name
             FROM haccp_item hi
             left join unit u on u.id = hi."Unit_id" 

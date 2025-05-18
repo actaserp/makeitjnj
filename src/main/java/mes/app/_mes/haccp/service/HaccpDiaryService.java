@@ -108,14 +108,14 @@ public class HaccpDiaryService {
             , hp."ActionMethod"
             , hp."TestCycle"
             , hp."Standard" 
-            , to_char(hd."DataDate", 'YYYY-MM-DD') as "DataDate"
+            , FORMAT(hd."DataDate", 'YYYY-MM-DD') as "DataDate"
             , hd."WriterName"
             , hd."Description"
             , hd."OverText"
             , hd."ActionText"
             , hd."ActionUserName"
             , hd."ConfirmUserName"
-            , to_char(hd."_created", 'YYYY-MM-DD HH24:MI:SS') as _created
+            , FORMAT(hd."_created", 'YYYY-MM-DD HH24:MI:SS') as _created
             , e."Name" as "EquipmentName"
             , hd."Equipment_id" 
             from haccp_diary hd
@@ -228,9 +228,9 @@ public class HaccpDiaryService {
 		, hddd."HaccpDiary_id" as hd_id
 		, ht.id as ht_id
 		, hi.id as hi_id
-		, to_char(hddd."StartTime" , 'HH24:MI') as "StartTime"
-		, to_char(hddd."EndTime", 'HH24:MI') as "EndTime"
-		, to_char(hddd."HappenTime", 'HH24:MI') as "HappenTime"
+		, FORMAT(hddd."StartTime" , 'HH24:MI') as "StartTime"
+		, FORMAT(hddd."EndTime", 'HH24:MI') as "EndTime"
+		, FORMAT(hddd."HappenTime", 'HH24:MI') as "HappenTime"
 		, hddd."HappenPlace" 
 		, hddd."AbnormalDetail" 
 		, hddd."ActionDetail" 
@@ -343,9 +343,9 @@ public class HaccpDiaryService {
 		select  
 		hddd.id as hddd_id
 		, hddd."HaccpDiary_id" as hd_id
-		, to_char(hddd."StartTime" , 'HH24:MI') as "StartTime"
-		, to_char(hddd."EndTime", 'HH24:MI') as "EndTime"
-		, to_char(hddd."HappenTime", 'HH24:MI') as "HappenTime"
+		, FORMAT(hddd."StartTime" , 'HH24:MI') as "StartTime"
+		, FORMAT(hddd."EndTime", 'HH24:MI') as "EndTime"
+		, FORMAT(hddd."HappenTime", 'HH24:MI') as "HappenTime"
 		, hddd."HappenPlace" 
 		, hddd."AbnormalDetail" 
 		, hddd."ActionDetail"

@@ -50,22 +50,22 @@ public class BomService {
         		with A as (select b.id
 				, b."Name"
 				, b."BOMType"
-				, fn_code_name('bom_type', b."BOMType") as bom_type_name
+				, dbo.fn_code_name('bom_type', b."BOMType") as bom_type_name
 				, b."OutputAmount"
 				, b."Version"
-				, to_char(b."StartDate", 'yyyy-mm-dd') as "StartDate"
-				, to_char(b."EndDate", 'yyyy-mm-dd') as "EndDate"
+				, FORMAT(b."StartDate", 'yyyy-mm-dd') as "StartDate"
+				, FORMAT(b."EndDate", 'yyyy-mm-dd') as "EndDate"
 				, b."Material_id"
 				, m."Name" as mat_name
 				, m."Code" as mat_code
 				, mg."Name" as mat_group_name
-				, fn_code_name('mat_type', mg."MaterialType") as mat_type
+				, dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type
 				, u."Name" as unit
 				, row_number() over (partition by b."BOMType", b."Material_id" order by b."StartDate" desc) as g_idx
-				, case when to_char(current_date, 'yyyy-mm-dd') between to_char(b."StartDate", 'yyyy-mm-dd') and to_char(b."EndDate", 'yyyy-mm-dd') then 'current'
+				, case when FORMAT(current_date, 'yyyy-mm-dd') between FORMAT(b."StartDate", 'yyyy-mm-dd') and FORMAT(b."EndDate", 'yyyy-mm-dd') then 'current'
 				    when b."StartDate" is null or b."EndDate" is null then 'error'
-					when to_char(current_date, 'yyyy-mm-dd') > to_char(b."EndDate", 'yyyy-mm-dd') then 'past' 
-					when to_char(current_date, 'yyyy-mm-dd') < to_char(b."StartDate", 'yyyy-mm-dd') then 'future'
+					when FORMAT(current_date, 'yyyy-mm-dd') > FORMAT(b."EndDate", 'yyyy-mm-dd') then 'past' 
+					when FORMAT(current_date, 'yyyy-mm-dd') < FORMAT(b."StartDate", 'yyyy-mm-dd') then 'future'
 					else 'error' end as current_flag
 				from bom b 
 				left join material m on b."Material_id" = m.id 
@@ -139,13 +139,13 @@ public class BomService {
 	            , b."BOMType"
 	            , b."OutputAmount"
 	            , b."Version"
-	            , to_char(b."StartDate", 'yyyy-mm-dd') as "StartDate"
-	            , to_char(b."EndDate", 'yyyy-mm-dd') as "EndDate"
+	            , FORMAT(b."StartDate", 'yyyy-mm-dd') as "StartDate"
+	            , FORMAT(b."EndDate", 'yyyy-mm-dd') as "EndDate"
 	            , b."Material_id"
 	            , m."Name" as "MaterialName"
 	            , m."Code" as mat_code
 	            , mg."Name" as mat_group_name
-	            , fn_code_name('mat_type', mg."MaterialType") as mat_type
+	            , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type
 	            from bom b 
 	            left join material m on b."Material_id" = m.id 
 	            left join mat_grp mg on mg.id = m."MaterialGroup_id"
@@ -241,7 +241,7 @@ public class BomService {
 		String sql = """
             select bc.id
               , bc."BOM_id"
-              , fn_code_name('mat_type', mg."MaterialType") as mat_type
+              , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type
               , mg."Name" as group_name
               , m."Name" as "MaterialName"
               , m."Code" as mat_code
@@ -336,7 +336,7 @@ public class BomService {
               , case when bom_tree.data_div = 'child' then bom_tree.parent_key end as parent_key
               , bom_tree."Material_id" as mat_id
               , case when bom_tree.data_div = 'child' then bom_tree.parent_mat_id end as parent_mat_id
-              , fn_code_name('mat_type', mg."MaterialType") as mat_type
+              , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type
               , m."Name" as mat_name
               , m."Code" as mat_code
               , bom_tree.quantity

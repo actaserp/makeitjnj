@@ -8,7 +8,7 @@
         id, "Type" as type
         , "Source" as source
         ,"Message" as message
-        , to_char("_created" ,'yyyy-mm-dd hh24:mi:ss') as created
+        , FORMAT("_created" ,'yyyy-mm-dd hh24:mi:ss') as created
         from sys_log sl
         where _created between #{start} and #{end}
         
@@ -19,7 +19,7 @@
     </select>
     
     <select id="getSystemLogDetail" parameterType="long" resultType="map">
-        select id, "Type" as type, "Source" as source,"Message" as message , to_char("_created" ,'yyyy-mm-dd hh24:mi:ss') as created
+        select id, "Type" as type, "Source" as source,"Message" as message , FORMAT("_created" ,'yyyy-mm-dd hh24:mi:ss') as created
         from sys_log sl
         where id = #{id}
     </select>

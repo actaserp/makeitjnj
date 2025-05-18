@@ -201,7 +201,7 @@ public class BomController {
 		AjaxResult result = new AjaxResult();
 		String sql = """
 	            select bc.id
-	            , fn_code_name('mat_type', mg."MaterialType") as mat_type
+	            , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type
 	            , mg."Name" as group_name
 	            , m."Name" as mat_name
 	            , m."Code" as mat_code

@@ -37,7 +37,7 @@ public class MatRequSimulationService {
 	        )
 	        select B1.mat_pk
             , mg."MaterialType" as mat_type
-	        , fn_code_name('mat_type', mg."MaterialType") as mat_type_name
+	        , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name
 	        , mg."Name" as mat_group_name
 	        , m."Code" as mat_code
 	        , m."Name" as mat_name 

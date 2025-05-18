@@ -31,9 +31,9 @@ public class ProdScheduleBService {
         String sql = """
         		select
 	            id as head_id
-	            , to_char(_created,'yyyy-mm-dd hh24:mi') as created
-	            , to_char(_modified,'yyyy-mm-dd hh24:mi') as modified
-	            , fn_code_name('prod_week_term_state',_status) as state_name
+	            , FORMAT(_created,'yyyy-mm-dd hh24:mi') as created
+	            , FORMAT(_modified,'yyyy-mm-dd hh24:mi') as modified
+	            , dbo.fn_code_name('prod_week_term_state',_status) as state_name
 	            from bundle_head bh 
 	            where 
 	              bh."TableName"='suju'
@@ -63,20 +63,20 @@ public class ProdScheduleBService {
 	            , m."Name" as product_name
 	            , u."Name" as unit_name
 	            , s."SujuQty"
-	            , to_char(s."JumunDate", 'yyyy-mm-dd') as "JumunDate"
-	            , to_char(s."DueDate", 'yyyy-mm-dd') as "DueDate"
+	            , FORMAT(s."JumunDate", 'yyyy-mm-dd') as "JumunDate"
+	            , FORMAT(s."DueDate", 'yyyy-mm-dd') as "DueDate"
 	            , s."CompanyName"
 	            , c."Name" as company_name
 	            , s."Company_id"
-	            , to_char(s."ProductionPlanDate", 'yyyy-mm-dd') as production_plan_date
-	            , to_char(s."ShipmentPlanDate", 'yyyy-mm-dd') as shiment_plan_date
+	            , FORMAT(s."ProductionPlanDate", 'yyyy-mm-dd') as production_plan_date
+	            , FORMAT(s."ShipmentPlanDate", 'yyyy-mm-dd') as shiment_plan_date
 	            , s."Description"
 	            , s."AvailableStock"
 	            , s."ReservationStock"
 	            , s."SujuQty2"
-	            , fn_code_name('suju_state', s."State") as "StateName"
+	            , dbo.fn_code_name('suju_state', s."State") as "StateName"
 	            , s."State"
-	            , to_char(s."_created", 'yyyy-mm-dd') as create_date
+	            , FORMAT(s."_created", 'yyyy-mm-dd') as create_date
 	            , s."PlanDataPk" as head_id , s."PlanTableName"
 	            from suju s
 	            inner join material m on m.id = s."Material_id"
@@ -110,20 +110,20 @@ public class ProdScheduleBService {
 	            , m."Name" as product_name
 	            , u."Name" as unit_name
 	            , s."SujuQty"
-	            , to_char(s."JumunDate", 'yyyy-mm-dd') as "JumunDate"
-	            , to_char(s."DueDate", 'yyyy-mm-dd') as "DueDate"
+	            , FORMAT(s."JumunDate", 'yyyy-mm-dd') as "JumunDate"
+	            , FORMAT(s."DueDate", 'yyyy-mm-dd') as "DueDate"
 	            , s."CompanyName"
 	            , c."Name" as company_name
 	            , s."Company_id"
-	            , to_char(s."ProductionPlanDate", 'yyyy-mm-dd') as production_plan_date
-	            , to_char(s."ShipmentPlanDate", 'yyyy-mm-dd') as shiment_plan_date
+	            , FORMAT(s."ProductionPlanDate", 'yyyy-mm-dd') as production_plan_date
+	            , FORMAT(s."ShipmentPlanDate", 'yyyy-mm-dd') as shiment_plan_date
 	            , s."Description"
 	            , s."AvailableStock"
 	            , s."ReservationStock"
 	            , s."SujuQty2"
-	            , fn_code_name('suju_state', s."State") as "StateName"
+	            , dbo.fn_code_name('suju_state', s."State") as "StateName"
 	            , s."State"
-	            , to_char(s."_created", 'yyyy-mm-dd') as create_date
+	            , FORMAT(s."_created", 'yyyy-mm-dd') as create_date
 	            , s."PlanDataPk" as head_id , s."PlanTableName"
 	            from suju s
 	            inner join material m on m.id = s."Material_id"
@@ -173,8 +173,8 @@ public class ProdScheduleBService {
 	        	    else greatest(0, mr."RequireQty1" +  greatest(0, coalesce(m."SafetyStock", 0) - coalesce(mr."AvailableStock",0) ) - coalesce(mr."RequestQty",0)) end as "RequestQty_input"
 	            , greatest(greatest((mr."RequireQty1" + (coalesce(m."SafetyStock", 0) - (coalesce(mr."AvailableStock",0)-coalesce(mr."ReservationStock",0)))-coalesce(mr."ReservationStock",0) ), 0)-coalesce(mr."RequestQty",0),0)  as "RequestQty_input2"
 	            , coalesce(mr."RequestQty",0) as "RequestQty" /* 생산요청량 */
-	            , to_char(mr."RequestDate",'yyyy-mm-dd hh24:mi') as "RequestDate"
-	            , to_char(mr._modified,'yyyy-mm-dd hh24:mi:ss') as modified
+	            , FORMAT(mr."RequestDate",'yyyy-mm-dd hh24:mi') as "RequestDate"
+	            , FORMAT(mr._modified,'yyyy-mm-dd hh24:mi:ss') as modified
 	            from mat_requ mr
 	                left join material m on m.id=mr."Material_id" 
 	                left join mat_grp mg on mg.id = m."MaterialGroup_id" 
@@ -296,7 +296,7 @@ public class ProdScheduleBService {
 	                , bm.mat_pk
 	                , sum(bm.bom_ratio) as req_qty
 	                from agg 
-	                inner join tbl_bom_detail(agg.prod_ids,to_char(now(),'yyyy-mm-dd') ) bm on 1 = 1
+	                inner join tbl_bom_detail(agg.prod_ids,FORMAT(now(),'yyyy-mm-dd') ) bm on 1 = 1
 	                inner join material m on m.id = bm.mat_pk
 	                inner join mat_grp mg on mg.id = m."MaterialGroup_id"
 	                where 1 = 1

@@ -30,9 +30,9 @@ public class ProdOrderAService {
 		String sql = """
 		        select jr.id
 		        , jr."WorkOrderNumber" as workorder_number
-                , to_char(jr."ProductionDate", 'yyyy-mm-dd') as production_date
+                , FORMAT(jr."ProductionDate", 'yyyy-mm-dd') as production_date
 	            , jr."ShiftCode" as shift_code, sh."Name" as shift_name
-	            , fn_code_name('mat_type', mg."MaterialType") as mat_type_name
+	            , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name
 	            , mg."Name" as mat_grp_name
 	            , m."Code" as mat_code
 	            , m."Name" as mat_name
@@ -41,7 +41,7 @@ public class ProdOrderAService {
                         else null end as box_qty
 	            , jr."OrderQty" as order_qty
 	            , wc."Name" as workcenter_name, e."Name" as equip_name
-	            , jr."State" as state, fn_code_name('job_state', jr."State") as state_name
+	            , jr."State" as state, dbo.fn_code_name('job_state', jr."State") as state_name
                 , jr."Description" as description
                 , up."Name" as creator
 	            from job_res jr 
@@ -101,11 +101,11 @@ public class ProdOrderAService {
 	            select 
 	            jr.id
 	            , jr."WorkOrderNumber" as workorder_number
-                , to_char(jr."ProductionDate", 'yyyy-mm-dd') as production_date
+                , FORMAT(jr."ProductionDate", 'yyyy-mm-dd') as production_date
 	            , jr."ShiftCode" as shift_code
 	            , sh."Name" as shift_name
                 , mg."MaterialType" as mat_type
-	            , fn_code_name('mat_type', mg."MaterialType") as mat_type_name
+	            , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name
 	            , mg.id as mat_grp_id
 	            , mg."Name" as mat_grp_name
 	            , m.id as mat_id
@@ -123,7 +123,7 @@ public class ProdOrderAService {
                 , e.id as equip_id
                 , e."Name" as equip_name
 	            , jr."State" as state
-	            , fn_code_name('job_state', jr."State") as state_name
+	            , dbo.fn_code_name('job_state', jr."State") as state_name
                 , jr."Description" as description
 	            from job_res jr 
 	            left join material m on m.id = jr."Material_id"

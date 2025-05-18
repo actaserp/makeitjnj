@@ -28,7 +28,7 @@ public class MaterialService {
         String sql = """
 			select m.id
                 --, mg."MaterialType" as mat_type
-                , fn_code_name('mat_type', mg."MaterialType" ) as mat_type_name
+                , dbo.fn_code_name('mat_type', mg."MaterialType" ) as mat_type_name
                 , mg."Name" as mat_grp_name
                 , m."Code" as mat_code
                 , m."Name" as mat_name
@@ -73,7 +73,7 @@ public class MaterialService {
                 , r."Name" as routing_name
                 , m."UnitPrice" as unit_price
                 , coalesce(m."LotUseYN",'N') as "lotUseYn"
-                , to_char(m._created, 'yyyy-mm-dd') as _created
+                , FORMAT(m._created, 'yyyy-mm-dd') as _created
                 , m."Mtyn" as mtyn
                 , m."Useyn" as useyn
                 , m."Avrqty" as avrqty

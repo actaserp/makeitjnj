@@ -45,8 +45,8 @@ public class ProdOrderEditService {
 	                , s."SujuQty"
 	                , s."SujuQty2"
 	                , coalesce (s."ReservationStock",0) as "ReservationStock"
-	                , fn_code_name('suju_state', s."State") as "StateName"
-	                , fn_code_name('mat_type', mg."MaterialType") as mat_type_name
+	                , dbo.fn_code_name('suju_state', s."State") as "StateName"
+	                , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name
 	                , s."State"
 	                , s."Description" as description
 	                from suju s
@@ -88,8 +88,8 @@ public class ProdOrderEditService {
 	            )
 	            select s.id
 	            , s."JumunNumber"
-	            , to_char(s."JumunDate", 'yyyy-mm-dd') as "JumunDate"
-	            , to_char(s."DueDate", 'yyyy-mm-dd') as "DueDate"
+	            , FORMAT(s."JumunDate", 'yyyy-mm-dd') as "JumunDate"
+	            , FORMAT(s."DueDate", 'yyyy-mm-dd') as "DueDate"
 	            , s."CompanyName"
 	            , s.mat_type_name
 	            , s."MaterialGroupName"
@@ -170,7 +170,7 @@ public class ProdOrderEditService {
 	            , jr."Equipment_id"
 	            , e."Name" as "EquipmentName"
 	            , jr."State" 
-	            , fn_code_name('job_state', jr."State") as "StateName"
+	            , dbo.fn_code_name('job_state', jr."State") as "StateName"
 	            from job_res jr 
 	            inner join material m on m.id = jr."Material_id" 
 	            inner join mat_grp mg on mg.id = m."MaterialGroup_id" 
@@ -198,7 +198,7 @@ public class ProdOrderEditService {
 		String sql = """
 				select jr.id
 	            , jr."WorkOrderNumber"
-	            , to_char(jr."ProductionDate", 'yyyy-mm-dd') as "ProductionDate"
+	            , FORMAT(jr."ProductionDate", 'yyyy-mm-dd') as "ProductionDate"
 	            , jr."Material_id"
 	            , jr."ShiftCode" 
 	            , s."Name" as "ShiftName"
@@ -208,7 +208,7 @@ public class ProdOrderEditService {
 	            , jr."WorkCenter_id" 
 	            , jr."Equipment_id"
 	            , jr."State" 
-	            , fn_code_name('job_state', jr."State") as "StateName"
+	            , dbo.fn_code_name('job_state', jr."State") as "StateName"
 	            , jr."Description"
 	            from job_res jr 
 	            inner join material m on m.id = jr."Material_id" 
@@ -294,7 +294,7 @@ public class ProdOrderEditService {
 	            , jr."Equipment_id"
 	            , e."Name" as "EquipmentName"
 	            , jr."State" 
-	            , fn_code_name('job_state', jr."State") as "StateName"
+	            , dbo.fn_code_name('job_state', jr."State") as "StateName"
 	            from job_res jr 
 	            inner join material m on m.id = jr."Material_id" 
 	            inner join mat_grp mg on mg.id = m."MaterialGroup_id" 

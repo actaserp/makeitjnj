@@ -40,28 +40,28 @@ public class SujuService {
             , s."Material_id" as "Material_id"
             , mg."Name" as "MaterialGroupName"
             , mg.id as "MaterialGroup_id"
-            , fn_code_name('mat_type', mg."MaterialType") as "MaterialTypeName"
+            , dbo.fn_code_name('mat_type', mg."MaterialType") as "MaterialTypeName"
             , m.id as "Material_id"
             , m."Code" as product_code
             , m."Name" as product_name
             , u."Name" as unit
             , s."SujuQty" as "SujuQty"
-            , to_char(s."JumunDate", 'yyyy-mm-dd') as "JumunDate"
-            , to_char(s."DueDate", 'yyyy-mm-dd') as "DueDate"
+            , FORMAT(s."JumunDate", 'yyyy-mm-dd') as "JumunDate"
+            , FORMAT(s."DueDate", 'yyyy-mm-dd') as "DueDate"
             , s."CompanyName"
             , s."Company_id"
             , s."SujuType"
-            , fn_code_name('suju_type', s."SujuType") as "SujuTypeName"
-            , to_char(s."ProductionPlanDate", 'yyyy-mm-dd') as production_plan_date
-            , to_char(s."ShipmentPlanDate", 'yyyy-mm-dd') as shiment_plan_date
+            , dbo.fn_code_name('suju_type', s."SujuType") as "SujuTypeName"
+            , FORMAT(s."ProductionPlanDate", 'yyyy-mm-dd') as production_plan_date
+            , FORMAT(s."ShipmentPlanDate", 'yyyy-mm-dd') as shiment_plan_date
             , s."Description"
             , s."AvailableStock" as "AvailableStock"
             , s."ReservationStock" as "ReservationStock"
             , s."SujuQty2" as "SujuQty2"
-            , fn_code_name('suju_state', s."State") as "StateName"
-            , fn_code_name('shipment_state', s."ShipmentState") as "ShipmentStateName"
+            , dbo.fn_code_name('suju_state', s."State") as "StateName"
+            , dbo.fn_code_name('shipment_state', s."ShipmentState") as "ShipmentStateName"
             , s."State"
-            , to_char(s."_created", 'yyyy-mm-dd') as create_date
+            , FORMAT(s."_created", 'yyyy-mm-dd') as create_date
             , case s."PlanTableName" when 'prod_week_term' then '주간계획' when 'bundle_head' then '임의계획' else s."PlanTableName" end as plan_state
             from suju s
             inner join material m on m.id = s."Material_id"
@@ -100,27 +100,27 @@ public class SujuService {
             , s."Material_id" as "Material_id"
             , mg."Name" as "MaterialGroupName"
             , mg.id as "MaterialGroup_id"
-            , fn_code_name('mat_type', mg."MaterialType") as "MaterialTypeName"
+            , dbo.fn_code_name('mat_type', mg."MaterialType") as "MaterialTypeName"
             , m.id as "Material_id"
             , m."Code" as product_code
             , m."Name" as product_name
             , u."Name" as unit
             , s."SujuQty" as "SujuQty"
-            , to_char(s."JumunDate", 'yyyy-mm-dd') as "JumunDate"
-            , to_char(s."DueDate", 'yyyy-mm-dd') as "DueDate"
+            , FORMAT(s."JumunDate", 'yyyy-mm-dd') as "JumunDate"
+            , FORMAT(s."DueDate", 'yyyy-mm-dd') as "DueDate"
             , s."CompanyName"
             , s."Company_id"
             , s."SujuType"
-            , fn_code_name('suju_type', s."SujuType") as "SujuTypeName"
-            , to_char(s."ProductionPlanDate", 'yyyy-mm-dd') as production_plan_date
-            , to_char(s."ShipmentPlanDate", 'yyyy-mm-dd') as shiment_plan_date
+            , dbo.fn_code_name('suju_type', s."SujuType") as "SujuTypeName"
+            , FORMAT(s."ProductionPlanDate", 'yyyy-mm-dd') as production_plan_date
+            , FORMAT(s."ShipmentPlanDate", 'yyyy-mm-dd') as shiment_plan_date
             , s."Description"
             , s."AvailableStock" as "AvailableStock"
             , s."ReservationStock" as "ReservationStock"
             , s."SujuQty2" as "SujuQty2"
             , s."State"
-            , fn_code_name('suju_state', s."State") as "StateName"
-            , to_char(s."_created", 'yyyy-mm-dd') as create_date
+            , dbo.fn_code_name('suju_state', s."State") as "StateName"
+            , FORMAT(s."_created", 'yyyy-mm-dd') as create_date
             from suju s
             inner join material m on m.id = s."Material_id"
             inner join mat_grp mg on mg.id = m."MaterialGroup_id"

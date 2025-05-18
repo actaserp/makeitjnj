@@ -30,8 +30,8 @@ public class HmiFormBService {
         String sql = """
         		select id
                 , "FormName" as form_name
-                , to_char("StartDate", 'yyyy-mm-dd') || ' ~ ' || to_char("EndDate", 'yyyy-mm-dd') as apply_date
-                , to_char(_created, 'yyyy-mm-dd') as created_date
+                , FORMAT("StartDate", 'yyyy-mm-dd') || ' ~ ' || FORMAT("EndDate", 'yyyy-mm-dd') as apply_date
+                , FORMAT(_created, 'yyyy-mm-dd') as created_date
                 , "Description" as description
                 from doc_form
                 where "FormType" = 'hmi_b'

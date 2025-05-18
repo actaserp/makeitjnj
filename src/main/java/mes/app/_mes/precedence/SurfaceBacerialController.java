@@ -209,7 +209,7 @@ if(bhId > 0) {
 			sql = """
 		             insert into devi_action("SourceDataPk", "SourceTableName", "HappenDate", "HappenPlace"
 					       ,"AbnormalDetail", "ConfirmDetail", _created, _creater_id)
-					 select tir.id as src_data_pk, 'surface_bacerial' , to_char(bh."Date1", 'yyyy-MM-dd')::date as happen_date ,'표면오염도 검사성적서' as happen_place
+					 select tir.id as src_data_pk, 'surface_bacerial' , FORMAT(bh."Date1", 'yyyy-MM-dd')::date as happen_date ,'표면오염도 검사성적서' as happen_place
 	                      , concat('부적합 : ', mt."Name") as abnormal_detail ,tir."CharResult"     
                         ,current_date, :userId
 	                from bundle_head bh
@@ -250,7 +250,7 @@ if(bhId > 0) {
 			sql = """
 		             insert into devi_action("SourceDataPk", "SourceTableName", "HappenDate", "HappenPlace"
 					       ,"AbnormalDetail", "ConfirmDetail", _created, _creater_id)
-					 select tir.id as src_data_pk, 'surface_bacerial' , to_char(bh."Date1", 'yyyy-MM-dd')::date as happen_date ,'표면오염도 검사성적서' as happen_place
+					 select tir.id as src_data_pk, 'surface_bacerial' , FORMAT(bh."Date1", 'yyyy-MM-dd')::date as happen_date ,'표면오염도 검사성적서' as happen_place
 	                      , concat('부적합 : ', mt."Name") as abnormal_detail ,tir."CharResult"     
                         ,current_date, :userId
 	                from bundle_head bh

@@ -31,7 +31,7 @@ public class AirConfresiaService {
 		paramMap.addValue("endDate", endDate);
 		
 		String sql = """
-				select b.id, b."Char1" as "Title", coalesce(r."State", 'write') as "State", coalesce(r."StateName", '작성') as "StateName", r."LineName", r."LineNameState", to_char(b."Date1", 'yyyy-MM') as "DataDate", coalesce(r."SearchYN", 'Y') as "SearchYN",
+				select b.id, b."Char1" as "Title", coalesce(r."State", 'write') as "State", coalesce(r."StateName", '작성') as "StateName", r."LineName", r."LineNameState", FORMAT(b."Date1", 'yyyy-MM') as "DataDate", coalesce(r."SearchYN", 'Y') as "SearchYN",
 				 coalesce(r."EditYN", 'Y') as "EditYN", coalesce(r."DeleteYN", 'Y') as "DeleteYN", b."Number1" as check_master_id
                 ,b._creater_id ,up."Name" as creater_name , b._modifier_id, up2."Name" as modifier_name, cm."CheckCycle", b."Text1"
                 ,b."Char2" as "CheckStep"
@@ -86,7 +86,7 @@ public class AirConfresiaService {
 		
 		if(bhId > 0) {
 			sql ="""
-                select b.id, b."Char1" as "Title", to_char(b."Date1", 'yyyy-MM') as "DataDate",  coalesce(uu."Name", cu."Name") as "FirstName", coalesce(r."State", 'write') as "State", coalesce(r."StateName", '작성') as "StateName"  , b."Text1"
+                select b.id, b."Char1" as "Title", FORMAT(b."Date1", 'yyyy-MM') as "DataDate",  coalesce(uu."Name", cu."Name") as "FirstName", coalesce(r."State", 'write') as "State", coalesce(r."StateName", '작성') as "StateName"  , b."Text1"
                 ,cr.id as check_result_id ,cr."CheckMaster_id", cr."Description", cm."Name" as check_master_name
                 ,b."Char2" as "CheckStep"
                 from bundle_head b
@@ -104,11 +104,11 @@ public class AirConfresiaService {
 			
 			 sql = """
 	                    select t.id
-		                    , r1."CheckerName" as "CheckName1", coalesce(to_char(r1."CheckDate", 'yyyy-MM-dd'), '-') as "CheckDate1", r1."Char1" ApprName1, CAST(r1."Char2" AS text) as "ApprDate1"
-		                    , r2."CheckerName" as "CheckName2", coalesce(to_char(r2."CheckDate", 'yyyy-MM-dd'), '-') as "CheckDate2", r2."Char1" ApprName2, CAST(r2."Char2" AS text) as "ApprDate2"
-		                    , r3."CheckerName" as "CheckName3", coalesce(to_char(r3."CheckDate", 'yyyy-MM-dd'), '-') as "CheckDate3", r3."Char1" ApprName3, CAST(r3."Char2" AS text) as "ApprDate3"
-		                    , r4."CheckerName" as "CheckName4", coalesce(to_char(r4."CheckDate", 'yyyy-MM-dd'), '-') as "CheckDate4", r4."Char1" ApprName4, CAST(r4."Char2" AS text) as "ApprDate4"
-		                    , r5."CheckerName" as "CheckName5", coalesce(to_char(r5."CheckDate", 'yyyy-MM-dd'), '-') as "CheckDate5", r5."Char1" ApprName5, CAST(r5."Char2" AS text) as "ApprDate5"
+		                    , r1."CheckerName" as "CheckName1", coalesce(FORMAT(r1."CheckDate", 'yyyy-MM-dd'), '-') as "CheckDate1", r1."Char1" ApprName1, CAST(r1."Char2" AS text) as "ApprDate1"
+		                    , r2."CheckerName" as "CheckName2", coalesce(FORMAT(r2."CheckDate", 'yyyy-MM-dd'), '-') as "CheckDate2", r2."Char1" ApprName2, CAST(r2."Char2" AS text) as "ApprDate2"
+		                    , r3."CheckerName" as "CheckName3", coalesce(FORMAT(r3."CheckDate", 'yyyy-MM-dd'), '-') as "CheckDate3", r3."Char1" ApprName3, CAST(r3."Char2" AS text) as "ApprDate3"
+		                    , r4."CheckerName" as "CheckName4", coalesce(FORMAT(r4."CheckDate", 'yyyy-MM-dd'), '-') as "CheckDate4", r4."Char1" ApprName4, CAST(r4."Char2" AS text) as "ApprDate4"
+		                    , r5."CheckerName" as "CheckName5", coalesce(FORMAT(r5."CheckDate", 'yyyy-MM-dd'), '-') as "CheckDate5", r5."Char1" ApprName5, CAST(r5."Char2" AS text) as "ApprDate5"
 	                    from bundle_head t
 	                    left join check_result r1 on t.id = r1."SourceDataPk" and r1."SourceTableName" = 'bundle_head' and r1."Number2" = 1
 	                    left join check_result r2 on t.id = r2."SourceDataPk" and r2."SourceTableName" = 'bundle_head' and r2."Number2" = 2
@@ -207,7 +207,7 @@ public class AirConfresiaService {
 	                , da."ActorName" as actor_name
 	                , da."Confer_id" as confer_id
 	                , da."ConferName" as confer_name
-                    , to_char(da._modified,'yyyy-MM-dd') as actor_date
+                    , FORMAT(da._modified,'yyyy-MM-dd') as actor_date
                 from v_devi_action da
                 inner join check_item_result cir on cir.id = da."SourceDataPk" and da."SourceTableName" = 'devi_action_cross_contamination1'
                 inner join check_item ci on ci.id = cir."CheckItem_id"

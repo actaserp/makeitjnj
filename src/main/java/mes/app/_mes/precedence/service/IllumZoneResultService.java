@@ -79,7 +79,7 @@ public class IllumZoneResultService {
 				        , r."DataDate", left(cast(r."DataTime" as text),5) as "DataTime", r."Number1"
 				    from master_result r
 				    inner join A on A.master_id = r."MasterTable_id"
-				    where to_char(r."DataDate",'YYYY-MM') like concat('%%', :search_date ,'%%')
+				    where FORMAT(r."DataDate",'YYYY-MM') like concat('%%', :search_date ,'%%')
 				    and r."SourceDataPk" = :bh_id
 				)
 				select A._order, A.master_id, A.master_name, A.type_code, A.type_name, A.area_num
@@ -156,7 +156,7 @@ public class IllumZoneResultService {
                         , t._order
 	                    from master_t t
 	                    where t."MasterClass" = 'illum_zone'
-	                    and to_char(cast(:base_date as date),'YYYY-MM') between to_char(t."StartDate",'YYYY-MM') and to_char(t."EndDate",'YYYY-MM')
+	                    and FORMAT(cast(:base_date as date),'YYYY-MM') between FORMAT(t."StartDate",'YYYY-MM') and FORMAT(t."EndDate",'YYYY-MM')
                         and t."Type2" = :type2
                     )
                     select A._order, A.master_id, A.master_name, A.type_code, A.type_name , A.area_num

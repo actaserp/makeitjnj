@@ -133,7 +133,7 @@ public class UserService {
               , up."Depart_id"
               , up.lang_code
               , au.is_active
-              , to_char(au.date_joined ,'yyyy-mm-dd hh24:mi') as date_joined
+              , FORMAT(au.date_joined ,'yyyy-mm-dd hh24:mi') as date_joined
             from auth_user au 
             left join user_profile up on up."User_id" = au.id
             left join user_group ug on up."UserGroup_id" = ug.id 

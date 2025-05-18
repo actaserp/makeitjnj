@@ -66,7 +66,7 @@ public class SystemServiceTest {
                 , "Type" as type
                 , "Source" as source
                 ,"Message" as message
-                , to_char("_created" ,'yyyy-mm-dd hh24:mi:ss') as created
+                , FORMAT("_created" ,'yyyy-mm-dd hh24:mi:ss') as created
                 from sys_log sl
                 where _created between :start and :end    			
         	""";

@@ -30,7 +30,7 @@ public class UnsuitableProductService {
         
 		String sql = """
 				select b.id, b."Char1" as "Title", coalesce(r."StateName", '작성') as "StateName"
-				, r."LineName", r."LineNameState", to_char(b."Date1", 'yyyy-MM-dd') as "DataDate"
+				, r."LineName", r."LineNameState", FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate"
 				, coalesce(r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN"
 				, coalesce(r."DeleteYN", 'Y') as "DeleteYN", b."Number1" as check_master_id
 				, b._creater_id ,up."Name" as "creater_name" , b._modifier_id, up2."Name" as "modifier_name"
@@ -77,7 +77,7 @@ public class UnsuitableProductService {
         
     	String sql = """
     		select b.id, b."Char1" as "Title"
-    		, to_char(b."Date1", 'yyyy-MM-dd') as "DataDate"
+    		, FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate"
     		,  coalesce(uu."Name", cu."Name") as "FirstName"
     		, coalesce(r."State", 'write') as "State"
     		, coalesce(r."StateName", '작성') as "StateName"
@@ -98,9 +98,9 @@ public class UnsuitableProductService {
         		sql = """
         		  select  tr.id 
 				 , mi."InoutDate" as inout_dt
-			     , case when mi."InOut" = 'in' then fn_code_name('input_type', mi."InputType") 
-			       when mi."InOut" = 'out' then fn_code_name('output_type', mi."OutputType") end as inout_type
-			     , fn_code_name('mat_type', mg."MaterialType") as material_type
+			     , case when mi."InOut" = 'in' then dbo.fn_code_name('input_type', mi."InputType") 
+			       when mi."InOut" = 'out' then dbo.fn_code_name('output_type', mi."OutputType") end as inout_type
+			     , dbo.fn_code_name('mat_type', mg."MaterialType") as material_type
 			     , m."Name" as mat_name
 			     , mi."PotentialInputQty" as "potential_input_qty"
 			     , ARRAY_TO_STRING(ARRAY_AGG(ti."Name"),' | ') as "testName"
@@ -130,9 +130,9 @@ public class UnsuitableProductService {
         		sql = """
               		  select  tr.id 
       				 , mi."InoutDate" as inout_dt
-      			     , case when mi."InOut" = 'in' then fn_code_name('input_type', mi."InputType") 
-      			       when mi."InOut" = 'out' then fn_code_name('output_type', mi."OutputType") end as inout_type
-      			     , fn_code_name('mat_type', mg."MaterialType") as material_type
+      			     , case when mi."InOut" = 'in' then dbo.fn_code_name('input_type', mi."InputType") 
+      			       when mi."InOut" = 'out' then dbo.fn_code_name('output_type', mi."OutputType") end as inout_type
+      			     , dbo.fn_code_name('mat_type', mg."MaterialType") as material_type
       			     , m."Name" as mat_name
       			     , mi."PotentialInputQty" as "potential_input_qty"
       			     , ARRAY_TO_STRING(ARRAY_AGG(ti."Name"),' | ') as "testName"
@@ -167,7 +167,7 @@ public class UnsuitableProductService {
         } else if (diary_type.equals("부적합품(생산)")) {
         	if (type) {
             	sql = """
-            			select jrd.id, jr."ProductionDate", jr."WorkOrderNumber", fn_code_name('mat_type', mg."MaterialType") as material_type ,m."Name" as "mat_name" 
+            			select jrd.id, jr."ProductionDate", jr."WorkOrderNumber", dbo.fn_code_name('mat_type', mg."MaterialType") as material_type ,m."Name" as "mat_name" 
     					,jr."OrderQty" ,dt."Name" as "defect_name", jrd."DefectQty" 
 					    , ad."Code" as "result1"
 					    , ad."Description" as "result2"
@@ -190,7 +190,7 @@ public class UnsuitableProductService {
         		
         	} else {
             	sql = """
-            			select jrd.id, jr."ProductionDate", jr."WorkOrderNumber", fn_code_name('mat_type', mg."MaterialType") as material_type ,m."Name" as "mat_name" 
+            			select jrd.id, jr."ProductionDate", jr."WorkOrderNumber", dbo.fn_code_name('mat_type', mg."MaterialType") as material_type ,m."Name" as "mat_name" 
     					,jr."OrderQty" ,dt."Name" as "defect_name", jrd."DefectQty" 
 	      			    , '' as "result1"
 	      			    , '' as "result2"

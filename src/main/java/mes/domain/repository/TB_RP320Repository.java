@@ -38,12 +38,12 @@ public interface TB_RP320Repository extends JpaRepository<TB_RP320, TB_RP320_Id>
 	
 	// 월별
 	@Query(value = "SELECT " +
-				   "TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM') as month, " +
+				   "FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM') as month, " +
 				   "t.powernm, " +
 				   "SUM(t.mevalue) as totalValue " +
 				   "FROM tb_rp320 t " +
 				   "WHERE TO_DATE(t.standdt, 'YYYYMMDD') BETWEEN TO_DATE(:startDate, 'YYYYMMDD') AND TO_DATE(:endDate, 'YYYYMMDD') " +
-				   "GROUP BY TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM'), t.powernm " +
+				   "GROUP BY FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM'), t.powernm " +
 				   "ORDER BY month, t.powernm", nativeQuery = true)
 	List<Object[]> getMonthlyData(@Param("startDate") String startDate,
 								  @Param("endDate") String endDate);
@@ -102,11 +102,11 @@ public interface TB_RP320Repository extends JpaRepository<TB_RP320, TB_RP320_Id>
 	// tab5
 	// YoY MoM
 	@Query(value = "SELECT " +
-				   "TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM') as month, " +
+				   "FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM') as month, " +
 				   "t.powernm, " +
 				   "SUM(t.mevalue) as totalValue " +
 				   "FROM tb_rp320 t " +
-				   "GROUP BY TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM'), t.powernm " +
+				   "GROUP BY FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM'), t.powernm " +
 				   "ORDER BY month, t.powernm", nativeQuery = true)
 	List<Object[]> getMonthlyDataForYoYAndMoM();
 	
@@ -125,11 +125,11 @@ public interface TB_RP320Repository extends JpaRepository<TB_RP320, TB_RP320_Id>
 	
 	// YTD
 	@Query(value = "SELECT " +
-				   "TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM') as month, " +
+				   "FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM') as month, " +
 				   "t.powernm, " +
-				   "SUM(SUM(t.mevalue)) OVER (PARTITION BY t.powernm, EXTRACT(YEAR FROM TO_DATE(t.standdt, 'YYYYMMDD')) ORDER BY TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM')) as cumulativeValue " +
+				   "SUM(SUM(t.mevalue)) OVER (PARTITION BY t.powernm, EXTRACT(YEAR FROM TO_DATE(t.standdt, 'YYYYMMDD')) ORDER BY FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM')) as cumulativeValue " +
 				   "FROM tb_rp320 t " +
-				   "GROUP BY TO_CHAR(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM'), t.powernm, EXTRACT(YEAR FROM TO_DATE(t.standdt, 'YYYYMMDD')) " +
+				   "GROUP BY FORMAT(TO_DATE(t.standdt, 'YYYYMMDD'), 'YYYY-MM'), t.powernm, EXTRACT(YEAR FROM TO_DATE(t.standdt, 'YYYYMMDD')) " +
 				   "ORDER BY month, t.powernm", nativeQuery = true)
 	List<Object[]> getMonthlyDataForYTD();
 	
@@ -194,7 +194,7 @@ public interface TB_RP320Repository extends JpaRepository<TB_RP320, TB_RP320_Id>
 //
 //	// 월별 조회, 분기별 조회, 반기별 조회
 ////	@Query("SELECT new mes.domain.DTO.TB_RP320Dto(" +
-////			"TO_CHAR(DATE_TRUNC('month', TO_DATE(t.standdt, 'YYYY-MM-DD')), 'YYYY-MM'), " +
+////			"FORMAT(DATE_TRUNC('month', TO_DATE(t.standdt, 'YYYY-MM-DD')), 'YYYY-MM'), " +
 ////			"t.powerid, t.powernm, SUM(t.mevaluet)) " +
 ////			"FROM TB_RP320 t " +
 ////			"WHERE TO_DATE(t.standdt, 'YYYY-MM-DD') BETWEEN TO_DATE(:startdt, 'YYYY-MM-DD') AND TO_DATE(:enddt, 'YYYY-MM-DD') " +
@@ -206,7 +206,7 @@ public interface TB_RP320Repository extends JpaRepository<TB_RP320, TB_RP320_Id>
 //
 //	// 분기별 조회
 //	@Query("SELECT new mes.domain.DTO.TB_RP320Dto(" +
-//			"TO_CHAR(DATE_TRUNC('month', TO_DATE(t.standdt, 'YYYY-MM-DD')), 'YYYY-MM'), " +
+//			"FORMAT(DATE_TRUNC('month', TO_DATE(t.standdt, 'YYYY-MM-DD')), 'YYYY-MM'), " +
 //			"t.powerid, t.powernm, SUM(t.mevaluet)) " +
 //			"FROM TB_RP320 t " +
 //			"WHERE TO_DATE(t.standdt, 'YYYY-MM-DD') BETWEEN TO_DATE(:startdt, 'YYYY-MM-DD') AND TO_DATE(:enddt, 'YYYY-MM-DD') " +
@@ -217,21 +217,21 @@ public interface TB_RP320Repository extends JpaRepository<TB_RP320, TB_RP320_Id>
 //
 //	// 연도별 조회
 //	@Query("SELECT new mes.domain.DTO.TB_RP320Dto(" +
-//		   "TO_CHAR(TO_DATE(t.standdt, 'YYYY-MM-DD'), 'YYYY-MM'), " +
+//		   "FORMAT(TO_DATE(t.standdt, 'YYYY-MM-DD'), 'YYYY-MM'), " +
 //		   "t.powerid, t.powernm, SUM(t.mevalue)) " +
 //		   "FROM TB_RP320 t " +
 //		   "WHERE EXTRACT(YEAR FROM TO_DATE(t.standdt, 'YYYY-MM-DD')) = :year " +
 //		   "AND (:powerid = 'all' OR t.powernm = :powerid) " +
-//		   "GROUP BY TO_CHAR(TO_DATE(t.standdt, 'YYYY-MM-DD'), 'YYYY-MM'), t.powerid, t.powernm " +
-//		   "ORDER BY TO_CHAR(TO_DATE(t.standdt, 'YYYY-MM-DD'), 'YYYY-MM')")
+//		   "GROUP BY FORMAT(TO_DATE(t.standdt, 'YYYY-MM-DD'), 'YYYY-MM'), t.powerid, t.powernm " +
+//		   "ORDER BY FORMAT(TO_DATE(t.standdt, 'YYYY-MM-DD'), 'YYYY-MM')")
 //	List<TB_RP320Dto> searchYearlyData(@Param("year") int year, @Param("powerid") String powerid);
 //
 //
 //
 //	// 연도 목록 가져오기
-//	@Query("SELECT DISTINCT TO_CHAR(TO_DATE(t.standdt, 'YYYY-MM-DD'), 'YYYY') AS year " +
+//	@Query("SELECT DISTINCT FORMAT(TO_DATE(t.standdt, 'YYYY-MM-DD'), 'YYYY') AS year " +
 //			"FROM TB_RP320 t " +
-//			"ORDER BY TO_CHAR(TO_DATE(t.standdt, 'YYYY-MM-DD'), 'YYYY') DESC")
+//			"ORDER BY FORMAT(TO_DATE(t.standdt, 'YYYY-MM-DD'), 'YYYY') DESC")
 //	List<String> findDistinctYears();
 //
 //

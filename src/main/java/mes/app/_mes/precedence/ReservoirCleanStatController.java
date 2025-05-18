@@ -176,7 +176,7 @@ public class ReservoirCleanStatController {
 		
 		String sql = """
 					select ir.id as src_data_pk, 'devi_action_reservoir_clean' as source_table_name
-					, to_char(b."Date1", 'yyyy-MM-dd') as happen_date ,cm."Name" as happen_place                
+					, FORMAT(b."Date1", 'yyyy-MM-dd') as happen_date ,cm."Name" as happen_place                
 					, concat('부적합 : ', coalesce(ci."ItemGroup1",' '), coalesce(ci."ItemGroup2", ' '), coalesce(ci."ItemGroup3",' '), ci."Name") as abnormal_detail       
 					,null as action_detail ,null as confirm_detail, current_date , :userId
 					from bundle_head b

@@ -91,7 +91,7 @@ public class PopupController {
                  , e."Name"
                  , eg."Name" as group_name
                  , eg."EquipmentType"
-                 , fn_code_name('equipment_type',  eg."EquipmentType") as "EquipmentTypeName"
+                 , dbo.fn_code_name('equipment_type',  eg."EquipmentType") as "EquipmentTypeName"
                 from equ e
                   left join equ_grp eg on e."EquipmentGroup_id" = eg.id
                 where 1=1  
@@ -140,7 +140,7 @@ public class PopupController {
                 , sc."Value" as mat_type_name
                 , u."Name" as unit_name
                 from job_res jr
-                inner join tbl_bom_detail(jr."Material_id"::text, cast(to_char(cast(:today as date),'YYYY-MM-DD') as text)) a  on a.b_level = 1 
+                inner join tbl_bom_detail(jr."Material_id"::text, cast(FORMAT(cast(:today as date),'YYYY-MM-DD') as text)) a  on a.b_level = 1 
                 inner join material m on m.id = a.mat_pk
                 left join unit u on m."Unit_id" = u.id
                 left join mat_grp mg on m."MaterialGroup_id" = mg.id
@@ -206,8 +206,8 @@ public class PopupController {
 		        , a."CurrentStock" as cur_stock
 		        , a."InputQty" as first_qty
 		        , sh."Name" as storehouse_name
-		        , to_char(a."EffectiveDate",'yyyy-mm-dd') as effective_date
-		        , to_char(a."InputDateTime",'yyyy-mm-dd') as create_date
+		        , FORMAT(a."EffectiveDate",'yyyy-mm-dd') as effective_date
+		        , FORMAT(a."InputDateTime",'yyyy-mm-dd') as create_date
 		        , case when aa.mat_lot_id is not null then 'Y' else 'N' end as lot_use
 		        from mat_lot a
 		        inner join material m on m.id = a."Material_id"
@@ -240,8 +240,8 @@ public class PopupController {
 	        , a."CurrentStock" as cur_stock
 	        , a."InputQty" as first_qty
 	        , sh."Name" as storehouse_name
-		    , to_char(a."EffectiveDate",'yyyy-mm-dd') as effective_date
-		    , to_char(a."InputDateTime",'yyyy-mm-dd') as create_date
+		    , FORMAT(a."EffectiveDate",'yyyy-mm-dd') as effective_date
+		    , FORMAT(a."InputDateTime",'yyyy-mm-dd') as create_date
 		    from mat_lot a
 		    inner join material m on m.id = a."Material_id" 
 		    left join store_house sh on sh.id = a."StoreHouse_id"

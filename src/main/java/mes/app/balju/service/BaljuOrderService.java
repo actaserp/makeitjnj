@@ -34,33 +34,33 @@ public class BaljuOrderService {
           , b."Material_id" as "Material_id"
           , mg."Name" as "MaterialGroupName"
           , mg.id as "MaterialGroup_id"
-          , fn_code_name('mat_type', mg."MaterialType") as "MaterialTypeName"
+          , dbo.fn_code_name('mat_type', mg."MaterialType") as "MaterialTypeName"
           , m.id as "Material_id"
           , m."Code" as product_code
           , m."Name" as product_name
           , u."Name" as unit
           , b."SujuQty" as "SujuQty"
           , GREATEST((b."SujuQty" - b."SujuQty2"), 0) as "SujuQty3"
-          , to_char(b."JumunDate", 'yyyy-mm-dd') as "JumunDate"
-          , to_char(b."DueDate", 'yyyy-mm-dd') as "DueDate"
+          , FORMAT(b."JumunDate", 'yyyy-mm-dd') as "JumunDate"
+          , FORMAT(b."DueDate", 'yyyy-mm-dd') as "DueDate"
           , b."CompanyName"
           , b."Company_id"
           , b."SujuType"
-          , fn_code_name('Balju_type', b."SujuType") as "BaljuTypeName"
-          , to_char(b."ProductionPlanDate", 'yyyy-mm-dd') as production_plan_date
-          , to_char(b."ShipmentPlanDate", 'yyyy-mm-dd') as shiment_plan_date
+          , dbo.fn_code_name('Balju_type', b."SujuType") as "BaljuTypeName"
+          , FORMAT(b."ProductionPlanDate", 'yyyy-mm-dd') as production_plan_date
+          , FORMAT(b."ShipmentPlanDate", 'yyyy-mm-dd') as shiment_plan_date
           , b."Description"
           , b."AvailableStock" as "AvailableStock"
           , b."ReservationStock" as "ReservationStock"
           , b."SujuQty2" as "SujuQty2"
-          , fn_code_name('balju_state', b."State") as "StateName"
+          , dbo.fn_code_name('balju_state', b."State") as "StateName"
           , sh."Name" as "ShipmentStateName"
           , b."State"
           , b."UnitPrice" as "BaljuUnitPrice"
           , b."Vat" as "BaljuVat"
           , sum(b."Price"+ coalesce(b."Vat", 0)) as "BaljuTotalPrice"
           , b."Price" as "BaljuPrice"
-          , to_char(b."_created", 'yyyy-mm-dd') as create_date
+          , FORMAT(b."_created", 'yyyy-mm-dd') as create_date
           , case b."PlanTableName" when 'prod_week_term' then '주간계획' when 'bundle_head' then '임의계획' else b."PlanTableName" end as plan_state
           from balju b
           inner join material m on m.id = b."Material_id" and m.spjangcd = b.spjangcd
@@ -113,20 +113,20 @@ public class BaljuOrderService {
             , b."Material_id" as "Material_id"
             , mg."Name" as "MaterialGroupName"
             , mg.id as "MaterialGroup_id"
-            , fn_code_name('mat_type', mg."MaterialType") as "MaterialTypeName"
+            , dbo.fn_code_name('mat_type', mg."MaterialType") as "MaterialTypeName"
             , m.id as "Material_id"
             , m."Code" as product_code
             , m."Name" as product_name
             , u."Name" as unit
             , b."SujuQty" as "SujuQty"
-            , to_char(b."JumunDate", 'yyyy-mm-dd') as "JumunDate"
-            , to_char(b."DueDate", 'yyyy-mm-dd') as "DueDate"
+            , FORMAT(b."JumunDate", 'yyyy-mm-dd') as "JumunDate"
+            , FORMAT(b."DueDate", 'yyyy-mm-dd') as "DueDate"
             , b."CompanyName"
             , b."Company_id"
             , b."SujuType"
-            , fn_code_name('Balju_type', b."SujuType") as "SujuTypeName"
-            , to_char(b."ProductionPlanDate", 'yyyy-mm-dd') as production_plan_date
-            , to_char(b."ShipmentPlanDate", 'yyyy-mm-dd') as shiment_plan_date
+            , dbo.fn_code_name('Balju_type', b."SujuType") as "SujuTypeName"
+            , FORMAT(b."ProductionPlanDate", 'yyyy-mm-dd') as production_plan_date
+            , FORMAT(b."ShipmentPlanDate", 'yyyy-mm-dd') as shiment_plan_date
             , b."Description"
             , b."AvailableStock" as "AvailableStock"
             , b."ReservationStock" as "ReservationStock"
@@ -137,8 +137,8 @@ public class BaljuOrderService {
             , b."Vat"as "BaljuVat"
             , b."InVatYN"
             , sum(b."Price"+ coalesce(b."Vat", 0)) as "BaljuTotalPrice"
-            , fn_code_name('balju_state', b."State") as "StateName"
-            , to_char(b."_created", 'yyyy-mm-dd') as create_date
+            , dbo.fn_code_name('balju_state', b."State") as "StateName"
+            , FORMAT(b."_created", 'yyyy-mm-dd') as create_date
             from balju b
             inner join material m on m.id = b."Material_id" and m.spjangcd = b.spjangcd
             inner join mat_grp mg on mg.id = m."MaterialGroup_id" and mg.spjangcd = b.spjangcd

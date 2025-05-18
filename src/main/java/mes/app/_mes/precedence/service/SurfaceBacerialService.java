@@ -27,7 +27,7 @@ public class SurfaceBacerialService {
 		
 		String sql = """
 				select b.id, b."Char1" as "Title", coalesce(r."StateName", '작성') as "StateName", r."LineName"
-				 , r."LineNameState", to_char(b."Date1", 'yyyy-MM-DD') as "DataDate"
+				 , r."LineNameState", FORMAT(b."Date1", 'yyyy-MM-DD') as "DataDate"
 				 , coalesce(r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN"
 				 , coalesce(r."DeleteYN", 'Y') as "DeleteYN", b."Number1" as check_master_id
 				 ,b._creater_id ,up."Name" as creater_name , b._modifier_id, up2."Name" as modifier_name
@@ -70,7 +70,7 @@ public class SurfaceBacerialService {
 					select bh.id
 	                , bh."Char1" as "Title"
 	                , bh."Char2" as "Description"
-	                , to_char(bh."Date1", 'yyyy-MM') as "DataDate"
+	                , FORMAT(bh."Date1", 'yyyy-MM') as "DataDate"
 	                , coalesce(uu."Name", cu."Name") as "FirstName"
 	                , coalesce(r."State", 'write') as "State"
 	                , coalesce(r."StateName", '작성') as "StateName"
@@ -85,8 +85,8 @@ public class SurfaceBacerialService {
 				head_info = this.sqlRunner.getRow(sql, paramMap);
 				
 				sql = """
-					select tir.id as "tirId", tir."CharResult",tir."Char1",tir."Char2",bh."Char1",to_char(bh."Date1",'YYYY-MM-DD')as date1,bh."Text1",bh."Char2" as collMethod,
-	                 bh."Char3" as condition,bh."Char4" as inspecResult,ti."Name", to_char(tir."TestDateTime",'YYYY-MM-DD')as testDateTime ,
+					select tir.id as "tirId", tir."CharResult",tir."Char1",tir."Char2",bh."Char1",FORMAT(bh."Date1",'YYYY-MM-DD')as date1,bh."Text1",bh."Char2" as collMethod,
+	                 bh."Char3" as condition,bh."Char4" as inspecResult,ti."Name", FORMAT(tir."TestDateTime",'YYYY-MM-DD')as testDateTime ,
 					tim."SpecType" ,tim."SpecText" ,tim."LowSpec" ,tim."UpperSpec", tim."TestItem_id" ,bh.id
 					from test_item_result tir 
 					inner join test_result tr on tr.id = tir."TestResult_id"

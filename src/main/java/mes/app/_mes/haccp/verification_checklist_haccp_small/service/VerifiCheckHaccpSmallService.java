@@ -27,7 +27,7 @@ public class VerifiCheckHaccpSmallService {
         
 		String sql = """
 				select b.id, b."Char1" as "Title", coalesce(r."StateName", '작성') as "StateName"
-				, r."LineName", r."LineNameState", to_char(b."Date1", 'yyyy-MM-dd') as "DataDate"
+				, r."LineName", r."LineNameState", FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate"
 				, coalesce(r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN"
 				, coalesce(r."DeleteYN", 'Y') as "DeleteYN", b."Number1" as check_master_id
 				, b._creater_id ,up."Name" as "creater_name" , b._modifier_id, up2."Name" as "modifier_name"
@@ -68,7 +68,7 @@ public class VerifiCheckHaccpSmallService {
         
         if (bh_id > 0) {
         	String sql = """
-        		select b.id, b."Char1" as "Title", to_char(b."Date1", 'yyyy-MM-dd') as "DataDate",  coalesce(uu."Name", cu."Name") as "FirstName", coalesce(r."State", 'write') as "State", coalesce(r."StateName", '작성') as "StateName"
+        		select b.id, b."Char1" as "Title", FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate",  coalesce(uu."Name", cu."Name") as "FirstName", coalesce(r."State", 'write') as "State", coalesce(r."StateName", '작성') as "StateName"
 				from bundle_head b
 				inner join user_profile cu on b._creater_id = cu."User_id"
 				left join user_profile uu on b._modifier_id = uu."User_id"

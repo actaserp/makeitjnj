@@ -27,14 +27,14 @@ public class EquipmentRunChartService {
         
         String sql = """
         		select er.id
-                , to_char(er."StartDate", 'yyyy-mm-dd') as start_date
-                , to_char(er."EndDate", 'yyyy-mm-dd') as end_date
+                , FORMAT(er."StartDate", 'yyyy-mm-dd') as start_date
+                , FORMAT(er."EndDate", 'yyyy-mm-dd') as end_date
 	            , e."Name"
 	            , e."Code"
 	            , er."StartDate"
-	            , to_char(er."StartDate",'HH24:MI') as "StartTime"
+	            , FORMAT(er."StartDate",'HH24:MI') as "StartTime"
 	            , er."EndDate"
-	            , to_char(er."EndDate",'HH24:MI') as "EndTime"
+	            , FORMAT(er."EndDate",'HH24:MI') as "EndTime"
 	            , EXTRACT(day from (er."EndDate" - er."StartDate")) * 60 * 24
 	                + EXTRACT(hour from (er."EndDate" - er."StartDate")) * 60 
 	                + EXTRACT(min from ("EndDate" - "StartDate")) as "GapTime"

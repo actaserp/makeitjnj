@@ -139,7 +139,7 @@ public class DashBoardService {
 			left join job_res jr on jrd."JobResponse_id" = jr.id
 			left join material m on jr."Material_id"  = m.id
 			left join mat_grp mg on m."MaterialGroup_id"  = mg.id
-			where to_char(jr."ProductionDate",'YYYY') = to_char(current_date,'YYYY')
+			where FORMAT(jr."ProductionDate",'YYYY') = FORMAT(current_date,'YYYY')
 			group by mg."Name" , m."Name" , m."UnitPrice"
 			having coalesce(sum(jrd."DefectQty"),0) > 0
 			order by coalesce(sum(jr."DefectQty") * m."UnitPrice",0) desc
@@ -173,11 +173,11 @@ public class DashBoardService {
 	public List<Map<String, Object>> customOrder() {
 		
 		String sql = """
-				select mg."Name" as prod_grp, fn_code_name('mat_type', mg."MaterialType" ) as mat_type_name, m."Name" as prod,m."Code" as prod_code ,coalesce(sum(s."SujuQty") * m."UnitPrice" ,0) as sujup
+				select mg."Name" as prod_grp, dbo.fn_code_name('mat_type', mg."MaterialType" ) as mat_type_name, m."Name" as prod,m."Code" as prod_code ,coalesce(sum(s."SujuQty") * m."UnitPrice" ,0) as sujup
 				from suju s
 				inner join material m on m.id = s."Material_id" 
 				inner join mat_grp mg on mg.id = m."MaterialGroup_id" 
-				where to_char(s."JumunDate", 'YYYY') = to_char(current_date, 'YYYY') 
+				where FORMAT(s."JumunDate", 'YYYY') = FORMAT(current_date, 'YYYY') 
 				group by m."Name" , mg."Name" ,m."UnitPrice", m."Code" , mg."MaterialType"
 				having coalesce(sum(s."SujuQty") * m."UnitPrice" ,0) > 0
 				order by sujup desc
@@ -198,9 +198,9 @@ public class DashBoardService {
 				""";
 		
 		if (dateType.equals("Year")) {
-			sql += " where to_char(cc.\"CheckDate\",'YYYY') = to_char(current_date,'YYYY') ";
+			sql += " where FORMAT(cc.\"CheckDate\",'YYYY') = FORMAT(current_date,'YYYY') ";
 		} else if (dateType.equals("Mon")) {
-			sql += " where to_char(cc.\"CheckDate\",'YYYY-MM') = to_char(current_date,'YYYY-MM') ";
+			sql += " where FORMAT(cc.\"CheckDate\",'YYYY-MM') = FORMAT(current_date,'YYYY-MM') ";
 		}
 		
 		sql += """
@@ -221,9 +221,9 @@ public class DashBoardService {
 				""";
 		
 		if (dateType.equals("Year")) {
-			sql += " where to_char(cc.\"CheckDate\",'YYYY') = to_char(current_date,'YYYY') ";
+			sql += " where FORMAT(cc.\"CheckDate\",'YYYY') = FORMAT(current_date,'YYYY') ";
 		} else if (dateType.equals("Mon")) {
-			sql += " where to_char(cc.\"CheckDate\",'YYYY-MM') = to_char(current_date,'YYYY-MM') ";
+			sql += " where FORMAT(cc.\"CheckDate\",'YYYY-MM') = FORMAT(current_date,'YYYY-MM') ";
 		}
 		
 		sql += """
@@ -254,12 +254,12 @@ public class DashBoardService {
 				""";
 		
 		for (int i = 1; i < 13; i++) {
-				sql += 	" , sum(case when cast(to_char(cc.\"CheckDate\", 'MM') as integer) = "+ i + "then cc.\"Qty\" else 0 end) as p"+ i + " ";
+				sql += 	" , sum(case when cast(FORMAT(cc.\"CheckDate\", 'MM') as integer) = "+ i + "then cc.\"Qty\" else 0 end) as p"+ i + " ";
 		}
 		
 		sql += """
 				from cust_complain cc
-				where to_char(cc."CheckDate", 'YYYY') = to_char(current_date, 'YYYY') 
+				where FORMAT(cc."CheckDate", 'YYYY') = FORMAT(current_date, 'YYYY') 
 				group by cc."Type" 
 				""";
 		
@@ -298,7 +298,7 @@ public class DashBoardService {
 				from v_appr_result
 			)
 			, re as(
-			select distinct tm.id, sc."Value" as code_group_name,"State",tm."Code" as code, tm."TaskName" as task_name, to_char(ar."ApprDate", 'yyyy-MM-dd') as last_appr_date, ar."StateName" as state_name
+			select distinct tm.id, sc."Value" as code_group_name,"State",tm."Code" as code, tm."TaskName" as task_name, FORMAT(ar."ApprDate", 'yyyy-MM-dd') as last_appr_date, ar."StateName" as state_name
 				, "OriginGui" as menu_link,ta."User_id",tm."WriterGroup_id"--,tm."User_id"
 			from task_master tm
 			inner join sys_code sc on tm."GroupCode" = sc."Code" and sc."CodeType" = 'task_group_code'
@@ -332,7 +332,7 @@ public class DashBoardService {
 				, "ApprDate", "TaskMasterCode", "StateName", "LineName","OriginGui","State"
 				from v_appr_result
 			)
-			select distinct tm.id, sc."Value" as code_group_name,"State",tm."Code" as code, tm."TaskName" as task_name, to_char(ar."ApprDate", 'yyyy-MM-dd') as last_appr_date, ar."StateName" as state_name
+			select distinct tm.id, sc."Value" as code_group_name,"State",tm."Code" as code, tm."TaskName" as task_name, FORMAT(ar."ApprDate", 'yyyy-MM-dd') as last_appr_date, ar."StateName" as state_name
 				, public.fn_prop_data_char('task_master', tm.id, 'menu_link') as menu_link,ta."User_id",tm."WriterGroup_id"--,tm."User_id"
 			from task_master tm
 			inner join sys_code sc on tm."GroupCode" = sc."Code" and sc."CodeType" = 'task_group_code'
@@ -361,31 +361,31 @@ public class DashBoardService {
 			, dd as (
 				select 'Y' as data_div, min(data_date) as from_date, max(data_date) as to_date 
 				from dummy_date 
-				where data_year = cast(to_char(now(), 'yyyy') as Integer)
+				where data_year = cast(FORMAT(now(), 'yyyy') as Integer)
 				union all
 				select 'H' as data_div, min(data_date) as from_date, max(data_date) as to_date 
 				from dummy_date 
-				where data_year = cast(to_char(now(), 'yyyy') as Integer)
+				where data_year = cast(FORMAT(now(), 'yyyy') as Integer)
 				group by case when data_month in (1,2,3,4,5,6) then 1 else 2 end
 				union all
 				select 'Q' as data_div, min(data_date) as from_date, max(data_date) as to_date 
 				from dummy_date 
-				where data_year = cast(to_char(now(), 'yyyy') as Integer)
+				where data_year = cast(FORMAT(now(), 'yyyy') as Integer)
 				group by case when data_month in (1,2,3) then 1 when data_month in (4,5,6) then 2 when data_month in (7,8,9) then 3 else 4 end
 				union all
 				select 'M' as data_div, min(data_date) as from_date, max(data_date) as to_date 
 				from dummy_date 
-				where data_year = cast(to_char(now(), 'yyyy') as Integer)
+				where data_year = cast(FORMAT(now(), 'yyyy') as Integer)
 				group by data_month
 				union all
 				select 'W' as data_div, min(data_date) as from_date, max(data_date) as to_date 
 				from dummy_date 
-				where yw_year = cast(to_char(now(), 'yyyy') as Integer)
+				where yw_year = cast(FORMAT(now(), 'yyyy') as Integer)
 				group by yw_week
 				union all
 				select 'D' as data_div, data_date as from_date, data_date as to_date 
 				from dummy_date 
-				where data_year = cast(to_char(now(), 'yyyy') as Integer)
+				where data_year = cast(FORMAT(now(), 'yyyy') as Integer)
 			)
 			, task_t as (
 				select sc."Value" as code_group_name, tm."TaskName" as task_name, tm."CycleBase" as cycle_base, pd."Char1" as cycle_check, dd.from_date, dd.to_date
@@ -439,7 +439,7 @@ public class DashBoardService {
 			)
 			, calib_t as (
 				select t."Name" as "Name", t."CycleBase", t."CycleNumber", t."SourceTableName", r."CalibDate"
-					,to_char(coalesce(
+					,FORMAT(coalesce(
 						case when t."CycleBase" = 'Y' and r."CalibDate" is not null then r."CalibDate" + ("CycleNumber"::text||' year')::interval
 							when t."CycleBase" = 'M' and r."CalibDate" is not null then r."CalibDate" + ("CycleNumber"::text||' month')::interval 
 							else r."CalibDate"
@@ -457,7 +457,7 @@ public class DashBoardService {
 					group by "CalibInstrument_id"
 				) r on t.id = r."CalibInstrument_id"
 				where u."User_id" = :userId
-				and to_char(coalesce(
+				and FORMAT(coalesce(
 						case when t."CycleBase" = 'Y' and r."CalibDate" is not null then r."CalibDate" + ("CycleNumber"::text||' year')::interval
 							when t."CycleBase" = 'M' and r."CalibDate" is not null then r."CalibDate" + ("CycleNumber"::text||' month')::interval 
 							else r."CalibDate"
@@ -740,7 +740,7 @@ public class DashBoardService {
 	            , hi."ResultType"
 	            , u."Name" as unit_name
 	            , hpi."_order"
-	            , to_char(hpi."_created",'YYYY-MM-DD HH24:MI:SS') as "_created"
+	            , FORMAT(hpi."_created",'YYYY-MM-DD HH24:MI:SS') as "_created"
 	            FROM haccp_proc_item hpi 
 	            left join haccp_proc hp on hp.id = hpi."HaccpProcess_id" 
 	            left join haccp_item hi on hi.id = hpi."HaccpItem_id" 
@@ -760,7 +760,7 @@ public class DashBoardService {
 		            , hi."ResultType"
 		            , u."Name" as unit_name
 		            , hpi."_order"
-		            , to_char(hpi."_created",'YYYY-MM-DD HH24:MI:SS') as "_created"
+		            , FORMAT(hpi."_created",'YYYY-MM-DD HH24:MI:SS') as "_created"
 		            FROM haccp_proc_item hpi 
 		            left join haccp_proc hp on hp.id = hpi."HaccpProcess_id" 
 		            left join haccp_item hi on hi.id = hpi."HaccpItem_id" 
@@ -781,7 +781,7 @@ public class DashBoardService {
 		            , hi."ResultType"
 		            , u."Name" as unit_name
 		            , hpi."_order"
-		            , to_char(hpi."_created",'YYYY-MM-DD HH24:MI:SS') as "_created"
+		            , FORMAT(hpi."_created",'YYYY-MM-DD HH24:MI:SS') as "_created"
 		            FROM haccp_proc_item hpi 
 		            left join haccp_proc hp on hp.id = hpi."HaccpProcess_id" 
 		            left join haccp_item hi on hi.id = hpi."HaccpItem_id" 

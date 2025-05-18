@@ -22,11 +22,11 @@ public class StoryBoardService {
                 then concat(mi."MenuName",'(', mf."FolderName",')')
                else df."FormName" end as name
               , si."BoardType"
-              , fn_code_name('story_board_type', si."BoardType" ) as "BoardTypeName"
+              , dbo.fn_code_name('story_board_type', si."BoardType" ) as "BoardTypeName"
               , si."Duration"
               , si."Url"
               , up."Name" as writer
-              , to_char(si."_created" ,'yyyy-mm-dd hh24:mi:ss') as created
+              , FORMAT(si."_created" ,'yyyy-mm-dd hh24:mi:ss') as created
               , si."ParameterData"
             from storyboard_item si 
             left join menu_item mi on mi."MenuCode" = si."MenuCode" 

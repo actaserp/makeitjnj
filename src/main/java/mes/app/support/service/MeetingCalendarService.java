@@ -24,9 +24,9 @@ public class MeetingCalendarService {
 		String sql = """
 				select id::text
                 , "Title" as title
-                , to_char("DataDate",'yyyy-mm-dd') as "DataDate"
-                , to_char("DataDate",'yyyy-mm-dd')||' '||to_char("StartTime",'hh24:mi') as start
-                , to_char("DataDate",'yyyy-mm-dd')||' '||to_char("EndTime",'hh24:mi') as end
+                , FORMAT("DataDate",'yyyy-mm-dd') as "DataDate"
+                , FORMAT("DataDate",'yyyy-mm-dd')||' '||FORMAT("StartTime",'hh24:mi') as start
+                , FORMAT("DataDate",'yyyy-mm-dd')||' '||FORMAT("EndTime",'hh24:mi') as end
                 , "Color" as color
                 , 'calendar' as data_div
                 , "Description" as description
@@ -38,9 +38,9 @@ public class MeetingCalendarService {
 		        --, mo."OrderNumber"
 		        --, mo."AvailableStock"
 		        , concat(m."Name",' ',mo."OrderQty", u."Name") as title
-                , to_char(mo."InputPlanDate",'yyyy-mm-dd') as "DataDate"
-                , to_char(mo."InputPlanDate",'yyyy-mm-dd')||' 00:00' as start
-                , to_char(mo."InputPlanDate",'yyyy-mm-dd')||' 00:00' as end
+                , FORMAT(mo."InputPlanDate",'yyyy-mm-dd') as "DataDate"
+                , FORMAT(mo."InputPlanDate",'yyyy-mm-dd')||' 00:00' as start
+                , FORMAT(mo."InputPlanDate",'yyyy-mm-dd')||' 00:00' as end
 	            , '#FF0000' as color
                 , 'mat_order' as data_div
                 , mo."Description" as description

@@ -132,7 +132,7 @@ public class MatInoutStockController {
 		String sql = """
 				insert into devi_action("SourceDataPk", "SourceTableName", "HappenDate", "HappenPlace"
 			    , "AbnormalDetail", _created, _creater_id)
-			    select mr.id as src_data_pk, 'mat_inout_stock_result' , cast(to_char(b."Date1", 'yyyy-MM-dd') as date) as happen_date 
+			    select mr.id as src_data_pk, 'mat_inout_stock_result' , cast(FORMAT(b."Date1", 'yyyy-MM-dd') as date) as happen_date 
 			    	,'입출고 및 재고 점검표' as happen_place
 			        ,concat('부적합 : ', m."Name") as abnormal_detail       
 			    ,current_date, :userId
@@ -231,7 +231,7 @@ public class MatInoutStockController {
 		String sql = """
 				insert into devi_action("SourceDataPk", "SourceTableName", "HappenDate", "HappenPlace"
 			    , "AbnormalDetail", _created, _creater_id)
-			    select mr.id as src_data_pk, 'mat_inout_stock_result' , cast(to_char(b."Date1", 'yyyy-MM-dd') as date) as happen_date 
+			    select mr.id as src_data_pk, 'mat_inout_stock_result' , cast(FORMAT(b."Date1", 'yyyy-MM-dd') as date) as happen_date 
 			    	,'입출고 및 재고 점검표' as happen_place
 			        ,concat('부적합 : ', m."Name") as abnormal_detail       
 			    ,current_date, :userId

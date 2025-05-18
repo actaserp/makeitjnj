@@ -254,7 +254,7 @@ public class UnitPriceService {
 		dicParam.addValue("priceId", priceId);
         
         String sql = """
-				select id, "Material_id", "Company_id", to_char("ApplyStartDate",'yyyy-mm-dd') as "ApplyStartDate"
+				select id, "Material_id", "Company_id", FORMAT("ApplyStartDate",'yyyy-mm-dd') as "ApplyStartDate"
 	            from mat_comp_uprice
 	            where id = :priceId
 				""";

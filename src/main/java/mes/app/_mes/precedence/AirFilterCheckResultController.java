@@ -146,7 +146,7 @@ public class AirFilterCheckResultController {
         String sql = """
                 select mr.id as src_data_pk
                 , bh."TableName" as source_table_name
-                , to_char(bh."Date1", 'yyyy-MM-dd') as happen_date
+                , FORMAT(bh."Date1", 'yyyy-MM-dd') as happen_date
                 , '공조필터 점검일지' as happen_place
                 , concat('부적합 : ', mt."Name") as abnormal_detail
                 , null as action_detail

@@ -23,9 +23,9 @@ public class PropertyMasterService {
 
         String sql = """
 		   select pm.id
-            , fn_code_name('prop_master', pm."TableName") as table_name
+            , dbo.fn_code_name('prop_master', pm."TableName") as table_name
             , pm."Code" as table_code
-            , fn_code_name('value_type', pm."Type") as val_type
+            , dbo.fn_code_name('value_type', pm."Type") as val_type
             , pm."Description" as description
             from prop_master pm
             left join sys_code sc on pm."TableName" =sc."Value" 

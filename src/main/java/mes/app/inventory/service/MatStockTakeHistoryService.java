@@ -31,7 +31,7 @@ public class MatStockTakeHistoryService {
         String sql = """
         		select st.id
 		        , sh."Name" as house_name
-		        , fn_code_name('mat_type', mg."MaterialType") as mat_type_name	
+		        , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name	
 		        , mg."Name" as mat_grp_name
 		        , m."Code" as mat_code
 		        , m."Name" as mat_name 
@@ -44,9 +44,9 @@ public class MatStockTakeHistoryService {
                 , st."Gap" * m."UnitPrice" as gap_price
                 , st."Description" description
                 , up."Name" taker_name
-                , to_char(st."TakeDate" + st."TakeTime", 'yyyy-mm-dd hh24:mi') take_date_time
+                , FORMAT(st."TakeDate" + st."TakeTime", 'yyyy-mm-dd hh24:mi') take_date_time
                 , up2."Name" confirmer_name
-                , to_char(st."ConfirmDateTime", 'yyyy-mm-dd hh24:mi') confirm_date_time
+                , FORMAT(st."ConfirmDateTime", 'yyyy-mm-dd hh24:mi') confirm_date_time
                 , case st."State" when 'taked' then '조사' else '확인' end state
                 from stock_take st
                 inner join store_house sh on sh.id = st."StoreHouse_id" 

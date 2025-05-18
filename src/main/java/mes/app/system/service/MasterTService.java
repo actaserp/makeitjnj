@@ -28,8 +28,8 @@ public class MasterTService {
 		paramMap.addValue("type", type);
 		paramMap.addValue("type2", type2);
 		
-		String funcName = "fn_code_name";
-		String funcName2 = "fn_code_name";
+		String funcName = "dbo.fn_code_name";
+		String funcName2 = "dbo.fn_code_name";
 		
         if (typeClassTable.equals("user_code")) {
         	funcName = "fn_user_code_name";

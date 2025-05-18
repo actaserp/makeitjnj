@@ -38,7 +38,7 @@ public class ShipmentOrderService {
 	            , suju."Company_id"
 	            --, suju."CompanyName"
                 ,c2."Name" as "CompanyName" 
-	            , fn_code_name('suju_state', suju."State") as "State"
+	            , dbo.fn_code_name('suju_state', suju."State") as "State"
 	            , suju."Material_id"  
 	            , suju."SujuQty" 
 	            , suju."SujuQty2" 
@@ -68,7 +68,7 @@ public class ShipmentOrderService {
             select s.suju_pk, s."JumunNumber",s."JumunDate",s."DueDate"
             ,s."Company_id",s."CompanyName", s."Description" as remark
             , m.id as mat_id
-            , fn_code_name('mat_type', mg."MaterialType") as mat_type
+            , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type
             , mg."Name" as mat_grp
             , m."Code" as mat_code
             , m."Name" as mat_name
@@ -107,7 +107,7 @@ public class ShipmentOrderService {
 		
         String sql = """ 
     			select m.id as mat_id
-                , fn_code_name('mat_type', mg."MaterialType") as mat_type
+                , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type
                     , mg."Name" as mat_grp
                 , m."Code" as mat_code
                 , m."Name" as mat_name
@@ -152,8 +152,8 @@ public class ShipmentOrderService {
 	            , sh."TotalVat" as total_vat
 	            , sh."Description" as description
                 , sh."State" as state
-                , fn_code_name('shipment_state', sh."State") as state_name
-                , to_char(coalesce(sh."OrderDate",sh."_created") ,'yyyy-mm-dd') as order_date
+                , dbo.fn_code_name('shipment_state', sh."State") as state_name
+                , FORMAT(coalesce(sh."OrderDate",sh."_created") ,'yyyy-mm-dd') as order_date
                 , sh."StatementIssuedYN" as issue_yn
                 , sh."StatementNumber" as stmt_number 
                 , sh."IssueDate" as issue_date

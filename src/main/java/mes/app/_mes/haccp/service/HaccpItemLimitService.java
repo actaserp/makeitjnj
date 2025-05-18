@@ -31,11 +31,11 @@ public class HaccpItemLimitService {
 	            , m."Name" as product_name
 	            , hp."Name" as haccp_process_name 
 	            , hi."Name" as item_name
-	            , fn_code_name('haccp_result_type', hi."ResultType") as "ResultTypeName"
+	            , dbo.fn_code_name('haccp_result_type', hi."ResultType") as "ResultTypeName"
 	            , hil."LowSpec" 
 	            , hil."UpperSpec" 
 	            , hil."SpecText" 
-	            , to_char(hil."_created",'YYYY-MM-DD HH24:MI:SS') as "_created"
+	            , FORMAT(hil."_created",'YYYY-MM-DD HH24:MI:SS') as "_created"
 	            , u."Name" as unit_name
 	            , hpi."_order"
 	            from haccp_item_limit hil

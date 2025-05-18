@@ -38,7 +38,7 @@ public class SujuManageService {
             , sj."JumunDate" as jumun_date
             , sj."DueDate" as due_date
             , sj."ProductionPlanDate" as plan_date
-            , fn_code_name('suju_state', sj."State") as state
+            , dbo.fn_code_name('suju_state', sj."State") as state
             from suju sj
             inner join company com on com.id = sj."Company_id"
             inner join material mat on mat.id = sj."Material_id"

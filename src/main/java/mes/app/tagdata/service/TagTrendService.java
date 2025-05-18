@@ -65,7 +65,7 @@ public class TagTrendService {
 	                with A as (
 	                    select unnest(string_to_array(:tagCode, ';')) as tag_code
 	                )
-				    select td.tag_code, td.data_date, to_char(td.data_date, 'yyyy-mm-dd hh24:mi:ss') as data_time
+				    select td.tag_code, td.data_date, FORMAT(td.data_date, 'yyyy-mm-dd hh24:mi:ss') as data_time
 	                , round(td.data_value::decimal, T."RoundDigit")::float as data_value
 	                , t.tag_name
 		            from tag_dat td 

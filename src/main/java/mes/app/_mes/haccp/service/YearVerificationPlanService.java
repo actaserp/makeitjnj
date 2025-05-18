@@ -97,7 +97,7 @@ public class YearVerificationPlanService {
 		
 		String sql = """
 				select b.id, b."Char1" as "Title", coalesce(r."StateName", '작성') as "StateName"
-				, r."LineName", r."LineNameState", to_char(b."Date1", 'yyyy-MM-dd') as "DataDate"
+				, r."LineName", r."LineNameState", FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate"
 				, coalesce(r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN"
 				, coalesce(r."DeleteYN", 'Y') as "DeleteYN", b."Number1" as check_master_id
 				, b._creater_id ,up."Name" as "creater_name" , b._modifier_id, up2."Name" as "modifier_name"

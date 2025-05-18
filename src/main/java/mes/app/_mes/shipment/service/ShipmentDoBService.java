@@ -39,7 +39,7 @@ public class ShipmentDoBService {
 			                , sh."TotalPrice" as total_price
 			                , sh."TotalVat" as total_vat
 			                , sh."State" as state
-			                , fn_code_name('shipment_state', sh."State") as state_name
+			                , dbo.fn_code_name('shipment_state', sh."State") as state_name
 				            , sh."Description" as description
 			                from shipment_head sh
 				            left join company c on c.id = sh."Company_id"
@@ -150,7 +150,7 @@ public class ShipmentDoBService {
 		                  , ml."Material_id" 
 		                  , mlc."SourceDataPk"
 		                  , u."Name" as unit_name
-		                  , to_char(ml."EffectiveDate", 'YYYY-MM-DD HH24:MI:SS') as "EffectiveDate"
+		                  , FORMAT(ml."EffectiveDate", 'YYYY-MM-DD HH24:MI:SS') as "EffectiveDate"
 		               from shipment_head sh
 				 	   inner join shipment s on s."ShipmentHead_id"=sh.id            
 		               inner join mat_lot_cons mlc on mlc."SourceTableName"='shipment' and mlc."SourceDataPk" = s.id
@@ -197,9 +197,9 @@ public class ShipmentDoBService {
 			        , m."Code" as mat_code
 			        , m."Name" as mat_name
 			        , B.shipment_id
-		            , to_char(ml."EffectiveDate", 'YYYY-MM-DD HH24:MI:SS') as "EffectiveDate"
-		            , to_char(ml."InputDateTime", 'YYYY-MM-DD HH24:MI:SS') as "InputDateTime"
-		            , fn_code_name('mat_type', mg."MaterialType") as mat_type 
+		            , FORMAT(ml."EffectiveDate", 'YYYY-MM-DD HH24:MI:SS') as "EffectiveDate"
+		            , FORMAT(ml."InputDateTime", 'YYYY-MM-DD HH24:MI:SS') as "InputDateTime"
+		            , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type 
 	        from mat_lot ml 
 	            inner join A on A."Material_id" = ml."Material_id" 
 	            inner join material m on m.id = ml."Material_id" 

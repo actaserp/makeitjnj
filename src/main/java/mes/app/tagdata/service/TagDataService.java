@@ -25,7 +25,7 @@ public class TagDataService {
         String sql = """
 			select td.tag_code as tag_code
 		        ,t.tag_name as tag_name
-		        ,to_char(td.data_date, 'yyyy-mm-dd hh24:mi:ss') as data_date
+		        ,FORMAT(td.data_date, 'yyyy-mm-dd hh24:mi:ss') as data_date
                 , td.data_value
                 , td.data_char
 	            from tag_dat td

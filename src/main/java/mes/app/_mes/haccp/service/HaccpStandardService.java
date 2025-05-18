@@ -28,7 +28,7 @@ public class HaccpStandardService {
                     , f."FormName" as form_name
                     , dr."DocumentName" as doc_name
                     , dr."Content" as content
-                    , to_char(dr."DocumentDate",'yyyy-mm-dd') as doc_date
+                    , FORMAT(dr."DocumentDate",'yyyy-mm-dd') as doc_date
                     , (select array_to_json(ARRAY_AGG(case when af.id > 0 then json_build_object('file_id',af.id,'attach_name',af."AttachName",'file_name',af."FileName") else null end)) 
 	                        from attach_file af 
 						    where af."DataPk" = dr.id
@@ -93,7 +93,7 @@ public class HaccpStandardService {
 	            , f.id as doc_form_id
 	            , dr."DocumentName" as doc_name
 	            , dr."Content" as content
-	            , to_char(dr."DocumentDate",'yyyy-mm-dd') as doc_date
+	            , FORMAT(dr."DocumentDate",'yyyy-mm-dd') as doc_date
 		        from doc_result dr 
 		        inner join doc_form f on f.id = dr."DocumentForm_id"
 			    where 1=1 
@@ -113,7 +113,7 @@ public class HaccpStandardService {
 		
 		String sql = """
 				select b.id, b."Char1" as "Title", coalesce(r."StateName", '작성') as "StateName"
-				, r."LineName", r."LineNameState", to_char(b."Date1", 'yyyy-MM-dd') as "DataDate"
+				, r."LineName", r."LineNameState", FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate"
 				, coalesce(r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN"
 				, coalesce(r."DeleteYN", 'Y') as "DeleteYN", b."Number1" as check_master_id
 				, b._creater_id ,up."Name" as "creater_name" , b._modifier_id, up2."Name" as "modifier_name"
@@ -140,7 +140,7 @@ public class HaccpStandardService {
 		String sql = null;
 		
 		sql = """
-				select b.id, b."Char1" as title, to_char(b."Date1", 'yyyy-MM-dd') as "DataDate", coalesce(uu."Name", cu."Name") as "createName"
+				select b.id, b."Char1" as title, FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate", coalesce(uu."Name", cu."Name") as "createName"
                 from bundle_head b
 				inner join user_profile cu on b._creater_id = cu."User_id"
 				left join user_profile uu on b._modifier_id = uu."User_id"

@@ -30,7 +30,7 @@ public class CompanyService {
             , "Code" as comp_code
             , "Code2" as comp_code2
             , "CompanyType"  as company_type
-            , fn_code_name('company_type', c."CompanyType") as company_type_name
+            , dbo.fn_code_name('company_type', c."CompanyType") as company_type_name
             , "BusinessNumber" as business_number
             , "CEOName"  as ceo_name
             , "ZipCode"  as zip_code
@@ -148,7 +148,7 @@ public class CompanyService {
             )
             select A.id as mcu_id
             , A."Material_id" as mat_id
-            , fn_code_name('mat_type', mg."MaterialType") as mat_type_name
+            , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name
             , mg."Name" as mat_grp_name
             , m."Code" as mat_code
             , m."Name" as mat_name
@@ -213,7 +213,7 @@ public class CompanyService {
 		String sql = """
 			select mcu.id 
             , mcu."Material_id" as mat_id
-            , fn_code_name('mat_type', mg."MaterialType") as mat_type_name
+            , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name
             , mg."Name" as mat_grp_name
             , m."Code" as mat_code
             , m."Name" as mat_name

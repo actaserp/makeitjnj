@@ -26,7 +26,7 @@ public class MatMoveAService {
 		
         String sql = """
         		select m.id as mat_id
-                , fn_code_name('mat_type', mg."MaterialType") as mat_type
+                , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type
                 , mg."Name" as mat_group
                 , m."Code" as mat_code
                 , m."Name" as material

@@ -34,7 +34,7 @@ public class ProcessService {
             , p."Code" as process_code
             , p."Name" as process_name
             , p."ProcessType" as process_type
-            , to_char(p."_created" ,'yyyy-mm-dd hh24:mi') as created
+            , FORMAT(p."_created" ,'yyyy-mm-dd hh24:mi') as created
             , f."Name" as factory_name
             , p."Factory_id" as factory_id
             , p."Description" as description
@@ -60,7 +60,7 @@ public class ProcessService {
 		    , p."Code" as process_code
 		    , p."Name" as process_name
 		    , p."ProcessType" as process_type
-		    , to_char(p."_created" ,'yyyy-mm-dd hh24:mi') as created
+		    , FORMAT(p."_created" ,'yyyy-mm-dd hh24:mi') as created
 		    , f."Name" as factory_name
 		    , p."Factory_id" as factory_id
 		    , p."Description" as description

@@ -43,7 +43,7 @@ public class ApprResultService {
         String sql = """
         		select ar.id, ar."Line" as line, ar."LineName" as line_name
 	            , ar."Approver_id" as approver_id, u."Name" as approver_name
-	            , to_char(ar."ApprDate",'yyyy-mm-dd') as appr_date
+	            , FORMAT(ar."ApprDate",'yyyy-mm-dd') as appr_date
                 , ar."State" as state
                 , ar."Description" as description
 	            from appr_result ar
@@ -544,7 +544,7 @@ public class ApprResultService {
 		String sql = """
 	            select r.id, r."Line", r."LineName", u."Depart_id", d."Name" as "DepartName", '' as "Shift", '' as "ShiftName", u."User_id", u."Name" as "UserName"
 		            , coalesce(r."State", 'process') as "State", case when r."State" in ('approval', 'reject') then sc."Value" when r."ApprStepYN"='Y' then '진행중' else '-' end "StateName"
-					, to_char(r."ApprDate", 'yyyy-MM-dd HH:mm:ss') as "ApprDate"
+					, FORMAT(r."ApprDate", 'yyyy-MM-dd HH:mm:ss') as "ApprDate"
 	                , coalesce(r."ApprStepYN", 'N') as "ApprStepYN", coalesce(r."Description", '') as "Description"
 	                , case when r."ApprStepYN"='Y' and r."Approver_id"= :userId then 'Y' else 'N' end as "ApprUser"
 	            from appr_result r
@@ -630,7 +630,7 @@ public class ApprResultService {
 		
 		if(state.equals("do_list")) {
 			sql = """
-					select r.id,hd.id ,b.id as bh_id,b."Text1", coalesce(b."Char1",tm."TaskName" )as "Title", r."State", to_char(r._created, 'yyyy-MM-dd HH:mm:ss') as "ReqDate", coalesce(r."StateName", '작성') as "StateName", r."LineName", r."LineNameState"
+					select r.id,hd.id ,b.id as bh_id,b."Text1", coalesce(b."Char1",tm."TaskName" )as "Title", r."State", FORMAT(r._created, 'yyyy-MM-dd HH:mm:ss') as "ReqDate", coalesce(r."StateName", '작성') as "StateName", r."LineName", r."LineNameState"
 				, r."OriginGui", r."OriginGuiParam", r."OriginTableName", :state as "SearchState", 
 				'N' as "CollectYN", tm."TaskName" as task_name
 			from v_appr_result r
@@ -656,7 +656,7 @@ public class ApprResultService {
 			items = this.sqlRunner.getRows(sql, paramMap);
 		}else if(state.equals("appr_list")){
 			sql = """
-					select r.id, b.id as bh_id, b."Char1" as "Title", r."State", to_char(r._created, 'yyyy-MM-dd HH:mm:ss') as "ReqDate", coalesce(r."StateName", '작성') as "StateName", r."LineName", r."LineNameState"
+					select r.id, b.id as bh_id, b."Char1" as "Title", r."State", FORMAT(r._created, 'yyyy-MM-dd HH:mm:ss') as "ReqDate", coalesce(r."StateName", '작성') as "StateName", r."LineName", r."LineNameState"
 				, r."OriginGui", r."OriginGuiParam", r."OriginTableName", :state as "SearchState", 
 				'N' as "CollectYN", tm."TaskName" as task_name
 			from v_appr_result r
@@ -681,7 +681,7 @@ public class ApprResultService {
 			items = this.sqlRunner.getRows(sql, paramMap);
 		}else if(state.equals("req_list")) {
 			sql = """
-					select r.id, b.id as bh_id, b."Char1" as "Title", r."State", to_char(r._created, 'yyyy-MM-dd HH:mm:ss') as "ReqDate", coalesce(r."StateName", '작성') as "StateName", r."LineName", r."LineNameState"
+					select r.id, b.id as bh_id, b."Char1" as "Title", r."State", FORMAT(r._created, 'yyyy-MM-dd HH:mm:ss') as "ReqDate", coalesce(r."StateName", '작성') as "StateName", r."LineName", r."LineNameState"
 				, r."OriginGui", r."OriginGuiParam", r."OriginTableName", :state as "SearchState", 
 				'N' as "CollectYN", tm."TaskName" as task_name
 				,(

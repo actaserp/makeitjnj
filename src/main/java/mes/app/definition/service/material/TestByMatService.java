@@ -19,7 +19,7 @@ public class TestByMatService {
         dicParam.addValue("mat_pk", matPk);
         
         String sql = """
-			select tm.id, fn_code_name('test_class', tg."TestClass") as test_class_name
+			select tm.id, dbo.fn_code_name('test_class', tg."TestClass") as test_class_name
 	            , tg."Name" as test_master_group_name, t."Name" as test_master_name 
 	            , t.id as test_master_id
 	            from test_mast_mat tm 

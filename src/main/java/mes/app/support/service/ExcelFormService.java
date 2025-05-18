@@ -24,8 +24,8 @@ public class ExcelFormService {
 		String sql = """
 	           select id
                 , "FormName" as form_name
-                , to_char("StartDate", 'yyyy-mm-dd') || ' ~ ' || to_char("EndDate", 'yyyy-mm-dd') as apply_date
-                , to_char(_created, 'yyyy-mm-dd') as created_date
+                , FORMAT("StartDate", 'yyyy-mm-dd') || ' ~ ' || FORMAT("EndDate", 'yyyy-mm-dd') as apply_date
+                , FORMAT(_created, 'yyyy-mm-dd') as created_date
                 , "Description" as description
                 from doc_form
                 where "FormType" = 'excel'
@@ -51,8 +51,8 @@ public class ExcelFormService {
 		String sql = """
 	           select id
                 , "FormName" as form_name
-                , to_char("StartDate", 'yyyy-mm-dd') as start_date
-                , to_char("EndDate", 'yyyy-mm-dd') as end_date
+                , FORMAT("StartDate", 'yyyy-mm-dd') as start_date
+                , FORMAT("EndDate", 'yyyy-mm-dd') as end_date
                 , "Content" as form_value
                 , "Description" as description
                 from doc_form

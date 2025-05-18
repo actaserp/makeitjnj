@@ -63,7 +63,7 @@ public class TradeStmtService {
 		        , sh."TotalPrice" + coalesce(sh."TotalVat", 0) as total_price2
 		        , sh."Description" as description
 	            , sh."State" as state
-	            , fn_code_name('shipment_state', sh."State") as state_name
+	            , dbo.fn_code_name('shipment_state', sh."State") as state_name
 	            , sh."StatementIssuedYN" as issue_yn
 	            , sh."StatementNumber" as stmt_number 
 	            , sh."IssueDate" as issue_date
@@ -89,7 +89,7 @@ public class TradeStmtService {
 		
         String sql = """
         		select s.id as ship_pk
-	            , to_char(sh."ShipDate", 'mm-dd') as data_date
+	            , FORMAT(sh."ShipDate", 'mm-dd') as data_date
 				, s."Material_id" as mat_pk
 				, mg."Name" as mat_grp_name
 				, m."Code" as mat_code

@@ -26,9 +26,9 @@ public class PestControlStandardService {
 		String sql = """
 				select pcs.id, pcs."HaccpAreaClassCode" as haccp_area_class_code
                 , pcs."PestClassCode", pcs."SeasonCode"
-	            , fn_code_name('haccp_area_class', pcs."HaccpAreaClassCode") haccp_area_class
-	            , fn_code_name('pest_class', pcs."PestClassCode") as pest_class
-	            , fn_code_name('pest_season', pcs."SeasonCode") as season
+	            , dbo.fn_code_name('haccp_area_class', pcs."HaccpAreaClassCode") haccp_area_class
+	            , dbo.fn_code_name('pest_class', pcs."PestClassCode") as pest_class
+	            , dbo.fn_code_name('pest_season', pcs."SeasonCode") as season
 	            , pcs."FromCount" as from_count, pcs."ToCount" as to_count, pcs."ActionContent" as action_content
 	            from pest_control_standard pcs
 	            where 1 = 1
@@ -53,9 +53,9 @@ public class PestControlStandardService {
 		String sql = """
 				select pcs.id, pcs."HaccpAreaClassCode" 
                 , pcs."PestClassCode", pcs."SeasonCode"
-                , fn_code_name('haccp_area_class', pcs."HaccpAreaClassCode") as haccp_area_class
-                , fn_code_name('pest_class', pcs."PestClassCode") as pest_class
-                , fn_code_name('pest_season', pcs."SeasonCode") as season
+                , dbo.fn_code_name('haccp_area_class', pcs."HaccpAreaClassCode") as haccp_area_class
+                , dbo.fn_code_name('pest_class', pcs."PestClassCode") as pest_class
+                , dbo.fn_code_name('pest_season', pcs."SeasonCode") as season
                 , pcs."FromCount", pcs."ToCount", pcs."ActionContent"
                 from pest_control_standard pcs
                 where id = :id

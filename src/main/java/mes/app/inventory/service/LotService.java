@@ -60,8 +60,8 @@ public class LotService {
             , m."Thickness"
             , m."Width"
             , m."Length"
-            , to_char(ml."InputDateTime",'yyyy-MM-dd hh24:mi:ss') as "InputDateTime"
-            , to_char(ml."EffectiveDate",'yyyy-MM-dd') as "EffectiveDate"
+            , FORMAT(ml."InputDateTime",'yyyy-MM-dd hh24:mi:ss') as "InputDateTime"
+            , FORMAT(ml."EffectiveDate",'yyyy-MM-dd') as "EffectiveDate"
             , ml."Description"
             , ml."StoreHouse_id" as store_house_id
             from mat_lot ml  
@@ -150,9 +150,9 @@ public class LotService {
 		        , m."Name" as mat_name
 		        , mg."Name" as mat_group_name
 		        , mg."MaterialType" as mat_type
-                , to_char(ml."InputDateTime", 'yyyy-mm-dd hh24:mi') as "InputDateTime" 
-	            , to_char(ml."EffectiveDate" , 'yyyy-mm-dd hh24:mi') as "EffectiveDate"
-	            , fn_code_name('mat_type', mg."MaterialType" ) as mat_type_name
+                , FORMAT(ml."InputDateTime", 'yyyy-mm-dd hh24:mi') as "InputDateTime" 
+	            , FORMAT(ml."EffectiveDate" , 'yyyy-mm-dd hh24:mi') as "EffectiveDate"
+	            , dbo.fn_code_name('mat_type', mg."MaterialType" ) as mat_type_name
                 , u."Name" as unit_name
 		        , ml."SourceTableName" 
 		        , ml."SourceDataPk" 
@@ -376,11 +376,11 @@ with recursive T as (
         )
         select 
         LL.lot_number
-        , to_char(ml."EffectiveDate" ,'yyyy-MM-dd hh24:mi:ss') as "EffectiveDate"
-        , to_char(mi."InoutDate",'yyyy-MM-dd') as "InoutDate"
+        , FORMAT(ml."EffectiveDate" ,'yyyy-MM-dd hh24:mi:ss') as "EffectiveDate"
+        , FORMAT(mi."InoutDate",'yyyy-MM-dd') as "InoutDate"
         , mi."InoutTime"
         , mi."InputQty"
-        , fn_code_name('input_type',mi."InputType")as input_type_name
+        , dbo.fn_code_name('input_type',mi."InputType")as input_type_name
         , c."Name" as company_name
         , m."Name" as mat_name
         from LL 
@@ -428,7 +428,7 @@ with recursive T as (
 	        , c."Name" as company_name
 	        , sh."ShipDate" 
 	        , s."Qty" 
-	        , fn_code_name('shipment_state', sh."State" ) as shipment_state
+	        , dbo.fn_code_name('shipment_state', sh."State" ) as shipment_state
 	        from pp 
 	        inner join mat_lot ml on ml."LotNumber" =lot_number
 	        inner join material m on m.id = ml."Material_id" 
@@ -476,9 +476,9 @@ with recursive T as (
 		
         String sql = """
         		select ml.id
-                , to_char(ml."InputDateTime", 'yyyy-mm-dd hh24:mi') as prod_date
+                , FORMAT(ml."InputDateTime", 'yyyy-mm-dd hh24:mi') as prod_date
                 , ml."LotNumber" as lot_num
-                , fn_code_name('mat_type', mg."MaterialType" ) as mat_type
+                , dbo.fn_code_name('mat_type', mg."MaterialType" ) as mat_type
                 , mg."Name" as mat_group
                 , m."Code" as mat_code
                 , m."Name" as mat_name
@@ -558,7 +558,7 @@ with recursive T as (
         String sql = """
         		select mlc.id 
                 , ml."LotNumber" as lot_num
-                , to_char(mlc."OutputDateTime", 'yyyy-mm-dd hh24:mi') as consumed_date
+                , FORMAT(mlc."OutputDateTime", 'yyyy-mm-dd hh24:mi') as consumed_date
                 , mlc."OutputQty" as consumed_qty
                 , mlc."Description" as description
                 , mlc."SourceDataPk" as source_id

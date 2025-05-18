@@ -24,7 +24,7 @@ public class TagCurrentService {
 			 with A as
 	                (
 	                select tag_code
-	                --, max(to_char(data_date,'yyyy-mm-dd hh24:mi:ss')||'-'||data_value) as date_value
+	                --, max(FORMAT(data_date,'yyyy-mm-dd hh24:mi:ss')||'-'||data_value) as date_value
 	                , max(data_date::text||'-'||data_value) as date_value
 	                from tag_dat
 	                where 1 = 1

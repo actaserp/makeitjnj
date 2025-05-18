@@ -28,20 +28,20 @@ public class ProdPrepareService {
         String sql = """
         		select jr.id
                 , jr."WorkOrderNumber" as work_order_number
-                , to_char(jr."ProductionDate", 'yyyy-mm-dd') as production_date
+                , FORMAT(jr."ProductionDate", 'yyyy-mm-dd') as production_date
                 , jr."ShiftCode" as shift_code, sh."Name" as shift_name
                 , wc."Name" as workcenter_name
                 , jr."WorkIndex" as work_index
-                , fn_code_name('mat_type', mg."MaterialType") as mat_type_name
+                , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name
                 , mg."Name" as mat_grp_name
                 , m."Code" as mat_code, m."Name" as mat_name, u."Name" as unit_name
                 , jr."OrderQty" as order_qty
                 , e."Name" as equip_name
-                , jr."State" as state, fn_code_name('job_state', jr."State") as state_name
+                , jr."State" as state, dbo.fn_code_name('job_state', jr."State") as state_name
                 , jr."Description" as description
                 , jr."MaterialProcessInputRequest_id" as proc_input_req_id
                 , jr."State"
-                , fn_code_name('job_state', jr."State") as state_name
+                , dbo.fn_code_name('job_state', jr."State") as state_name
                 from job_res jr 
                 left join material m on m.id = jr."Material_id"
                 left join mat_grp mg on mg.id = m."MaterialGroup_id"
@@ -98,7 +98,7 @@ public class ProdPrepareService {
 	            ), R as 
 	            (
 	                select B1.mat_pk
-	                , fn_code_name('mat_type', mg."MaterialType") as mat_type_name
+	                , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name
 	                , mg."Name" as mat_group_name
 	                , m."Code" as mat_code
 	                , m."Name" as mat_name 
@@ -150,7 +150,7 @@ public class ProdPrepareService {
         		with R as (
                     select  mi."MaterialProcessInputRequest_id" as req_pk
                     , mi."Material_id" as mat_pk
-                    , fn_code_name('mat_type', mg."MaterialType") as mat_type_name
+                    , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name
                     , mg."Name" as mat_group_name
                     , m."Code" as mat_code
                     , m."Name" as mat_name 	
@@ -159,7 +159,7 @@ public class ProdPrepareService {
                     , m."CurrentStock" as cur_stock
                     ,coalesce( m."ProcessSafetyStock",0) as proc_safety_stock
                     , mi."MaterialStoreHouse_id", mi."ProcessStoreHouse_id"
-                    , fn_code_name('mat_proc_input_state', mi."State") as state_name
+                    , dbo.fn_code_name('mat_proc_input_state', mi."State") as state_name
                     from mat_proc_input mi
                     inner join material m on m.id = mi."Material_id"
                     inner join mat_grp mg on mg.id = m."MaterialGroup_id"	

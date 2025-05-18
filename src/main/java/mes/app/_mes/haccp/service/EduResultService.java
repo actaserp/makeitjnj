@@ -33,7 +33,7 @@ public class EduResultService {
 	            , er."EduContent" as edu_content
 	            , er."EduMaterial" as edu_material
 	            , er."AbsenteeProcess" as absentee_process_code
-	            , fn_code_name('edu_absentee_process', er."AbsenteeProcess") as absentee_process
+	            , dbo.fn_code_name('edu_absentee_process', er."AbsenteeProcess") as absentee_process
 	            , er."EduEvaluation"
 	            from edu_result er
 	            where er."EduDate" between cast(:dateFrom as date) and cast(:dateTo as date)
@@ -82,7 +82,7 @@ public class EduResultService {
 		
 		String sql = """
 				select b.id, b."Char1" as "Title", coalesce(r."StateName", '작성') as "StateName", r."LineName", r."LineNameState", b."Char2" as "EduType"
-                , to_char(b."Date1", 'yyyy-MM-dd') as "DataDate", coalesce(r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN"
+                , FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate", coalesce(r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN"
                 , coalesce(r."DeleteYN", 'Y') as "DeleteYN"                
                 from bundle_head b
                 left join v_appr_result r on b.id = r."SourceDataPk" and r."SourceTableName" = 'bundle_head'
@@ -126,7 +126,7 @@ public class EduResultService {
 		if (bhId > 0) {
 			sql = """
 					select b.id, b."Char1" as "Title", coalesce(r."StateName", '작성') as "StateName", r."LineName", r."LineNameState", coalesce(uu."Name", cu."Name") as "FirstName"
-                    , b."Char2" as "EduType", to_char(b."Date1", 'yyyy-MM-dd') as "DataDate", coalesce(r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN"
+                    , b."Char2" as "EduType", FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate", coalesce(r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN"
                     , coalesce(r."DeleteYN", 'Y') as "DeleteYN"                
                     from bundle_head b
 					inner join user_profile cu on b._creater_id = cu."User_id"
@@ -167,7 +167,7 @@ public class EduResultService {
 	        , er."EduContent" as edu_content
 	        , er."EduMaterial" as edu_material
 	        , er."AbsenteeProcess" as absentee_process_code
-	        , fn_code_name('edu_absentee_process', er."AbsenteeProcess") as absentee_process
+	        , dbo.fn_code_name('edu_absentee_process', er."AbsenteeProcess") as absentee_process
 	        , er."EduEvaluation" as edu_evaluation
 	        from edu_result er
 	        where er."SourceDataPk" = :bhId

@@ -30,7 +30,7 @@ public class AirFilterCheckResultService {
 		
 		String sql = """
 				 select b.id, b."Char1" as "Title", coalesce(r."StateName", '작성') as "StateName", r."LineName"
-				 , r."LineNameState", to_char(b."Date1", 'yyyy-MM') as "DataDate"
+				 , r."LineNameState", FORMAT(b."Date1", 'yyyy-MM') as "DataDate"
 				 , coalesce(r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN"
 				 , coalesce(r."DeleteYN", 'Y') as "DeleteYN", b."Number1" as check_master_id
 				 ,b._creater_id ,up."Name" as creater_name , b._modifier_id, up2."Name" as modifier_name
@@ -82,7 +82,7 @@ public class AirFilterCheckResultService {
 				select bh.id
                 , bh."Char1" as "Title"
                 , bh."Char2" as "Description"
-                , to_char(bh."Date1", 'yyyy-MM') as "DataDate"
+                , FORMAT(bh."Date1", 'yyyy-MM') as "DataDate"
                 , coalesce(uu."Name", cu."Name") as "FirstName"
                 , coalesce(r."State", 'write') as "State"
                 , coalesce(r."StateName", '작성') as "StateName"
@@ -152,7 +152,7 @@ public class AirFilterCheckResultService {
             , da."ActorName" as actor_name
             , da."Confer_id" as confer_id
             , da."ConferName" as confer_name
-            , to_char(da._modified,'yyyy-MM-dd') as actor_date
+            , FORMAT(da._modified,'yyyy-MM-dd') as actor_date
             from v_devi_action da
             inner join master_result mr on mr.id = da."SourceDataPk" and da."SourceTableName" = 'master_result_air_filter'
             and mr."SourceDataPk" = :bhId

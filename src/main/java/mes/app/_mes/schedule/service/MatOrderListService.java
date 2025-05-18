@@ -36,16 +36,16 @@ public class MatOrderListService {
 	            , mo."TotalPrice"
 	            , mo."InputPlanDate"
 	            , mo."Description"
-	            , to_char(mo."OrderDate",'yyyy-mm-dd') as "OrderDate"
-	            , fn_code_name('mat_order_state', mo."State" ) as "StateName"
+	            , FORMAT(mo."OrderDate",'yyyy-mm-dd') as "OrderDate"
+	            , dbo.fn_code_name('mat_order_state', mo."State" ) as "StateName"
 	            , mo."State"
 	            , mo."Approver_id"
-	            , to_char(mo."ApproveDateTime", 'yyyy-mm-dd hh24:mi') as "ApproveDateTime" 
+	            , FORMAT(mo."ApproveDateTime", 'yyyy-mm-dd hh24:mi') as "ApproveDateTime" 
 	            , c."Name" as "Company_Name"
 	            , m."Code" as "Material_Code"
 	            , m."Name" as "Material_Name"
 	            , mo."MaterialRequirement_id"
-	            , to_char(mo._created, 'yyyy-mm-dd hh24:mi') as _created
+	            , FORMAT(mo._created, 'yyyy-mm-dd hh24:mi') as _created
 	            , mo._creater_id
 	            , mo._modified
 	            , mo._modifier_id

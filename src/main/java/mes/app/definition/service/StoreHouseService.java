@@ -26,8 +26,8 @@ public class StoreHouseService {
 			select sh.id
             , sh."Code" as storehouse_code
             , sh."Name" as storehouse_name
-            , fn_code_name('storehouse_type', sh."HouseType") as storehouse_type
-            , to_char(sh."_created" ,'yyyy-mm-dd hh24:mi') as created
+            , dbo.fn_code_name('storehouse_type', sh."HouseType") as storehouse_type
+            , FORMAT(sh."_created" ,'yyyy-mm-dd hh24:mi') as created
             , f."Name" as factory_name
             , sh."Factory_id" as factory_id
             , sh."Description" as description
@@ -54,7 +54,7 @@ public class StoreHouseService {
             sh."Code" as storehouse_code,
             sh."Name" as storehouse_name,
             sh."HouseType" as storehouse_type,
-            to_char(sh."_created" ,'yyyy-mm-dd hh24:mi') as created,
+            FORMAT(sh."_created" ,'yyyy-mm-dd hh24:mi') as created,
             f."Name" as factory_name,
             sh."Factory_id" as factory_id,
             sh."Description" as description

@@ -122,7 +122,7 @@ public class ProductionResultService {
 		        select 
 		        BT.mat_pk
 		        , mg."MaterialType" as mat_type
-		        , fn_code_name('mat_type', mg."MaterialType") as mat_type_name
+		        , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name
 		        , mg."Name" as mat_group_name
 		        , m."Code" as mat_code
 		        , m."Name" as mat_name
@@ -245,20 +245,20 @@ public class ProductionResultService {
 		String sql = """
 			select jr.id
             , jr."WorkOrderNumber" as order_num
-            , to_char(jr."ProductionDate", 'yyyy-mm-dd') as prod_date
+            , FORMAT(jr."ProductionDate", 'yyyy-mm-dd') as prod_date
             , jr."LotNumber" as lot_num
-            , to_char(jr."StartTime", 'hh24:mi') as start_time
-            , to_char(jr."EndTime", 'hh24:mi') as end_time
+            , FORMAT(jr."StartTime", 'hh24:mi') as start_time
+            , FORMAT(jr."EndTime", 'hh24:mi') as end_time
             , wc.id as workcenter_id, wc."Name" as workcenter
             , jr."ShiftCode" as shift_code, sh."Name" as shift_name
             , jr."WorkIndex" as work_idx    
-            , fn_code_name('job_state', jr."State") as job_state
+            , dbo.fn_code_name('job_state', jr."State") as job_state
             , jr."State" as state
             , jr."WorkerCount" as worker_count
             , m.id as mat_pk
             , m."Code" as mat_code
             , m."Name" as mat_name
-            , fn_code_name('mat_type', mg."MaterialType") as mat_type
+            , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type
             , m."LotSize" as lot_size
             , m."Weight" as weight
             , u."Name" as unit
@@ -269,7 +269,7 @@ public class ProductionResultService {
             , jr."DefectQty" as defect_qty
             , jr."LossQty" as loss_qty
             , jr."ScrapQty" as scrap_qty
-            , to_char(jr."ProductionDate"+ m."ValidDays", 'yyyy-mm-dd') as "ValidDays"
+            , FORMAT(jr."ProductionDate"+ m."ValidDays", 'yyyy-mm-dd') as "ValidDays"
             from job_res jr 
             left join material m on m.id = jr."Material_id"
             left join mat_grp mg on mg.id = m."MaterialGroup_id"
@@ -301,7 +301,7 @@ public class ProductionResultService {
 	            , jr."WorkOrderNumber" as order_num
 	            , jr."LotNumber" as lot_num
 	            , jr."State" as state
-	            , fn_code_name('job_state', jr."State") as job_state
+	            , dbo.fn_code_name('job_state', jr."State") as job_state
 	            , jr."WorkIndex" as work_idx
 	            , m.id as mat_pk, m."Code" as mat_code, m."Name" as mat_name
 	            , m."LotSize"  as lot_size
@@ -311,11 +311,11 @@ public class ProductionResultService {
 	            , coalesce(jr."DefectQty", 0) as defect_qty
 	            , coalesce(jr."LossQty", 0) as loss_qty
 	            , coalesce(jr."ScrapQty", 0) as scrap_qty
-	            , to_char(jr."ProductionDate", 'yyyy-mm-dd') as prod_date
-	            , to_char(jr."StartTime", 'hh24:mi') as start_time
+	            , FORMAT(jr."ProductionDate", 'yyyy-mm-dd') as prod_date
+	            , FORMAT(jr."StartTime", 'hh24:mi') as start_time
 	            , jr."EndDate" as end_date
-	            , to_char(jr."StartTime", 'yyyy-mm-dd') as start_date
-	            , to_char(jr."EndTime", 'hh24:mi') as end_time
+	            , FORMAT(jr."StartTime", 'yyyy-mm-dd') as start_date
+	            , FORMAT(jr."EndTime", 'hh24:mi') as end_time
 	            , jr."ShiftCode" as shift_code, sh."Name" as shift_name
 	            , wc.id as workcenter_id, wc."Name" as workcenter_name
 	            , e.id as equipment_id, e."Name" as equipment_name
@@ -381,8 +381,8 @@ public class ProductionResultService {
 	            select id
 	            , "LotIndex" as chasu, "LotNumber" as lot_no
 	            , "GoodQty" as good_qty, "DefectQty" as defect_qty, "LossQty" as loss_qty, "ScrapQty" as scrap_qty
-	            , to_char("EndTime", 'HH24:MI') as end_time
-	            , case when to_char("_modified", 'HH24:MI') is null then to_char("_created", 'HH24:MI') else  to_char("_modified", 'HH24:MI') end as input_time
+	            , FORMAT("EndTime", 'HH24:MI') as end_time
+	            , case when FORMAT("_modified", 'HH24:MI') is null then FORMAT("_created", 'HH24:MI') else  FORMAT("_modified", 'HH24:MI') end as input_time
 	            from mat_produce
 	            where "JobResponse_id" = :jrPk
 	            order by "LotIndex"
@@ -411,21 +411,21 @@ public class ProductionResultService {
                 select  mpir.id as mpir_id
                 , mpi.id as mpi_id
                 , mpi."Material_id" as mat_pk
-                , fn_code_name('mat_type', mg."MaterialType") as mat_type_name
+                , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name
                 , mg."Name" as mat_group_name
                 , m."Code" as mat_code
                 , m."Name" as mat_name 
                 , u."Name" as unit_name
                 , mpi."RequestQty" as req_qty
                 , mpi."InputQty" 
-                , to_char(mpi."InputDateTime",'yyyy-MM-dd') as "InputDateTime"
+                , FORMAT(mpi."InputDateTime",'yyyy-MM-dd') as "InputDateTime"
                 , ml."LotNumber"
                 , ml."CurrentStock" as cur_stock
                 , m."ProcessSafetyStock" as proc_safety_stock
                 , mpi."MaterialStoreHouse_id"
                 , mpi."ProcessStoreHouse_id"
                 , mpi."State"
-                , fn_code_name('mat_proc_input_state', mpi."State") as state_name
+                , dbo.fn_code_name('mat_proc_input_state', mpi."State") as state_name
                 , sh."Name" as "StoreHouseName"
                 from job_res jr 
                 inner join mat_proc_input_req mpir on mpir.id = jr."MaterialProcessInputRequest_id" 
@@ -515,7 +515,7 @@ public class ProductionResultService {
                 select 
                 BT.mat_pk
                 , mg."MaterialType" as mat_type
-                , fn_code_name('mat_type', mg."MaterialType") as mat_type_name
+                , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name
                 , mg."Name" as mat_group_name
                 , m."Code" as mat_code
                 , m."Name" as mat_name
@@ -570,7 +570,7 @@ public class ProductionResultService {
                 , fn_unit_ceiling( bom.bom_ratio * , u."PieceYN" ) as bom_consumed
                 , A.lot_consumed
                 , A.lot_consumed as consumed
-                from tbl_bom_detail(cast(:prodPk as text), cast(to_char(cast(:prodDate as date),'YYYY-MM-DD') as text)) as bom
+                from tbl_bom_detail(cast(:prodPk as text), cast(FORMAT(cast(:prodDate as date),'YYYY-MM-DD') as text)) as bom
                 inner join material m on m.id = bom.mat_pk
                 left join unit u on u.id = m."Unit_id"
                 left join A on A.mat_id = m.id
@@ -591,7 +591,7 @@ public class ProductionResultService {
 		String sql = """
 					select ti.id, up."Name" as "CheckName", ti."ResultType" as "resultType"
 					, tim."SpecText" as "specText"
-					, to_char(tir."TestDateTime", 'YYYY-MM-DD') as "testDate"
+					, FORMAT(tir."TestDateTime", 'YYYY-MM-DD') as "testDate"
 					, tir."JudgeCode", tir."InputResult" as "ctRemark" ,tir."CharResult" as "ntRemark" , ti."Name" as name 
 					, tir."Char1" as result1, tir."Char2" as result2
 					, tr.id as "testResultId", tr."TestMaster_id" as "testMasterId"

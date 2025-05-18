@@ -26,7 +26,7 @@ public class WorkcenterService {
                 , fa."Name" as factory_name
                 , a."Name" as area_name
                 , wc."HierarchyLevel" as hierarchy_level
-                , fn_code_name('hierarchy_level',  wc."HierarchyLevel" ) as hierarchy_level_name
+                , dbo.fn_code_name('hierarchy_level',  wc."HierarchyLevel" ) as hierarchy_level_name
                 , wc."OutSourcingYN" as outsourcing_yn
                 , p."Name" as "ProcessName"
                 , wc."Process_id"
@@ -86,7 +86,7 @@ public class WorkcenterService {
               , wc."Name" as "WorkCenterName"
               , e."Name" as "EquipmentName"
               , e."Code" as "EquipmentCode"
-              , to_char(rd._created ,'yyyy-mm-dd hh24:mi:ss') as _created 
+              , FORMAT(rd._created ,'yyyy-mm-dd hh24:mi:ss') as _created 
             from rela_data rd 
                 left join work_center wc on wc.id = rd."DataPk1"
                 left join equ e on e.id = rd."DataPk2"

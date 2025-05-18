@@ -34,14 +34,14 @@ public class NoticeService {
         String sql = """
         		with A as (
                     select id, "Title" as title
-	                , to_char("WriteDateTime", 'yyyy-mm-dd hh24:mi:ss') as write_date_time
+	                , FORMAT("WriteDateTime", 'yyyy-mm-dd hh24:mi:ss') as write_date_time
 	                from board
 	                where "BoardGroup" = :board_group
                     and "NoticeYN" = 'Y'
 	                and "NoticeEndDate" >= :today
                 ), B as (
                     select B.id, B."Title" as title
-                    , to_char(B."WriteDateTime", 'yyyy-mm-dd hh24:mi:ss') as write_date_time
+                    , FORMAT(B."WriteDateTime", 'yyyy-mm-dd hh24:mi:ss') as write_date_time
                     from board B 
                     left join A on A.id = B.id
                     where B."BoardGroup" = :board_group

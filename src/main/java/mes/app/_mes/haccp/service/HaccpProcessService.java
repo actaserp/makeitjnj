@@ -42,8 +42,8 @@ public class HaccpProcessService {
 		--, hp."TestCycle"
 		--, hp."Standard"
 		, hp."ProcessKind"
-		, fn_code_name('happc_process_kind', hp."ProcessKind") as "ProcessKindName"
-		, to_char(hp."_created",'YYYY-MM-DD HH24:MI:SS') as "_created" 
+		, dbo.fn_code_name('happc_process_kind', hp."ProcessKind") as "ProcessKindName"
+		, FORMAT(hp."_created",'YYYY-MM-DD HH24:MI:SS') as "_created" 
 		FROM haccp_proc hp
 		left join aa on aa.hp_id= hp.id
 		where 1=1
@@ -74,7 +74,7 @@ public class HaccpProcessService {
 	            , hp."TestCycle"
 	            , hp."ProcessKind"
 	            , hp."Standard"
-	            , to_char(hp."_created",'YYYY-MM-DD HH24:MI:SS') as "_created" 
+	            , FORMAT(hp."_created",'YYYY-MM-DD HH24:MI:SS') as "_created" 
 	            FROM haccp_proc hp 
 	            where hp.id = :hp_id
 		    """;
@@ -129,7 +129,7 @@ public class HaccpProcessService {
 	            , hi."ResultType"
 	            , u."Name" as unit_name
 	            , hpi."_order"
-	            , to_char(hpi."_created",'YYYY-MM-DD HH24:MI:SS') as "_created"
+	            , FORMAT(hpi."_created",'YYYY-MM-DD HH24:MI:SS') as "_created"
 	            FROM haccp_proc_item hpi 
 	            left join haccp_proc hp on hp.id = hpi."HaccpProcess_id" 
 	            left join haccp_item hi on hi.id = hpi."HaccpItem_id" 

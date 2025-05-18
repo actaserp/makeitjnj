@@ -135,7 +135,7 @@ public class WorkPlaceListController {
 		String sql = """
 				insert into devi_action("SourceDataPk", "SourceTableName", "HappenDate", "HappenPlace"
 			    , "AbnormalDetail", _created, _creater_id)
-			    select mr.id as src_data_pk, 'workplace_th_result' , cast(to_char(b."Date1", 'yyyy-MM-dd') as date) as happen_date 
+			    select mr.id as src_data_pk, 'workplace_th_result' , cast(FORMAT(b."Date1", 'yyyy-MM-dd') as date) as happen_date 
 			    	,'온습도관리' as happen_place
 			        , concat('부적합 : ', m."Name") as abnormal_detail       
 			    ,current_date, :userId
@@ -218,7 +218,7 @@ public class WorkPlaceListController {
 		String sql = """
 				insert into devi_action("SourceDataPk", "SourceTableName", "HappenDate", "HappenPlace"
 			    , "AbnormalDetail", _created, _creater_id)
-			    select mr.id as src_data_pk, 'workplace_th_result' , cast(to_char(b."Date1", 'yyyy-MM-dd') as date) as happen_date 
+			    select mr.id as src_data_pk, 'workplace_th_result' , cast(FORMAT(b."Date1", 'yyyy-MM-dd') as date) as happen_date 
 			    	,'온습도관리' as happen_place
 			        , concat('부적합 : ', m."Name") as abnormal_detail       
 			    ,current_date, :userId

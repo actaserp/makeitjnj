@@ -35,7 +35,7 @@ public class ReservoirCleanStatService {
 		
 		String sql = """
 					 select b.id, b."Char1" as "Title", coalesce(r."State", 'write') as "State", coalesce(r."StateName", '상신대기') as "StateName"
-					 , r."LineName", r."LineNameState", to_char(b."Date1", 'yyyy-MM') as "DataDate", coalesce(r."SearchYN", 'Y') as "SearchYN"
+					 , r."LineName", r."LineNameState", FORMAT(b."Date1", 'yyyy-MM') as "DataDate", coalesce(r."SearchYN", 'Y') as "SearchYN"
 					 , coalesce(r."EditYN", 'Y') as "EditYN", coalesce(r."DeleteYN", 'Y') as "DeleteYN"
 					 , b."Number1" as check_master_id, b._creater_id ,up."Name" as creater_name , b._modifier_id
 					 , up2."Name" as modifier_name, cm."CheckCycle" , b."Text1"
@@ -76,7 +76,7 @@ public class ReservoirCleanStatService {
 		
 		if(bhId > 0) {
 			sql = """
-					select b.id, b."Char1" as "Title", to_char(b."Date1", 'yyyy-MM') as "DataDate"
+					select b.id, b."Char1" as "Title", FORMAT(b."Date1", 'yyyy-MM') as "DataDate"
 					, coalesce(uu."Name", cu."Name") as "FirstName", coalesce(r."State", 'write') as "State"
 					, coalesce(r."StateName", '상신대기') as "StateName"  , b."Text1"
 					, cr.id as check_result_id ,cr."CheckMaster_id", cr."Description", cm."Name" as check_master_name
@@ -135,7 +135,7 @@ public class ReservoirCleanStatService {
 			    , da."ActorName" as actor_name
 			    , da."Confer_id" as confer_id
 			    , da."ConferName" as confer_name
-			    , to_char(da._modified,'yyyy-MM-dd') as actor_date
+			    , FORMAT(da._modified,'yyyy-MM-dd') as actor_date
 			from v_devi_action da
 			inner join check_item_result cir on cir.id = da."SourceDataPk" and da."SourceTableName" = 'devi_action_reservoir_clean'
 			inner join check_item ci on ci.id = cir."CheckItem_id"

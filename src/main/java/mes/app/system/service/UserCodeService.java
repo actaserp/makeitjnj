@@ -124,8 +124,8 @@ public class UserCodeService {
 		paramMap.addValue("typeClassTable", typeClassTable);
 		paramMap.addValue("type2ClassTable", type2ClassTable);
 
-		String funcName = "fn_code_name";
-		String funcName2 = "fn_code_name";
+		String funcName = "dbo.fn_code_name";
+		String funcName2 = "dbo.fn_code_name";
 
 		if (typeClassTable != null) {
 			if(typeClassTable.equals("user_code")) {

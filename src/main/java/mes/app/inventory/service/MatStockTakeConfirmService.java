@@ -24,7 +24,7 @@ public class MatStockTakeConfirmService {
 		
         String sql = """
         		select st.id 
-	            , fn_code_name('mat_type', mg."MaterialType") as mat_type
+	            , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type
                 , m.id mat_id
                 , mg."Name" as mat_grp_name
 	            , m."Code" mat_code
@@ -37,7 +37,7 @@ public class MatStockTakeConfirmService {
 	            , st."Gap" gap
                 , m."UnitPrice" as unit_price
                 , m."UnitPrice" * st."Gap" as gap_money
-	            , to_char(st."TakeDate" + st."TakeTime", 'yy-mm-dd hh24:mi') take_date_time
+	            , FORMAT(st."TakeDate" + st."TakeTime", 'yy-mm-dd hh24:mi') take_date_time
 	            , case st."State" when 'taked' then '조사'
 		            else '확인' end state
 	            , st."Description" description

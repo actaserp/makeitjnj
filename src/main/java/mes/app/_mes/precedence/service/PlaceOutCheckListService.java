@@ -30,7 +30,7 @@ public class PlaceOutCheckListService {
         		, coalesce(r."State", 'write') as "State"
         		, coalesce(r."StateName", '작성') as "StateName"
         		, r."LineName", r."LineNameState"
-                , to_char(b."Date1", 'YYYY-MM-DD') as "DataDate"
+                , FORMAT(b."Date1", 'YYYY-MM-DD') as "DataDate"
                 , coalesce(r."SearchYN", 'Y') as "SearchYN"
                 , coalesce(r."EditYN", 'Y') as "EditYN"
                 , coalesce(r."DeleteYN", 'Y') as "DeleteYN"
@@ -65,7 +65,7 @@ public class PlaceOutCheckListService {
         
 	    if (bh_id > 0) {
 	        String sql = """
-	        		select b.id, b."Char1" as "Title", to_char(b."Date1", 'yyyy-MM-dd') as "DataDate",
+	        		select b.id, b."Char1" as "Title", FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate",
 					    coalesce(uu."Name", cu."Name") as "FirstName",
 					    coalesce(r."State", 'write') as "State",
 					    coalesce(r."StateName", '작성') as "StateName"

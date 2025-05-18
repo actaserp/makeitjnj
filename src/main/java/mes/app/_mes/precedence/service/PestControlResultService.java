@@ -31,7 +31,7 @@ public class PestControlResultService {
 //				with A as (
 //	            select dr.id 
 //	            , f."FormName" as form_name
-//	            , to_char(dr."DocumentDate",'yyyy-mm-dd') as doc_date
+//	            , FORMAT(dr."DocumentDate",'yyyy-mm-dd') as doc_date
 //				, dr."DocumentName" as doc_name
 //	            , dr."Content" as check_result
 //	            , dr."Description" as pest_result
@@ -80,7 +80,7 @@ public class PestControlResultService {
 				select dr.id as id
                 , f."FormName" as form_name
                 , f.id as doc_form_id
-	            , to_char(dr."DocumentDate",'yyyy-mm-dd') as doc_date
+	            , FORMAT(dr."DocumentDate",'yyyy-mm-dd') as doc_date
 	            , dr."Content" as check_result
 	            , dr."Description" as pest_result
 	            , dr."Text1" as problem
@@ -153,7 +153,7 @@ public class PestControlResultService {
 	                )
                 )
                 select b.id, b."Char1" as "Title", c."Code" as "PestTrapClass", c."Value" as "PestTrapClassName"
-					, coalesce(r."StateName", '작성') as "StateName", r."LineName", to_char(b."Date1", 'yyyy-MM-dd') as "DataDate", coalesce (r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN"
+					, coalesce(r."StateName", '작성') as "StateName", r."LineName", FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate", coalesce (r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN"
 					, coalesce (r."DeleteYN", 'Y') as "DeleteYN"
                 from bundle_head b
 				inner join c on b."Char2" = c."Code"
@@ -246,7 +246,7 @@ public class PestControlResultService {
 		
 		if (bhId > 0) {
 			sql = """
-                    select b.id, b."Char1" as "Title", to_char(b."Date1", 'yyyy-MM-dd') as "DataDate", b."Char2" as "PestTrapClass"
+                    select b.id, b."Char1" as "Title", FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate", b."Char2" as "PestTrapClass"
                     , coalesce(uu."Name", cu."Name") as "FirstName", coalesce(r."State", 'write') as "State", coalesce(r."StateName", '상신대기') as "StateName"
                     from bundle_head b
 					inner join user_profile cu on b._creater_id = cu."User_id"
@@ -276,9 +276,9 @@ public class PestControlResultService {
 		sql = """
                select pcs.id, pcs."HaccpAreaClassCode" as haccp_area_class_code
                 , pcs."PestClassCode", pcs."SeasonCode"
-                , fn_code_name('haccp_area_class', pcs."HaccpAreaClassCode") haccp_area_class
-                , fn_code_name('pest_class', pcs."PestClassCode") as pest_class
-                , fn_code_name('pest_season', pcs."SeasonCode") as season
+                , dbo.fn_code_name('haccp_area_class', pcs."HaccpAreaClassCode") haccp_area_class
+                , dbo.fn_code_name('pest_class', pcs."PestClassCode") as pest_class
+                , dbo.fn_code_name('pest_season', pcs."SeasonCode") as season
                 , pcs."FromCount" as from_count, pcs."ToCount" as to_count, pcs."ActionContent" as action_content
 	            from pest_control_standard pcs
 				""";

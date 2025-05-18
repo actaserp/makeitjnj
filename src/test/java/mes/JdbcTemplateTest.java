@@ -47,12 +47,12 @@ public class JdbcTemplateTest {
                 , m."Name" as mat_name
                 , bom.bom_ratio
                 , concat(bom.quantity,'->',bom.produced_qty) as bom_qty
-                , fn_code_name('mat_type',mg."MaterialType") as mat_type
+                , dbo.fn_code_name('mat_type',mg."MaterialType") as mat_type
                 , u."Name" as unit
                 , m."Code" as mat_code
                 , bom.prod_pk as my_key
                 , bom.parent_prod_pk as parent_key
-	            from tbl_bom_reverse(:mat_pk, to_char(now(),'yyyy-mm-dd')) as bom
+	            from tbl_bom_reverse(:mat_pk, FORMAT(now(),'yyyy-mm-dd')) as bom
                 inner join material m on m.id = bom.prod_pk
                 left join mat_grp mg on mg.id = m."MaterialGroup_id"
                 left join unit u on u.id = m."Unit_id"

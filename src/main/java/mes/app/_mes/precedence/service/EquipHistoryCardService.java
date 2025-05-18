@@ -27,7 +27,7 @@ public class EquipHistoryCardService {
 		
 		String sql = """
                 select b.id, b."Char1" as "Title", COALESCE(r."State", 'write') as "State", COALESCE(r."StateName", '작성') as "StateName", r."LineName", r."LineNameState"
-                , to_char(b."Date1", 'yyyy-MM-dd') as "DataDate", COALESCE(r."SearchYN", 'Y') as "SearchYN", COALESCE(r."EditYN", 'Y') as "EditYN", COALESCE(r."DeleteYN", 'Y') as "DeleteYN"                
+                , FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate", COALESCE(r."SearchYN", 'Y') as "SearchYN", COALESCE(r."EditYN", 'Y') as "EditYN", COALESCE(r."DeleteYN", 'Y') as "DeleteYN"                
                 --, b."Char2"||' ~ '||b."Char3" as "DataDate"
                 , coalesce(e.id, 0) as "EquipId", COALESCE(e."Name", ne."Name") as "EquipName", case when ne."Name" is not null then '신규설비' else '기존설비' end "EquipType"
                 from bundle_head b
@@ -78,7 +78,7 @@ public class EquipHistoryCardService {
 		if (bh_id > 0) {
 			sql = """
 				    SELECT b.id, b."Char1" as "Title", COALESCE(r."State", 'write') as "State", COALESCE(r."StateName", '상신대기') as "StateName", r."LineName", r."LineNameState", COALESCE(uu."Name", cu."Name") as "FirstName"
-					, to_char(b."Date1", 'yyyy-MM-dd') as "DataDate", COALESCE(r."SearchYN", 'Y') as "SearchYN", COALESCE(r."EditYN", 'Y') as "EditYN", COALESCE(r."DeleteYN", 'Y') as "DeleteYN"
+					, FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate", COALESCE(r."SearchYN", 'Y') as "SearchYN", COALESCE(r."EditYN", 'Y') as "EditYN", COALESCE(r."DeleteYN", 'Y') as "DeleteYN"
 					, b."Number1" as "EquipId", b."Char2" as "FromDate", b."Char3" as "ToDate", b."Char4" as "NewEquipId"
 					FROM bundle_head b
 					INNER JOIN user_profile cu ON b."_creater_id" = cu."User_id"
@@ -135,7 +135,7 @@ public class EquipHistoryCardService {
 		List<Map<String, Object>> repair_info = this.sqlRunner.getRows(sql, paramMap);
 		
 		sql = """
-				select eh.id, to_char(eh._created, 'yyyy-MM-dd HH:mm:ss') as "ChangeDate", u."Name" as "ChangeName", eh."Text1"
+				select eh.id, FORMAT(eh._created, 'yyyy-MM-dd HH:mm:ss') as "ChangeDate", u."Name" as "ChangeName", eh."Text1"
                 from equip_history eh
                 inner join equ e on e.id = eh."Equipment_id"
 				left join user_profile u on eh._creater_id = u."User_id"
@@ -173,7 +173,7 @@ public class EquipHistoryCardService {
 	             , e."SerialNumber"
 	             , e."SupplierName"
 	             , e."ProductionYear"
-	             , to_char(e."PurchaseDate",'yyyy-mm-dd') as "PurchaseDate"
+	             , FORMAT(e."PurchaseDate",'yyyy-mm-dd') as "PurchaseDate"
 	             , e."Manager"
 	             , e."PurchaseCost" 
 	             , e."ServiceCharger"
@@ -187,7 +187,7 @@ public class EquipHistoryCardService {
 	             , wc."Name" as workcenter_name
 	             , e."Depart_id"
 	             , d."Name" as DepartName
-	             , to_char(e._created ,'yyyy-mm-dd hh24:mi') as _created 
+	             , FORMAT(e._created ,'yyyy-mm-dd hh24:mi') as _created 
 	             , e."Inputdate", e."Voltage", e."Usage", "PowerWatt", e."ASTelNumber", e."AttentionRemark"
 	             , e."OvenTemperCount"
 	             , e."OvenProductTemperStandard"

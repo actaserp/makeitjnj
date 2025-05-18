@@ -40,7 +40,7 @@ public class ProductionMonthService {
 		
 		String sql ="""
 				select jr."Material_id" as mat_pk
-	            , fn_code_name('mat_type', mg."MaterialType") as mat_type_name, mg."Name" as mat_grp_name, m."Code" as mat_code, m."Name" as mat_name
+	            , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name, mg."Name" as mat_grp_name, m."Code" as mat_code, m."Name" as mat_name
                 , u."Name" as unit_name
 	            , sum(jr."GoodQty") as year_qty_sum
                 , sum(jr."GoodQty" * m."UnitPrice") as year_money_sum

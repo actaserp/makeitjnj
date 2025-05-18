@@ -1,24 +1,25 @@
 package mes.app.inventory.service;
 
-import io.micrometer.core.instrument.util.StringUtils;
-import mes.domain.services.SqlRunner;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.Map;
+import io.micrometer.core.instrument.util.StringUtils;
+import mes.domain.services.SqlRunner;
 
 @Service
 public class MaterialInoutService {
 
 	@Autowired
 	SqlRunner sqlRunner;
-	
+
 	public List<Map<String, Object>> getMaterialInout(String srchStartDt, String srchEndDt, String housePk,
-			String matType, String matGrpPk, String keyword) {
-		
+													  String matType, String matGrpPk, String keyword) {
+
 		MapSqlParameterSource param = new MapSqlParameterSource();
 		param.addValue("srchStartDt", srchStartDt);
 		param.addValue("srchEndDt", srchEndDt);
@@ -26,7 +27,7 @@ public class MaterialInoutService {
 		param.addValue("matType", matType);
 		param.addValue("matGrpPk", matGrpPk);
 		param.addValue("keyword", keyword);
-		
+
 		String sql = """
 					select distinct mi.id as mio_pk
                     , fn_code_name('inout_type', mi."InOut") as inout
@@ -82,24 +83,24 @@ public class MaterialInoutService {
                     --and sh."HouseType" = 'material'
                     and mi."InoutDate" between cast(:srchStartDt as date) and cast(:srchEndDt as date)
 				""";
-		
+
 		if (StringUtils.isEmpty(housePk)==false) sql +=" and sh.id = cast(:housePk as Integer) ";
 		if (StringUtils.isEmpty(matType)==false) sql +=" and mg.\"MaterialType\" = :matType ";
 		if (StringUtils.isEmpty(matGrpPk)==false) sql +=" and m.\"MaterialGroup_id\" = cast(:matGrpPk as Integer) ";
 		if (StringUtils.isEmpty(keyword)==false) sql +=" and upper(m.\"Name\") like concat('%%',upper(:keyword),'%%') ";
-		
+
 		sql += " order by \"InoutDate\" desc, \"InoutTime\" desc ";
-		
-        List<Map<String, Object>> items = this.sqlRunner.getRows(sql, param);
-        
-        return items;
+
+		List<Map<String, Object>> items = this.sqlRunner.getRows(sql, param);
+
+		return items;
 	}
 
 	public List<Map<String, Object>> mioLotList(String mioId) {
-		
+
 		MapSqlParameterSource param = new MapSqlParameterSource();
 		param.addValue("mioId", mioId);
-		
+
 		String sql = """
             select 
             mi.id as mio_id
@@ -127,17 +128,17 @@ public class MaterialInoutService {
                 left join mat_inout mi on ml."SourceDataPk" = mi.id and ml."SourceTableName" ='mat_inout'
             where mi.id = cast(:mioId as Integer) 
 			""";
-		
+
 		List<Map<String, Object>> items = this.sqlRunner.getRows(sql, param);
 		return items;
 	}
 
 	public List<Map<String, Object>> mioTestList(Integer mioId, Integer testResultId) {
-		
+
 		MapSqlParameterSource param = new MapSqlParameterSource();
 		param.addValue("mioId", mioId);
 		param.addValue("testResultId", testResultId);
-		
+
 		String sql = """
 				select ti.id, up."Name" as "CheckName", ti."ResultType" as "resultType", to_char(tir."TestDateTime", 'YYYY-MM-DD') as "testDate"
 				, tir."JudgeCode", tir."CharResult" , ti."Name" as name ,tir."Char1" as result1
@@ -150,11 +151,11 @@ public class MaterialInoutService {
 				and tr.id= :testResultId
 				order by ti.id
 				""";
-		
-		
-		
+
+
+
 		List<Map<String, Object>> items = this.sqlRunner.getRows(sql, param);
-		
+
 		return items;
 	}
 
@@ -191,7 +192,7 @@ public class MaterialInoutService {
 	}
 
 	public List<Map<String, Object>> mioTestDefaultList() {
-		
+
 		String sql = """
 				select ti.id,ti."Name" as name, ti."ResultType" as "resultType", '' as result1
 				from test_item ti
@@ -199,26 +200,26 @@ public class MaterialInoutService {
 				where tm."Code"  = 'inout_test'
 				order by ti.id
 			    """;
-		
+
 		List<Map<String, Object>> items = this.sqlRunner.getRows(sql, null);
-		
+
 		return items;
 	}
 
 	public Map<String, Object> getEffectDate(Integer mioId) {
-		
+
 		MapSqlParameterSource param = new MapSqlParameterSource();
 		param.addValue("mioId", mioId);
-		
+
 		String sql = """
 				select (case when mi."EffectiveDate" = null then null else to_char(mi."EffectiveDate", 'YYYY-MM-DD') end)  as "EffectiveDate"
 				from mat_inout mi 
 				inner join material m on m.id = mi."Material_id"
 				where mi.id = :mioId
 				""";
-		
+
 		Map<String,Object> items = this.sqlRunner.getRow(sql, param);
-		
+
 		return items;
 	}
 

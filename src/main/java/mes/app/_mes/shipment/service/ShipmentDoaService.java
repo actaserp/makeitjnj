@@ -41,7 +41,7 @@ public class ShipmentDoaService {
 	                , sh."TotalPrice" as total_price
 	                , sh."TotalVat" as total_vat
 	                , sh."State" as state
-	                , fn_code_name('shipment_state', sh."State") as state_name
+	                , dbo.fn_code_name('shipment_state', sh."State") as state_name
 		            , sh."Description" as description
 	                from shipment_head sh
 		            left join company c on c.id = sh."Company_id"

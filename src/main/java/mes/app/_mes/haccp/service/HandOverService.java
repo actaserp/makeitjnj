@@ -27,7 +27,7 @@ public class HandOverService {
         
 		String sql = """
 				select b.id, b."Char1" as "Title", coalesce(r."State", 'write') as "State", coalesce(r."StateName", '상신대기') as "StateName", r."LineName", r."LineNameState"
-				, to_char(b."Date1", 'yyyy-MM-dd') as "DataDate", coalesce(r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN", coalesce(r."DeleteYN", 'Y') as "DeleteYN"
+				, FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate", coalesce(r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN", coalesce(r."DeleteYN", 'Y') as "DeleteYN"
 				from bundle_head b
 				left join v_appr_result r on b.id = r."SourceDataPk" and r."SourceTableName" = 'bundle_head'
 				where b."TableName" = 'hand_over'
@@ -61,7 +61,7 @@ public class HandOverService {
 		if(bh_id > 0) {
 			String sql = """
 				select b.id, b."Char1" as "Title", coalesce(r."State", 'write') as "State", coalesce(r."StateName", '상신대기') as "StateName", r."LineName", r."LineNameState", coalesce(uu."Name", cu."Name") as "FirstName"
-                , to_char(b."Date1", 'yyyy-MM-dd') as "DataDate", coalesce(r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN", coalesce(r."DeleteYN", 'Y') as "DeleteYN"               
+                , FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate", coalesce(r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN", coalesce(r."DeleteYN", 'Y') as "DeleteYN"               
                 from bundle_head b
 				inner join user_profile cu on b._creater_id = cu."User_id"
 				left join user_profile uu on b._modifier_id = uu."User_id"

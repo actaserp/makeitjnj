@@ -457,7 +457,7 @@ public class SystemService {
     public Map<String, Object> getSystemLogDetail(Long id) {
         String sql = """
                        select id, Type as type, Source as source,Message as message
-                       , to_char(_created ,'yyyy-mm-dd hh24:mi:ss') as created
+                       , FORMAT(_created ,'yyyy-mm-dd hh24:mi:ss') as created
                        from sys_log sl
                        where id = :log_id    			
                 """;
@@ -594,7 +594,7 @@ public class SystemService {
                             , lc.Description
                             , lcl.LangCode
                             , lcl.DispText
-                            , to_char(lcl._created ,'yyyy-mm-dd hh24:mi:ss') as disp_created
+                            , FORMAT(lcl._created ,'yyyy-mm-dd hh24:mi:ss') as disp_created
                             from label_code_lang lcl
                             inner join label_code lc on lcl.LabelCode_id = lc.id
                             where lcl.LangCode = :langCode
@@ -614,11 +614,11 @@ public class SystemService {
                             then concat(mi.MenuName,'(', mf.FolderName,')')
                            else df.FormName end as name
                           , si.BoardType
-                          , fn_code_name('story_board_type', si.BoardType ) as BoardTypeName
+                          , dbo.fn_code_name('story_board_type', si.BoardType ) as BoardTypeName
                           , si.Duration
                           , si.Url
                           , up.Name as writer
-                          , to_char(si._created ,'yyyy-mm-dd hh24:mi:ss') as created
+                          , FORMAT(si._created ,'yyyy-mm-dd hh24:mi:ss') as created
                           , si.ParameterData
                          from storyboard_item si 
                          left join menu_item mi on mi.MenuCode = si.MenuCode 

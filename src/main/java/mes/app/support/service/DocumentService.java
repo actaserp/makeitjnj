@@ -33,7 +33,7 @@ public class DocumentService {
                     , f."FormName" as form_name
                     , dr."DocumentName" as doc_name
                     , dr."Content" as content
-                    , to_char(dr."DocumentDate",'yyyy-mm-dd') as doc_date
+                    , FORMAT(dr."DocumentDate",'yyyy-mm-dd') as doc_date
                     , (select array_to_json(ARRAY_AGG(case when af.id > 0 then json_build_object('file_id',af.id,'attach_name',af."AttachName",'file_name',af."FileName") else null end)) 
 	                        from attach_file af 
 						    where af."DataPk" = dr.id
@@ -85,7 +85,7 @@ public class DocumentService {
             , f.id as doc_form_id
             , dr."DocumentName" as doc_name
             , dr."Content" as content
-            , to_char(dr."DocumentDate",'yyyy-mm-dd') as doc_date
+            , FORMAT(dr."DocumentDate",'yyyy-mm-dd') as doc_date
 	        from doc_result dr 
 	        inner join doc_form f on f.id = dr."DocumentForm_id"
 		    where 1=1 

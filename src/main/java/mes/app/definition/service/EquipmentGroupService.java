@@ -23,7 +23,7 @@ public class EquipmentGroupService {
 			select eg.id
             , eg."Name" as equipment_group_name
             , eg."Code" as equipment_group_code
-            , fn_code_name('equipment_type', eg."EquipmentType"::text) as equipment_type
+            , dbo.fn_code_name('equipment_type', eg."EquipmentType"::text) as equipment_type
             from equ_grp eg 
             where 1=1
             """;

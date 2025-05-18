@@ -201,8 +201,8 @@ public class FieldService {
 
         // SQL 쿼리
         String sql = """
-        select *, TO_CHAR(servicertm, 'YYYY-MM-DD"T"HH24:MI') AS checkstdt,
-        TO_CHAR(serviceftm, 'YYYY-MM-DD"T"HH24:MI') AS checkendt
+        select *, FORMAT(servicertm, 'YYYY-MM-DD"T"HH24:MI') AS checkstdt,
+        FORMAT(serviceftm, 'YYYY-MM-DD"T"HH24:MI') AS checkendt
         from tb_rp810
         where indatem between :searchfrdate and :searchtodate
         and sitename like :sitename

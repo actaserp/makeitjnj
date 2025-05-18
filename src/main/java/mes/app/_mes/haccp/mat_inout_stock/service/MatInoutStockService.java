@@ -26,7 +26,7 @@ public class MatInoutStockService {
 		
 		String sql = """
 				select b.id, b."Char1" as "Title", coalesce(r."StateName", '작성') as "StateName"
-				, r."LineName", r."LineNameState", to_char(b."Date1", 'yyyy-MM-dd') as "DataDate"
+				, r."LineName", r."LineNameState", FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate"
 				, coalesce(r."SearchYN", 'Y') as "SearchYN", coalesce(r."EditYN", 'Y') as "EditYN"
 				, coalesce(r."DeleteYN", 'Y') as "DeleteYN", b."Number1" as check_master_id
 				, b._creater_id ,up."Name" as "creater_name" , b._modifier_id, up2."Name" as "modifier_name"
@@ -53,7 +53,7 @@ public class MatInoutStockService {
 		String sql = null;
 		
 		sql = """
-				select b.id, b."Char1" as title, to_char(b."Date1", 'yyyy-MM-dd') as "DataDate"
+				select b.id, b."Char1" as title, FORMAT(b."Date1", 'yyyy-MM-dd') as "DataDate"
 				, b."Number1" as "housePk", b."Char2" as "startDt", b."Char3" as "endDt"
                 from bundle_head b
 				inner join user_profile cu on b._creater_id = cu."User_id"
@@ -69,11 +69,11 @@ public class MatInoutStockService {
 		
 		sql = """
 					select mi.id as mio_pk
-                    , fn_code_name('inout_type', mi."InOut") as inout
-                    , case when mi."InOut" = 'in' then fn_code_name('input_type', mi."InputType") 
-	                    when mi."InOut" = 'out' then fn_code_name('output_type', mi."OutputType") end as inout_type
-                    , to_char(mi."InoutDate",'yyyy-mm-dd ') as "InoutDate"
-                    , to_char(mi."InoutTime", 'hh24:mi') as "InoutTime"
+                    , dbo.fn_code_name('inout_type', mi."InOut") as inout
+                    , case when mi."InOut" = 'in' then dbo.fn_code_name('input_type', mi."InputType") 
+	                    when mi."InOut" = 'out' then dbo.fn_code_name('output_type', mi."OutputType") end as inout_type
+                    , FORMAT(mi."InoutDate",'yyyy-mm-dd ') as "InoutDate"
+                    , FORMAT(mi."InoutTime", 'hh24:mi') as "InoutTime"
                     , m."Code" as "material_code"
                     , m."Name" as "material_name"
                     , mih2."CurrentStock" as "HouseStock"
@@ -81,7 +81,7 @@ public class MatInoutStockService {
                     , coalesce(mi."OutputQty", 0) as "OutputQty"
                     , u2."Name" as "unit_name"
                     , mi."Description"
-                    , fn_code_name('mat_type', mg."MaterialType") as material_type
+                    , dbo.fn_code_name('mat_type', mg."MaterialType") as material_type
                     , mr."Char1" as result1
                     from master_result mr 
                     inner join mat_inout mi on mi.id = mr."MasterTable_id"

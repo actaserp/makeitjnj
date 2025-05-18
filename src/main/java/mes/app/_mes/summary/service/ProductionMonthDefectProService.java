@@ -44,7 +44,7 @@ public class ProductionMonthDefectProService {
 				 with A as 
 	            (
 	            select jr."Material_id" as mat_pk
-	            , fn_code_name('mat_type', mg."MaterialType") as mat_type_name, mg."Name" as mat_grp_name, m."Code" as mat_code, m."Name" as mat_name
+	            , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name, mg."Name" as mat_grp_name, m."Code" as mat_code, m."Name" as mat_name
                 , u."Name" as unit_name
 	            , extract (month from jr."ProductionDate") as data_month
 	            , coalesce(sum(jr."DefectQty"),0) as defect_qty

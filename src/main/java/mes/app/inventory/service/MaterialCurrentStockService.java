@@ -25,7 +25,7 @@ public class MaterialCurrentStockService {
 		paramMap.addValue("spjangcd", spjangcd);
 		
 		String sql = """
-			select m.id, fn_code_name('mat_type', mg."MaterialType") as mat_type_name
+			select m.id, dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name
             , mg."Name" as mat_grp_name, m."Code" as mat_code, m."Name" as mat_name
             , m."UnitPrice" as unit_price 
             , u."Name" as unit_name

@@ -27,7 +27,7 @@ public class LabelCodeService {
 	             , lc."TemplateKey"
 	             , lc."LabelCode"
 	             , lc."Description"
-	             , to_char("_created" ,'yyyy-mm-dd hh24:mi:ss') as created
+	             , FORMAT("_created" ,'yyyy-mm-dd hh24:mi:ss') as created
 	            from label_code lc 
 	            where lc."ModuleName"= :moduleName
 	            """;
@@ -50,7 +50,7 @@ public class LabelCodeService {
              , lc."TemplateKey"
              , lc."LabelCode"
              , lc."Description"
-             , to_char("_created" ,'yyyy-mm-dd hh24:mi:ss') as created
+             , FORMAT("_created" ,'yyyy-mm-dd hh24:mi:ss') as created
             from label_code lc 
             where lc.id = :id
 	        """;
@@ -73,8 +73,8 @@ public class LabelCodeService {
                 , lc."LabelCode" 
                 , lcl."DispText" 
                 , lcl."LabelCode_id"
-                , to_char(lcl."_created" ,'yyyy-mm-dd hh24:mi:ss') as created
-                , fn_code_name('lang_code', lcl."LangCode") as lang_code_name
+                , FORMAT(lcl."_created" ,'yyyy-mm-dd hh24:mi:ss') as created
+                , dbo.fn_code_name('lang_code', lcl."LangCode") as lang_code_name
                 from label_code_lang lcl 
                 inner join label_code lc on lcl."LabelCode_id" = lc.id
                 where lcl."LabelCode_id" = :labelcode_id
@@ -98,7 +98,7 @@ public class LabelCodeService {
                 , lc."LabelCode" 
                 , lcl."DispText" 
                 , lcl."LabelCode_id"
-                , to_char(lcl."_created" ,'yyyy-mm-dd hh24:mi:ss') as created
+                , FORMAT(lcl."_created" ,'yyyy-mm-dd hh24:mi:ss') as created
                 from label_code_lang lcl 
                 inner join label_code lc on lcl."LabelCode_id" = lc.id
                 where lcl.id = :id

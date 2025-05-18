@@ -30,12 +30,12 @@ public class ProdResultListService {
 	            select jr.id as pk
 	                 , mp.id as mp_pk
 		             , jr."WorkOrderNumber" as order_num
-		             , to_char(mp."ProductionDate", 'yyyy-mm-dd') as prod_date
+		             , FORMAT(mp."ProductionDate", 'yyyy-mm-dd') as prod_date
 		             , wc."Name" as workcenter
 		             , p."Name" as process
 		             , mp."ShiftCode" as shift_code, sh."Name" as shift_name
 		             , jr."WorkIndex" as work_idx    
-		             , fn_code_name('job_state', jr."State") as job_state
+		             , dbo.fn_code_name('job_state', jr."State") as job_state
 		             , jr."State" as state
 		             , m.id as mat_pk
 		             , m."Code" as mat_code
@@ -83,7 +83,7 @@ public class ProdResultListService {
                  , jr."WorkOrderNumber" as order_num
                  , mp."LotNumber" as lot_num
                  , jr."State" as state
-                 , fn_code_name('job_state', jr."State") as job_state
+                 , dbo.fn_code_name('job_state', jr."State") as job_state
                  , jr."WorkIndex" as work_idx
                  , m.id as mat_pk, m."Code" as mat_code, m."Name" as mat_name
                  , m."LotSize"  as lot_size
@@ -93,10 +93,10 @@ public class ProdResultListService {
                  , mp."DefectQty" as defect_qty
                  , mp."LossQty" as loss_qty
                  , mp."ScrapQty" as scrap_qty
-                 , to_char(jr."ProductionDate", 'yyyy-mm-dd') as prod_date
-                 , to_char(jr."StartTime", 'hh24:mi') as start_time
-                 , to_char(jr."EndTime", 'yyyy-mm-dd') as end_date
-                 , to_char(jr."EndTime", 'hh24:mi') as end_time
+                 , FORMAT(jr."ProductionDate", 'yyyy-mm-dd') as prod_date
+                 , FORMAT(jr."StartTime", 'hh24:mi') as start_time
+                 , FORMAT(jr."EndTime", 'yyyy-mm-dd') as end_date
+                 , FORMAT(jr."EndTime", 'hh24:mi') as end_time
                  , jr."ShiftCode" as shift_code, sh."Name" as shift_name
                  , wc.id as workcenter_id, wc."Name" as workcenter_name
                  , p.id as process_id, p."Name" as process_name
@@ -153,8 +153,8 @@ public class ProdResultListService {
                 , coalesce(mc."BomQty", 0) as bom_consumed
                 , coalesce(mc."ScrapQty", 0) as scrap_consumed
                 , coalesce(mc."AddQty", 0) as add_consumed
-                , to_char(mc."StartTime", 'hh24:mi') as consumed_start
-                , to_char(mc."EndTime", 'hh24:mi') as consumed_end 
+                , FORMAT(mc."StartTime", 'hh24:mi') as consumed_start
+                , FORMAT(mc."EndTime", 'hh24:mi') as consumed_end 
                 from mat_consu mc
                 inner join material m on m.id = mc."Material_id"
                 left join unit u on u.id = m."Unit_id"

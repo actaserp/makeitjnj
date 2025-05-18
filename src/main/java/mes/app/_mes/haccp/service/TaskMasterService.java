@@ -40,15 +40,15 @@ public class TaskMasterService {
                 inner join user_profile up on up."User_id" = ta."User_id" 
                 group by ta."TaskMaster_id"
 			)
-			select tm.id, tm."GroupCode" as task_group_code, fn_code_name('task_group_code', tm."GroupCode") as task_group_name
+			select tm.id, tm."GroupCode" as task_group_code, dbo.fn_code_name('task_group_code', tm."GroupCode") as task_group_name
 	        , tm."Code" as code, tm."TaskName" as task_name, tm."Description" as description
 	        , tm."Line1Name" as line1_name 
 	        , tm."Line2Name" as line2_name
 	        , tm."Line3Name" as line3_name
 	        , tm."Line4Name" as line4_name
-	        --, case when coalesce(tm."CycleBase",'X') not in ('X') then concat(fn_code_name('cycle_base', tm."CycleBase"),' ', tm."CycleNumber",'회') end as cycle_name 
-	        , case when coalesce(tm."CycleBase",'X') not in ('', 'X') then public.fn_code_name('cycle_base', tm."CycleBase") else '수시' end as cycle_name 
-            , case when public.fn_code_name('cycle_base', tm."CycleBase")='주' then (
+	        --, case when coalesce(tm."CycleBase",'X') not in ('X') then concat(dbo.fn_code_name('cycle_base', tm."CycleBase"),' ', tm."CycleNumber",'회') end as cycle_name 
+	        , case when coalesce(tm."CycleBase",'X') not in ('', 'X') then public.dbo.fn_code_name('cycle_base', tm."CycleBase") else '수시' end as cycle_name 
+            , case when public.dbo.fn_code_name('cycle_base', tm."CycleBase")='주' then (
 		       case when pd."Char1" ='0' then '토요일' when pd."Char1" ='1' then '일요일' when pd."Char1" ='2' then '월요일' when pd."Char1" ='3' then '화요일'
             when pd."Char1" ='4' then '수요일' when pd."Char1" ='5' then '목요일' when pd."Char1" ='6' then '금요일' end
             ) else null end as cycle_weekday

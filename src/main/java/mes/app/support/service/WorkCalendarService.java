@@ -25,8 +25,8 @@ public class WorkCalendarService {
 		String sql = """
                 select wc.id as _id
 	            , wc."DataDate"
-	            , to_char(wc."DataDate",'yyyy-mm-dd') ||' '|| coalesce(to_char(wc."StartTime",'hh24:mi'),'00:00') as start
-	            , to_char(wc."DataDate",'yyyy-mm-dd') ||' '|| coalesce(to_char(wc."EndTime",'hh24:mi'),'00:00') as end
+	            , FORMAT(wc."DataDate",'yyyy-mm-dd') ||' '|| coalesce(FORMAT(wc."StartTime",'hh24:mi'),'00:00') as start
+	            , FORMAT(wc."DataDate",'yyyy-mm-dd') ||' '|| coalesce(FORMAT(wc."EndTime",'hh24:mi'),'00:00') as end
 	            --, wc."DataPk"  as title
 	            , wc."DataPk"  as factory_pk
                 , f."Name" as factory_name

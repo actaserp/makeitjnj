@@ -29,7 +29,7 @@ public class IllumResultStatService {
                 , coalesce(r."StateName", '작성') as "StateName"
                 , r."LineName"
                 , r."LineNameState"
-                , to_char(b."Date1", 'YYYY-MM-DD') as "DataDate"
+                , FORMAT(b."Date1", 'YYYY-MM-DD') as "DataDate"
                 , coalesce(r."SearchYN", 'Y') as "SearchYN"
                 , coalesce(r."EditYN", 'Y') as "EditYN"
                 , coalesce(r."DeleteYN", 'Y') as "DeleteYN"

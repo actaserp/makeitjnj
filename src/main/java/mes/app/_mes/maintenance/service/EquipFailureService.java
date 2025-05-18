@@ -69,8 +69,8 @@ public class EquipFailureService {
 	    , em."MaintType" as maint_type
 	    , em."MaintStartDate" as maint_start_date
 	    , em."MaintEndDate" as maint_end_date 
-	    , to_char(em."MaintStartTime", 'HH24:mi') as maint_start_time
-	    ,to_char( em."MaintEndTime", 'HH24:mi') as maint_end_time
+	    , FORMAT(em."MaintStartTime", 'HH24:mi') as maint_start_time
+	    ,FORMAT( em."MaintEndTime", 'HH24:mi') as maint_end_time
 	    , em."Description" as description 
 	    , em."ServicerName" as service_name
 	    , em."MaintCost" as maint_cost 

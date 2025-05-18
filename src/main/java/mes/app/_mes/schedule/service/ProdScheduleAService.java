@@ -25,9 +25,9 @@ public class ProdScheduleAService {
         
         String sql = """
         		select  id, "DataYear" as year, "WeekIndex", "StartDate", "EndDate"
-                , concat(to_char("StartDate", 'mm.dd'), '~', to_char("EndDate", 'mm.dd')) as period_date 
+                , concat(FORMAT("StartDate", 'mm.dd'), '~', FORMAT("EndDate", 'mm.dd')) as period_date 
                 , "PlanDate", "State"
-                , fn_code_name('prod_week_term_state', "State") as "StateName"
+                , dbo.fn_code_name('prod_week_term_state', "State") as "StateName"
                 from prod_week_term pwt
                 where "EndDate" >= cast(:ymd as date)
                 and "StartDate" < cast(:ymd as date) + interval ' 1 months'
@@ -47,9 +47,9 @@ public class ProdScheduleAService {
         		with W as (
                 select id
                 ,"DataYear","WeekIndex", "StartDate" , "EndDate"
-                , concat(to_char("StartDate", 'mm.dd'), '~', to_char("EndDate", 'mm.dd')) as period_date 
+                , concat(FORMAT("StartDate", 'mm.dd'), '~', FORMAT("EndDate", 'mm.dd')) as period_date 
                 , "PlanDate" , "State"
-                , fn_code_name('prod_week_term_state', "State") as StateName
+                , dbo.fn_code_name('prod_week_term_state', "State") as StateName
                 from prod_week_term 
                 where id = cast(:pwtId as Integer)
                 )
@@ -65,7 +65,7 @@ public class ProdScheduleAService {
                     else null end as box_qty
                 ,s."JumunDate", s."ProductionPlanDate", s."DueDate"
                 ,s."State"
-                ,fn_code_name('suju_state', s."State") as "StateName"
+                ,dbo.fn_code_name('suju_state', s."State") as "StateName"
                 ,s."Description" 
                 ,s."PlanDataPk"
                 from  suju s
@@ -108,8 +108,8 @@ public class ProdScheduleAService {
         	    else greatest(0, mr."RequireQty1" +  greatest(0, coalesce(m."SafetyStock", 0) - coalesce(mr."AvailableStock",0) ) - coalesce(mr."RequestQty",0)) end as "RequestQty_input"
             , greatest(greatest((mr."RequireQty1" + (coalesce(m."SafetyStock", 0) - (coalesce(mr."AvailableStock",0)-coalesce(mr."ReservationStock",0)))-coalesce(mr."ReservationStock",0) ), 0)-coalesce(mr."RequestQty",0),0)  as "RequestQty_input2"
             , coalesce(mr."RequestQty",0) as "RequestQty" /* 생산요청량 */
-            , to_char(mr."RequestDate",'yyyy-mm-dd hh24:mi') as "RequestDate"
-            , to_char(mr._modified,'yyyy-mm-dd hh24:mi:ss') as modified
+            , FORMAT(mr."RequestDate",'yyyy-mm-dd hh24:mi') as "RequestDate"
+            , FORMAT(mr._modified,'yyyy-mm-dd hh24:mi:ss') as modified
             from mat_requ mr
                 left join material m on m.id=mr."Material_id" 
                 left join mat_grp mg on mg.id = m."MaterialGroup_id" 
@@ -204,7 +204,7 @@ public class ProdScheduleAService {
                 , bm.mat_pk
                 , sum(bm.bom_ratio) as req_qty
                 from agg 
-                inner join tbl_bom_detail(agg.prod_ids,to_char(now(),'yyyy-mm-dd') ) bm on 1 = 1
+                inner join tbl_bom_detail(agg.prod_ids,FORMAT(now(),'yyyy-mm-dd') ) bm on 1 = 1
                 inner join material m on m.id = bm.mat_pk
                 inner join mat_grp mg on mg.id = m."MaterialGroup_id"
                 where 1 = 1
