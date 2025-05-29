@@ -5,405 +5,293 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <link rel="icon" type="image/png" href="/img/sungwoo_logo2.png">
-    <title> JNJ </title>
+    <link rel="icon" type="image/png" href="/images/logo/actas_log_a.png">
+    <title th:text="${ system_title }"></title>
     <link rel="stylesheet" href="/resource/windowContainer/css/jquery.scrollbar.min.css">
     <link rel="stylesheet" href="/resource/windowContainer/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/resource/windowContainer/css/nth-icons.css"/>
+    <link rel="stylesheet" href="/resource/windowContainer/css/nth-icons.css">
     <link rel="stylesheet" href="/resource/windowContainer/css/nth-tabs.css">
     <link rel="stylesheet" href="/resource/ax5ui/ax5ui.all.css">
     <link rel="stylesheet" href="/css/animate.css">
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/theme-top-mes.css">
-    <link rel="stylesheet" href="/css/theme-left-mes.css">
+    <!--    <link rel="stylesheet" href="/css/theme-left-mes.css">-->
     <link rel="stylesheet" type="text/css" href="/css/import.css">
     <script src="/js/vendor/jquery-3.6.0.js"></script>
     <script src="/js/vendor/jquery-ui.min.js"></script>
     <script src="/js/ui.js"></script> <!-- Common js -->
-    <script src="/js/Jung.js"></script>
+    <script src="/js/utilscript.js"></script> <!-- 박광열 -->
+
     <script th:inline="javascript">
-        var sandanData = /*[[${session.sandanList}]]*/ [];
+        var spjangList = /*[[${session.spjangList}]]*/ [];
+
     </script>
+
+    <style>
+        .left {
+            cursor: pointer;
+        }
+
+        .menu_area {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            transform: translateX(0); /* 기본 위치 */
+            opacity: 1;
+            width: 250px; /* 메뉴 너비 */
+            position: absolute; /* 왼쪽 고정 */
+            left: 0;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* 메뉴가 사라질 때 */
+        .menu_area.hidden {
+            transform: translateX(-250px); /* 부드럽게 왼쪽으로 사라짐 */
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none; /* 클릭 방지 */
+        }
+
+        /* 컨텐츠 영역 */
+        .con_area {
+            transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
+            width: calc(100% - 250px); /* 기본적으로 메뉴 너비만큼 줄어든 상태 */
+            left: 250px; /* 메뉴가 있을 때 기본 위치 */
+        }
+
+        /* 메뉴가 사라지면 컨텐츠 영역 확장 */
+        .menu_area.hidden + .con_area {
+            width: 100%;
+            left: 0;
+        }
+
+        /* 부드럽게 나오는 애니메이션 */
+        @keyframes menuFadeIn {
+            0% {
+                transform: translateX(-250px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+    </style>
 </head>
-<style>
-    .alarm-box {
-        display: block;
-        /*width: 50%; !* 박스의 폭을 80%로 설정 (필요에 따라 값 조정) *!*/
-        margin: 0 auto; /* 가운데 정렬 */
-    }
 
-    .table-wrap {
-        overflow-x: auto; /* 테이블이 박스 크기를 넘어가면 스크롤 생성 */
-    }
-
-    table {
-        width: 100%; /* 테이블 너비를 100%로 설정 */
-        border-collapse: collapse; /* 테이블의 경계선 정리 */
-    }
-
-    th, td {
-        padding: 10px; /* 셀 안의 여백 */
-        border: 1px solid #ddd; /* 테두리 설정 */
-        text-align: center; /* 가운데 정렬 */
-    }
-
-    th {
-        background-color: #f5f5f5; /* 테이블 헤더 배경색 */
-        font-weight: bold; /* 헤더 텍스트 굵게 */
-    }
-</style>
 <body>
 <div class="page-wrapper sub-page">
     <div class="dashboard-layout-header">
         <header>
-            <div class="left" style="display: flex; align-items: center; margin-left: 20px;">
-                <div class="logo" style="display: flex; align-items: center;">
-                    <img src="/images/logo/sungwoo_logo2.png" alt="로고" style="max-width: 40%; height: auto; margin-right: 10px;">
-                    <h4 style="margin: 0;"><a href="#" class="index">JNJ</a></h4>
+            <div class="left">
+                <div class="logo">
+                    <img src="/images/logo/sungwoo_logo2.png" style="width:100%" alt="로고">
+                    <h1>SCM</h1>
                 </div>
             </div>
-            <div class="right"> 
-
-                <div class="weather">
-                    <div class="wt-main">
-                        <p id="area"></p>
-                        <div class="wt-graphic">
-                            <img id="weatherIcon" src="" alt="">
-                            <!--                            <p id="temperature"></p> &lt;!&ndash; 기존의 <span> 태그를 제거 -->
-                            <p id="temperature"></p>
+            <div class="right">
+                <div id="navbarBarMenu2" style="margin-left: 10px;">
+                    <div class="open_menu">
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                    </div>
+                </div>
+                <div class="header-info">
+                    <div class="weather">
+                        <div class="wt-main">
+                            <p id="area"></p>
+                            <div class="wt-graphic">
+                                <img id="weatherIcon" src="" alt="">
+                                <!--                            <p id="temperature"></p> &lt;!&ndash; 기존의 <span> 태그를 제거 -->
+                                <p id="temperature"></p>
+                            </div>
+                        </div>
+                        <div class="wt-detail">
+                            <ul>
+                                <li>
+                                    <img src="/images/icon/ico-umbrella.svg" alt="강수">
+                                    <p id="precipitationProbability"></p>
+                                </li>
+                                <li>
+                                    <img src="/images/icon/ico-water.svg" alt="습도">
+                                    <p id="humidity"></p>
+                                </li>
+                                <li>
+                                    <img src="/images/icon/ico-wind.svg" alt="풍속">
+                                    <p id="windSpeed"></p>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    <div class="wt-detail">
+                    <!-- 알람 -->
+                    <a href="#" class="alarm" title="알람">
+                        <img src="/images/icon/ico-bell.svg" alt="알람 아이콘">
+                        <span>알람</span>
+                        <span class="num">0</span>
+                    </a>
+                    <div class="alarm-box" style="width: 1000px;">
+                        <ul class="alarm-tab-links">
+                            <li class="active">
+                                <a href="#alarm-tab1" title="주문의뢰">주문의뢰(0)</a> <!-- 동적으로 업데이트 -->
+                            </li>
+                        </ul>
+                        <div class="alarm-tab-contents">
+                            <div class="alarm-tab-item" id="alarm-tab1">
+                                <div class="table-wrap">
+                                    <table>
+                                        <caption>알람 테이블</caption>
+                                        <colgroup>
+                                            <col class="wp30"> <!-- 날짜 -->
+                                            <col class="wp45"> <!-- 업체 이름 -->
+                                            <col class="wp25"> <!-- 주문 상태 -->
+                                        </colgroup>
+                                        <thead>
+                                        <tr>
+                                            <th>날 짜</th>
+                                            <th>업체 이름</th>
+                                            <th>주문 상태</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <!-- 알림 데이터가 여기 동적으로 추가됨 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <a href="#" title="확인" class="btn-gray" id="AlarmOk" onclick="AlarmOk()">확인</a>
+                        </div>
+                    </div>
+                    <!-- 알람 -->
+                    <!-- 사용자 로그인 상태-->
+                    <!-- <div id="spjangSelectWrapper">
+                        
+                    </div> -->
+                    <a class="user" title="사용자">
+                        <span style="padding:0 5px">·</span>
+                        <span th:text="${ groupname }"></span>
+                        <span style="padding:0 5px">·</span>
+                        <span id="userName2" th:text="${ username }"></span>
+                        <span>(</span>
+                        <span id="userName3" th:text="${ userid }"></span>
+                        <span>)</span>
+                        <span style="padding-right: 8px">님</span>
+                    </a>
+                    <div class="user-box">
                         <ul>
                             <li>
-                                <img src="/images/icon/ico-umbrella.svg" alt="강수">
-                                <p id="precipitationProbability"></p>
+                                <a id="myinfo" href="#" title="내 정보" data-popup="popup1">내 정보</a>
                             </li>
-                            <li>
-                                <img src="/images/icon/ico-water.svg" alt="습도">
-                                <p id="humidity"></p>
-                            </li>
-                            <li>
-                                <img src="/images/icon/ico-wind.svg" alt="풍속">
-                                <p id="windSpeed"></p>
+                            <li id="logout">
+                                <a href="#" title="로그아웃">로그아웃</a>
                             </li>
                         </ul>
                     </div>
-                </div>
-                <!-- 알람 -->
-                <a href="#" class="alarm" title="알람">
-                    <img src="/images/icon/ico-bell.svg" alt="알람 아이콘">
-                    <span>알람</span>
-                    <span class="num">0</span>
-                </a>
-                <div class="alarm-box" style="width: 1000px;">
-                    <ul class="alarm-tab-links">
-                        <li class="active">
-                            <a href="#alarm-tab1" title="주문의뢰">주문의뢰(0)</a> <!-- 동적으로 업데이트 -->
-                        </li>
-                    </ul>
-                    <div class="alarm-tab-contents">
-                        <div class="alarm-tab-item" id="alarm-tab1">
-                            <div class="table-wrap">
-                                <table>
-                                    <caption>알람 테이블</caption>
-                                    <colgroup>
-                                        <col class="wp30"> <!-- 날짜 -->
-                                        <col class="wp45"> <!-- 업체 이름 -->
-                                        <col class="wp25"> <!-- 주문 상태 -->
-                                    </colgroup>
-                                    <thead>
-                                    <tr>
-                                        <th>날    짜</th>
-                                        <th>업체 이름</th>
-                                        <th>주문 상태</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <!-- 알림 데이터가 여기 동적으로 추가됨 -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <a href="#" title="확인" class="btn-gray" id="AlarmOk" onclick="AlarmOk()">확인</a>
-                    </div>
-                </div>
-                <!-- 알람 -->
-                <!-- 사용자 로그인 상태-->
-                <a class="user" title="사용자">
-                    <span id="spplannm-display"></span>
-                    <span style="padding:0 5px">·</span>
-                    <span>관리자</span>
-                    <span style="padding:0 5px">·</span>
-                    <span id="userName2" th:text="${ username }"></span>
-                    <span>(</span>
-                    <span id="userName3" th:text="${ userid }"></span>
-                    <span>)</span>
-                    <span style="padding-right: 8px">님</span>
-                </a>
-                <div class="user-box">
-                    <ul>
-                        <li id="myinfo">
-                            <a href="#" title="내 정보" data-popup="popup1" onclick="UserInfo()">내 정보</a>
-                        </li>
-                        <li id="logout">
-                            <a href="#" title="로그아웃">로그아웃</a>
-                        </li>
-                    </ul>
                 </div>
             </div>
         </header>
         <!--header [E]-->
     </div>
+
     <div class="menu_area">
         <div class="dashboard-layout-contents">
 
             <!-- [대시보드] 왼쪽 컨텐츠 영역 -->
-                <div class="dashboard-layout-left menu_wrap">
-                    <!-- (레이아웃) 사이드바  -->
-                    <div class="dashboard-layout-sidebar tabs" data-tab="tabWrap">
-                        <ul class="layout-sidebar-tab">
-                            <li class="active">
-                                <a href="#menu" title="전체메뉴">전체 메뉴</a>
-                            </li>
-                            <li>
-                                <a href="#bookmark" title="내메뉴">내 메뉴</a>
-                            </li>
-                        </ul>
-                        <div class="layout-sidebar-tabcont">
-                            <nav class="layout-nav sidebar-tabcont" id="menu">
-                                <ul class="dep1">
-                                    <li class="dep1-1">
-                                        <a href="#a" title="대시보드" class="ico-lnb01">
-                                            대시보드
-                                        </a>
-                                        <ul class="dep2" id="dep2-dashboard">
+            <div class="dashboard-layout-left menu_wrap">
+                <!-- (레이아웃) 사이드바  -->
+                <div class="dashboard-layout-sidebar tabs" data-tab="tabWrap">
+                    <ul class="layout-sidebar-tab">
+                        <li class="active">
+                            <a href="#menu" title="전체메뉴">전체 메뉴</a>
+                        </li>
+                        <li>
+                            <a href="#bookmark" title="내메뉴">내 메뉴</a>
+                        </li>
+                    </ul>
+                    <div class="layout-sidebar-tabcont">
+                        <nav class="layout-nav sidebar-tabcont" id="menu">
+                            <ul class="dep1">
+                                <li class="dep1-1">
+                                    <a href="#a" title="모니터링" class="ico-lnb01">
+                                        모니터링
+                                    </a>
+                                    <ul class="dep2" id="dep2-monitoring">
 
-                                        </ul>
-                                    </li>
-                                    <li class="dep1-1">
-                                        <a href="#a" title="주문등록" class="ico-lnb02">
-                                           주문 등록
-                                        </a>
-                                        <ul class="dep2" id="dep2-order-request">
+                                    </ul>
+                                </li>
+                                <li class="dep1-1">
+                                    <a href="#a" title="주문등록" class="ico-lnb05">
+                                        주문등록
+                                    </a>
+                                    <ul class="dep2" id="dep2-information">
 
-                                        </ul>
-                                    </li>
-                                    <li class="dep1-1">
-                                        <a href="#a" title="주문관리" class="ico-lnb03">
-                                            주문 관리
-                                        </a>
-                                        <ul class="dep2" id="dep2-order-status">
+                                    </ul>
+                                </li>
+                                <li class="dep1-1">
+                                    <a href="#a" title="주문 관리" class="ico-lnb02">
+                                        주문 관리
+                                    </a>
+                                    <ul class="dep2" id="dep2-sales-management">
 
-                                        </ul>
-                                    </li>
-                                    <li class="dep1-1">
-                                        <a href="#a" title="발주관리" class="ico-lnb03">
-                                            발주 관리
-                                        </a>
-                                        <ul class="dep2" id="dep2-wm-balju-order">
+                                    </ul>
+                                </li>
+                                <li class="dep1-1">
+                                    <a href="#a" title="발주 관리" class="ico-lnb03">
+                                        발주 관리
+                                    </a>
+                                    <ul class="dep2" id="dep2-purchase-materials">
 
-                                        </ul>
-                                    </li>
-                                    <li class="dep1-1">
-                                        <a href="#a" title="자재관리" class="ico-lnb04">
-                                            자재 관리
-                                        </a>
-                                        <ul class="dep2" id="dep2-wm-mat-group">
+                                    </ul>
+                                </li>
+                                <li class="dep1-1">
+                                    <a href="#a" title="자재 관리" class="ico-lnb03">
+                                        자재 관리
+                                    </a>
+                                    <ul class="dep2" id="dep2-production-management">
 
-                                        </ul>
-                                    </li>
-                                    <li class="dep1-1">
-                                        <a href="#a" title="시스템설정" class="ico-lnb05">
-                                            시스템 설정
-                                        </a>
-                                        <ul class="dep2" id="dep2-system-settings">
+                                    </ul>
+                                </li>
+                                <li class="dep1-1">
+                                    <a href="#a" title="시스템설정" class="ico-lnb04">
+                                        시스템설정
+                                    </a>
+                                    <ul class="dep2" id="dep2-quality">
 
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </nav> <!-- // nav end -->
-                            <div class="layout-bookmark sidebar-tabcont" id="bookmark">
-                                <ul class="bookmark-list" id="bookmark-menu">
+                                    </ul>
+                                </li> 
+                            </ul>
 
-                                </ul>
-                            </div>
+                        </nav> <!-- // nav end -->
+                        <div class="layout-bookmark sidebar-tabcont" id="bookmark">
+                            <ul class="bookmark-list" id="bookmark-menu">
+
+                            </ul>
                         </div>
-                            <div class="layout-sidebar-bottom">
-                             <!--   <img src="/images/logo/logo-kt.svg" alt="kt logo">-->
-                            </div>
                     </div>
-                </div><!-- //dashboard-layout-left end-->
+                    <div class="layout-sidebar-bottom">
+                        <!--   <img src="/images/logo/logo-kt.svg" alt="kt logo">-->
+                    </div>
+                </div>
+            </div><!-- //dashboard-layout-left end-->
 
             <!-- [대시보드] 오른쪽 컨텐츠 영역 -->
             <!-- //dashboard-layout-right end-->
         </div>
     </div>
-
     <div class="con_area">
-        <!--        <div class="contents">-->
+        <!--      <div class="contents">-->
         <div class="nth-tabs" id="main-tabs"></div>
-        <!--        </div>-->
+        <!--      </div>-->
+    </div>
+
+    <div class="footer">
+        <!--footer [S]-->
+        <span class="footer-left" id="link_privatepolicy" data-commonCd="개인정보 처리방침">개인정보 처리방침</span>
+        <span class="footer-left" id="link_emailreject" data-commonCd="이메일 무단수집 거부">이메일 무단수집 거부</span>
+        <span class="footer-right">Copyright ⓒ (주)엑타스. All Rights Reserved.</span>
+        <!--footer [E]-->
     </div>
 </div>
-
-<!--<div class="footer">-->
-<!--    &lt;!&ndash;footer [S]&ndash;&gt;-->
-<!--&lt;!&ndash;    <span class="footer-left" id="link_privatepolicy" data-commonCd="개인정보 처리방침">개인정보 처리방침</span>&ndash;&gt;-->
-<!--&lt;!&ndash;    <span class="footer-left" id="link_emailreject" data-commonCd="이메일 무단수집 거부">이메일 무단수집 거부</span>&ndash;&gt;-->
-<!--    <span class="footer-right">Copyright ⓒ (주)레플러스. All Rights Reserved.</span>-->
-<!--    &lt;!&ndash;footer [E]&ndash;&gt;-->
-<!--</div>-->
-<div id="overlay"></div>
-<!-- [내정보] 팝업  -->
-<div class="dashboard-layout-popup">
-    <div class="popup-overlay" id="popup1"></div>
-    <div class="popup-wrapper" id="wrapper1">
-        <div class="popup-title">
-            <h3>로그인 정보(내정보)</h3>
-            <a onclick="UserInfoClose()" title="팝업닫기" class="btn-popup-close">
-                <img src="/images/icon/btn-popup-close.svg" alt="닫기">
-            </a>
-        </div>
-        <div class="popup-contents">
-            <form id="userForm" autocomplete="off">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                <div class="table-wrap">
-                    <table class="table">
-                        <caption>사용자정보 테이블</caption>
-                        <colgroup>
-                            <col class="wp20">
-                            <col class="wp30">
-                            <col class="wp20">
-                            <col class="wp30">
-                        </colgroup>
-                        <tbody>
-                        <tr>
-                            <th>
-                                <label for="">
-                                    ID
-                                </label>
-                            </th>
-                            <td colspan="3" style="text-align: left">
-                                <div class="input-clear">
-                                    <input type="text" id="login_id" name="login_id" class="wp50" required
-                                           readonly="readonly"/>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <label for="">
-                                    업체명
-                                </label>
-                            </th>
-                            <td>
-                                <div class="input-clear">
-                                    <input type="text" id="cltnm" name="cltnm">
-                                </div>
-                            </td>
-                            <th>
-                                <label for="">
-                                    대표자
-                                </label>
-                            </th>
-                            <td>
-                                <div class="input-clear">
-                                    <input type="text" id="prenm" name="prenm">
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <label for="">
-                                    업태
-                                </label>
-                            </th>
-                            <td>
-                                <div class="input-clear">
-                                    <input type="text" id="biztypenm" name="biztypenm">
-                                </div>
-                            </td>
-                            <th>
-                                <label for="">
-                                    종목
-                                </label>
-                            </th>
-                            <td>
-                                <div class="input-clear">
-                                    <input type="text" id="bizitemnm" name="bizitemnm">
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>
-                                <label for="">
-                                    전화번호
-                                </label>
-                            </th>
-                            <td>
-                                <div class="input-clear">
-                                    <input type="text" id="tel" name="tel">
-                                </div>
-                            </td>
-                            <th>
-                                <label for="">
-                                    핸드폰
-                                </label>
-                            </th>
-                            <td>
-                                <div class="input-clear">
-                                    <input type="text" id="phone" name="phone">
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><label for="loginPwd">비밀번호</label></th>
-                            <td>
-                                <div class="input-clear">
-                                    <input type="password" class="form-control2" id="loginPwd" name="loginPwd" placeholder="비밀번호" title="" />
-                                </div>
-                            </td>
-                            <th><label for="loginPwd2">비밀번호 확인</label></th>
-                            <td>
-                                <div class="input-clear">
-                                    <input type="password" class="form-control2" id="loginPwd2" name="loginPwd2" placeholder="비밀번호 확인" title="" />
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <th>
-                                <label for="">
-                                    이메일
-                                </label>
-                            </th>
-                            <td>
-                                <div class="input-clear">
-                                    <input type="text" id="email" name="email">
-                                </div>
-                            </td>
-                        </tr>
-                        <th><label for="postno">주소</label></th>
-                        <td colspan="3">
-                            <div class="input-clear">
-                                <input type="text" id="postno" name="postno" placeholder="우편번호" onclick="sample4_execDaumPostcode()" style="width: 85px;">
-                                <input type="text" id="address1" name="address1" placeholder="도로명주소" style="width:250px" readonly>
-                                <input type="text" id="address2" name="address2" placeholder="상세주소">
-                                <span id="guide" style="color:#999;display:none"></span>
-                            </div>
-                        </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </form>
-        </div>
-        <div class="popup-button">
-            <button class="btn-navy" id="btnSaveAuth">수정</button>
-        </div>
-    </div>
-</div> <!-- //dashboard-layout-popup end -->
 
 <script type="text/javascript" src="/resource/jquery.min.js"></script>
 <script type="text/javascript" src="/resource/jquery-validation/1.17.0/jquery.validate.min.js"></script>
@@ -417,147 +305,56 @@
 
 <!-- 메뉴탭 이동 script -->
 <script type="text/javascript" src="/resource/windowContainer/js/html5sortable.js"></script>
-<script type="text/javascript" src="/js/nth-tabs.js"></script>
+<script type="text/javascript" src="/js/nth-tabs.js?v=1030"></script>
 
 <th:block th:replace="system_js :: system_js"></th:block>
 
 <script src="/js/common.js?v=1060"></script>
-<script type="text/javascript" src="/js/yumenu.js?v=1071"></script>
+<script type="text/javascript" src="/js/yumenu.js?v=1070"></script>
 <script type="text/javascript" src="/js/yuscript.js?v=1060"></script>
 <script type="text/javascript" src="/js/ax5commUtil.js?v=1070"></script>
-<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<script>
-    var popupWindow;
-
-    function sample4_execDaumPostcode() {
-        popupWindow = window.open('', 'postcodePopup', 'width=530,height=530');
-        new daum.Postcode({
-            oncomplete: function(data) {
-                // 검색 결과 선택 시 실행할 코드
-                var roadAddr = data.roadAddress;
-                var extraRoadAddr = '';
-
-                if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
-                    extraRoadAddr += data.bname;
-                }
-                if (data.buildingName !== '' && data.apartment === 'Y') {
-                    extraRoadAddr += (extraRoadAddr !== '' ? ', ' + data.buildingName : data.buildingName);
-                }
-                if (extraRoadAddr !== '') {
-                    extraRoadAddr = ' (' + extraRoadAddr + ')';
-                }
-
-                document.getElementById('postno').value = data.zonecode;
-                document.getElementById('address1').value = roadAddr;
-
-                var guideTextBox = document.getElementById("guide");
-                if (data.autoRoadAddress) {
-                    var expRoadAddr = data.autoRoadAddress + extraRoadAddr;
-                    guideTextBox.innerHTML = '(예상 도로명 주소 : ' + expRoadAddr + ')';
-                    guideTextBox.style.display = 'block';
-                } else if (data.autoJibunAddress) {
-                    var expJibunAddr = data.autoJibunAddress;
-                    guideTextBox.innerHTML = '(예상 지번 주소 : ' + expJibunAddr + ')';
-                    guideTextBox.style.display = 'block';
-                } else {
-                    guideTextBox.innerHTML = '';
-                    guideTextBox.style.display = 'none';
-                }
-
-                // 검색 완료 후 팝업 닫기
-                popupWindow.close();
-            }
-        }).embed(popupWindow.document.body);
-    }
-
-</script>
-
 <script type="text/javascript">
     let nthTabs = null;
     let default_menu = null;
 
-    window.onload = function () {
-       /* // 사용자 이름 마스킹 처리
-        var userNameSpan = document.getElementById('userName2');
-        var userName = userNameSpan.textContent;
-        if (userName.length > 1) {
-            userNameSpan.textContent = userName.substring(0, userName.length - 0) + '*';
-        }*/
-
-        // 사용자 ID 마스킹 처리
-        var userIdSpan = document.getElementById('userName3');
-        var userId = userIdSpan.textContent;
-        if (userId.length > 3) {
-            userIdSpan.textContent = userId.substring(0, userId.length - 3) + '***';
-        }
-
-        const spplannmDisplay = document.getElementById('spplannm-display');
-
-        if (spplannmDisplay) {
-            spplannmDisplay.textContent = sessionStorage.updatedSpplannm;
-        }
-
-    };
-
-    window.addEventListener('storage', function (event) {
-        // 변경된 key가 'updatedSpplannm'인지 확인
-        const spplannmDisplay = document.getElementById('spplannm-display');
-
-        if (spplannmDisplay) {
-            spplannmDisplay.textContent = sessionStorage.updatedSpplannm;
-        }
-
-    });
-
-    window.addEventListener('message', function (event) {
-        if (event.data === 'centerPopup') {
-            // 팝업을 화면 중앙에 위치시키는 로직
-            const iframe = document.querySelector('iframe'); // iframe 요소 선택
-            const popup = iframe.contentWindow.document.querySelector('.ax5-ui-dialog'); // iframe 내 팝업 선택
-
-            if (popup) {
-                // 화면의 중앙 위치 계산
-                const windowWidth = window.innerWidth;
-                const windowHeight = window.innerHeight;
-                const popupWidth = popup.offsetWidth;
-                const popupHeight = popup.offsetHeight;
-
-                // 중앙으로 이동시키는 CSS 설정
-                popup.style.position = 'fixed';
-                popup.style.top = `${(windowHeight - popupHeight) / 2}px`;
-                popup.style.left = `${(windowWidth - popupWidth) / 2}px`;
-            }
-        }
-    });
-
-
     $(document).ready(function () {
 
-        //로그 클릭 탭 지우기
-        $(".index").click(function () {
+        $(".left").click(function () {
             nthTabs.delAllTab();
+            // window.location.reload();
         });
 
+
+        // let lang_cd = i18n.getLanguageCode();
+        //i18n.initializeCommonData(lang_cd);
+        // i18n.initializeMenuData(lang_cd);
+
         // 메뉴 매핑(FrontFolder_id)
-        const dep2Mappings = {
-            1: '#dep2-dashboard',  //대시보드
-            2: '#dep2-order-request',  //주문등록
-            3: '#dep2-order-status',    // 주문현황
-            4: '#dep2-wm-balju-order',// 발주관리
-            5: '#dep2-wm-mat-group',// 재고관리
-            6: '#dep2-system-settings'
-        };
+
         nthTabs = $('#main-tabs').nthTabs();
 
-        function loadMenu(FrontFolderId, $FrontFolderElement) {
+        const dep2Mappings = {
+            1: '#dep2-monitoring',
+            2: '#dep2-information',
+            3: '#dep2-sales-management',
+            4: '#dep2-purchase-materials',
+            5: '#dep2-production-management',
+            6: '#dep2-quality',
+            7: '#dep2-report',
+            8: '#dep2-transaction',
+            9: '#dep2-system-settings',
+            10: '#dep2-clock-inout',
+            12: '#dep2-approval'
+        };
 
+        function loadMenu(FrontFolderId, $FrontFolderElement) {
             $.ajax({
                 url: '/api/system/menus', // menus API를 통해 전체 메뉴 데이터를 가져옴
                 type: 'GET',
                 success: function (response) {
-
                     // FrontFolder_id를 기반으로 폴더 필터링
                     const folders = response.data.filter(folder => folder.frontfolder_id === parseInt(FrontFolderId));
+
                     if (folders.length > 0) {
                         // 해당 FrontFolderId에 해당하는 폴더가 있으면 대 메뉴를 다시 보여줌
                         $FrontFolderElement.closest('.dep1-1').css('display', 'block');
@@ -642,18 +439,16 @@
 
                             if (nthTabs.isExistsTab('#' + objid)) {
                                 nthTabs.toggleTab('#' + objid);
-                                console.log("if");
                             } else {
-                                console.log("else");
                                 nthTabs.addTab({
                                     id: objid,
                                     title: val,
                                     url: '/gui/' + objid + '/default',
                                     active: true,
                                     allowClose: true,
-                                    // isbookmark: _bookmark
+                                    isbookmark: _bookmark
                                 });
-                                // nthTabs.bindBookmarkEvent(objid, _bookmark);
+                                nthTabs.bindBookmarkEvent(objid, _bookmark);
                             }
                         });
                     }
@@ -661,34 +456,47 @@
             });
         }
 
-        // 폴더
+
         Object.keys(dep2Mappings).forEach(FrontFolderId => {
             loadMenu(FrontFolderId, $(dep2Mappings[FrontFolderId]));
+        });
+
+
+        $('#navbarBarMenu2 .open_menu').click(function () {
+            $(this).toggleClass('menu_open'); // 메뉴 숨김 토글
+
+            $('.menu_area').toggleClass('hidden');
+            const isMenuHidden = $('.menu_area').hasClass('hidden');
+
+            $('.con_area, .tab-content').css({
+                'width': isMenuHidden ? '100%' : 'calc(100% - 250px)', // 메뉴가 닫히면 전체 확장
+                'left': isMenuHidden ? '0' : '250px' // 왼쪽으로 확장
+            });
         });
 
         // 북마크 및 default_menu를 한 번에 처리
         $.getJSON('/api/system/bookmark', function (result) {
             let _data = result.data;
             var litagbook = '';
-        
+
             // 북마크 메뉴 생성
             for (var i = 0; i < _data.length; i++) {
                 litagbook += '<li><a href="#" data-objid="' + _data[i].code + '" menuurl="' + _data[i].url + '">' + i18n.getMenuText(_data[i].name) + '</a></li>';
             }
-        
+
             $('#bookmark-menu').html(litagbook);
-        
+
             // 클릭 이벤트 바인딩
             $('#bookmark-menu').on('click', 'a', function (e) {
                 e.preventDefault();
                 $('#bookmark-menu li').removeClass('on');
                 $(this).parent('li').addClass('on');
-        
+
                 var val = $(this).text();
                 var menuurl = $(this).attr('menuurl');
                 var objid = $(this).attr('data-objid');
                 var _bookmark = 'true';
-        
+
                 if (nthTabs.isExistsTab('#' + objid)) {
                     nthTabs.toggleTab('#' + objid);
                 } else {
@@ -735,6 +543,79 @@
 
 
         $('.scrollbar-inner').scrollbar();
+        //
+        // var parentClass = $(this).parent('li');
+        // if (!$(this).hasClass('on')) {
+        //     $('.documents a').removeClass('on');
+        //     $(this).addClass('on');
+        // }
+        // if (parentClass.attr('class') == 'documents') {
+        //     $('.gnb li').removeClass('open');
+        //     $('.gnb li > ul').slideUp(100);
+        // }
+        // if (localStorage.getItem('theme-top') === null && localStorage.getItem('theme-left') === null) {
+        //     dynamicLinkCss('/css/theme-top-mes', '/css/theme-left-mes');
+        // } else {
+        //     dynamicLinkCss(localStorage.getItem('theme-top'), localStorage.getItem('theme-left'));
+        // }
+
+        //let _mainUrl = 'wm_dashboard_summary';
+        // let _mainUrl = default_menu;
+        // // 모바일 구분
+        // if ('B' == 'F') {
+        //     _mainUrl = '#OBJ0000000199';
+        //     $('#navbarBarMenu1').show();
+        //     $('#navbarBarMenu2').hide();
+        //     $('.menu_wrap').addClass('mobile_menu_wrap');
+        //     $('.menu_area').addClass('mobile_menu_area');
+        //     $('.con_area').addClass('mobile_con_area');
+        // } else {
+        //     $('#navbarBarMenu1').hide();
+        //     $('#navbarBarMenu2').show();
+        // }
+        //
+        // // 메뉴 자동으로 닫히게
+        // if ($(window).innerWidth() < 800) {
+        //     $('body').addClass('open');
+        //     $('.wrap').addClass('menu_close');
+        //     $('.con_area').addClass('open');
+        // }
+        //
+        // var jsmedia = window.matchMedia("screen and (max-width:799px)");
+        // jsmedia.addListener(function (e) {
+        //     if (e.matches) {
+        //         $('body').addClass('open');
+        //         $('.wrap').addClass('menu_close');
+        //         $('.con_area').addClass('open');
+        //         $('.menu_wrap').addClass('mobile_menu_wrap');
+        //         $('.menu_area').addClass('mobile_menu_area');
+        //         $('.con_area').addClass('mobile_con_area');
+        //     } else {
+        //         $('body').removeClass('open');
+        //         $('.wrap').removeClass('menu_close');
+        //         $('.con_area').removeClass('open');
+        //         $('.menu_wrap').removeClass('mobile_menu_wrap');
+        //         $('.menu_area').removeClass('mobile_menu_area');
+        //         $('.con_area').removeClass('mobile_con_area');
+        //     }
+        // });
+        //
+        // //$('#mainlogotitle').text("");
+        // $('#mainlogotitle').on('click', function () {
+        //     nthTabs.toggleTab(_mainUrl);
+        // });
+        //
+        // //menu slide(left open)
+        // $('.open_menu').click(function () {
+        //     $(this).toggleClass('menu_close');
+        //     $('.wrap').toggleClass('menu_close');
+        // });
+        // //menu slide(left open)
+        // $('.open_menu').click(function () {
+        //     $('.con_area').toggleClass('open');
+        //     $('.left_area').toggleClass('open');
+        //     $('body').toggleClass('open');
+        // });
 
         // TAB메뉴 Context Menu
         $('#tabdragdrop').on('contextmenu', 'li', function (e) {
@@ -780,21 +661,7 @@
             });
         });
 
-        window.addEventListener("message", function(event) {
-            if (event.data.action === "addTab") {
-                if (nthTabs.isExistsTab('#' + event.data.id)) {
-                    nthTabs.toggleTab('#' + event.data.id);
-                } else {
-                    nthTabs.addTab({
-                        id: event.data.id,
-                        title: event.data.title,
-                        url: event.data.url,
-                        active: event.data.active,
-                        allowClose: event.data.allowClose
-                    });
-                }
-            }
-        });
+
         // CR = String.fromCharCode(10);
         // let notify_list = notify_text.split(CR);
         //
@@ -809,177 +676,77 @@
         //     $('#notify_text').text(notify_text);
         //     notify_index++;
         // }, 5000);
+        //
+        // // 내정보 클릭
+        $('#myinfo').on('click', function (e) {
+            e.preventDefault();
+            Ax5Modal.open({url: '/page/account/myinfo', width: 400, height: 380});
+            $(".profile_contbox").hide();
+        });
+        //
+        // // 언어설정
+        // $('#myLanguage').on('click', function (e) {
+        //     e.preventDefault();
+        //     Ax5Modal.open({url: '/page/account/language', width: 400, height: 200});
+        //     $(".profile_contbox").hide();
+        // });
+        //
+        // // 테마변경
+        // $('.setting-color > label').on('click', function (e) {
+        //     dynamicLinkCss($(this).data('load-top-css'), $(this).data('load-left-css'));
+        // });
+        //
+        // // 개인정보 처리방침 클릭
+        // $('#link_privatepolicy').on('click', function (e) {
+        //     Ax5Modal.open({url: '/page/popup/privacy_policy', width: 800, height: 200});
+        // });
+        //
+        // // 이메일 무단수집 거부 클릭
+        // $('#link_emailreject').on('click', function (e) {
+        //     Ax5Modal.open({url: '/page/popup/email_unauthorized_collection_policy', width: 800, height: 400});
+        // });
 
+        // 오픈소스 사용공지 필요
     });
-</script>
-<script type="text/javascript">
-    //알람
-    function loadNotifications() {
-        $.ajax({
-            url: '/api/Alarm/notifications',
-            method: 'GET',
-            success: function (response) {
-                if (response.success && Array.isArray(response.data) && response.data.length > 0) {
-                    const alarmCount = response.data.length; // 알람 개수
-                    updateAlarmCount(alarmCount); // 알람 카운트 업데이트
-                    updateAlarmTab(response.data); // 알람 탭 업데이트
-                    renderNotifications(response.data); // 알람 내용 렌더링
-                } else {
-                    console.log("표시할 알람이 없습니다.");
-                    updateAlarmCount(''); // 알람이 없을 때 카운트 0으로 설정
-                    clearNotifications(); // 알람 UI 초기화
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("알람 데이터를 가져오는 중 오류 발생:", error);
-            }
-        });
-    }
-
-    // 알람 카운트를 업데이트하는 함수
-    function updateAlarmCount(count) {
-        const alarmNumElement = document.querySelector('.num');
-        if (alarmNumElement) {
-            alarmNumElement.textContent = count; // 알람 개수 설정
-        }
-    }
-    // 알람 탭 업데이트
-    function updateAlarmTab(data) {
-        const alarmCount = data.length;
-        const alarmTab = document.querySelector('.alarm-tab-links a');
-        if (alarmTab) {
-            alarmTab.innerHTML = `주문의뢰(${alarmCount})`;
-        }
-    }
-
-    // 알람 내용 렌더링
-    function renderNotifications(data) {
-        const tableBody = document.querySelector('.alarm-tab-contents tbody');
-        if (!tableBody) return;
-
-        tableBody.innerHTML = ''; // 기존 데이터 초기화
-
-        data.forEach(item => {
-            const row = `
-            <tr>
-                <td>${item.alert_date || '날짜 없음'}</td>
-                <td>${item.cltnm || '업체명 없음'}</td>
-                <td>${getOrdflagText(item.ordflag)}</td>
-            </tr>`;
-            tableBody.insertAdjacentHTML('beforeend', row);
-        });
-    }
-
-    // ordflag 값을 텍스트로 변환하는 함수
-    function getOrdflagText(ordflag) {
-        switch (parseInt(ordflag, 10)) { // ordflag를 숫자로 변환
-            case 0:
-                return "주문등록";
-            case 1:
-                return "주문확인";
-            case 2:
-                return "주문확정";
-            case 3:
-                return "제작진행";
-            case 4:
-                return "출고";
-            case 5:
-                return "주문 취소";
-            default:
-                return "상태 없음"; // 기본 값
-        }
-    }
-
-    // 알람 UI 초기화
-    function clearNotifications() {
-        const alarmTab = document.querySelector('.alarm-tab-links a');
-        if (alarmTab) {
-            alarmTab.innerHTML = '주문의뢰(0)';
-        }
-
-        const tableBody = document.querySelector('.alarm-tab-contents tbody');
-        if (tableBody) {
-            tableBody.innerHTML = '<tr><td colspan="3">알람이 없습니다.</td></tr>';
-        }
-    }
-
-    // 초기 실행
-    document.addEventListener('DOMContentLoaded', loadNotifications);
-
-    function AlarmOk() {
-        /*// 기본 동작 방지
-        event.preventDefault();*/
-        const csrfToken = $('input[name="_csrf"]').val();
-        // 서버로 알람 확인 요청
-        $.ajax({
-            url: '/api/Alarm/markAsRead',
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken // CSRF 토큰 추가
-            },
-            success: function (response) {
-                if (response.success) {
-                    Alert.alert('',"알람이 확인되었습니다.");
-                    // 알람 카운트를 0으로 초기화
-                    document.querySelector('.num').textContent = '0';
-                    document.querySelector('.alarm-tab-links a').textContent = '주문의뢰(0)';
-                    // 알람 내용을 초기화
-                    clearNotifications();
-                } else {
-                    Alert.alert('',"알람 확인 처리 중 오류가 발생했습니다.");
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("알람 확인 요청 중 오류 발생:", error);
-                Alert.alert('',"알람 확인 요청 처리 중 오류가 발생했습니다.");
-            }
-        });
-    }
-
-    //일반 거래처  알람 표지 숨기기
-    function checkUserRole() {
-        $.ajax({
-            url: '/api/Alarm/role', // 사용자 역할을 가져오는 API
-            type: 'GET',
-            success: function (response) {
-                console.log("사용자 역할 확인 응답:", response);
-
-                // role_id 또는 role 값을 확인하여 일반 거래처인지 판단
-                if (response.role_id === 35 || response.role === "general_client") {
-                    console.log("일반 거래처이므로 알람을 숨깁니다.");
-
-                    // 알람 UI 숨기기
-                    document.querySelector(".alarm").style.display = "none";
-                } else {
-                    console.log("관리자 또는 담당자이므로 알람 표시");
-                    loadNotifications(); // 알람 데이터 불러오기
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("사용자 역할 확인 중 오류 발생:", error);
-                alert("서버와의 통신 중 오류가 발생했습니다.");
-            }
-        });
-    }
-
-    // 페이지 로드 시 실행
-    document.addEventListener("DOMContentLoaded", checkUserRole);
-
 
 </script>
 
 <script type="text/javascript">
     // 날씨 정보
     fetchWeatherData();
+
+
+    function sseConnect(){
+
+        const spjangcd = sessionStorage.getItem("spjangcd");
+
+        const eventSource = new EventSource("/sse/subscribe?spjangcd="  + spjangcd);
+
+        eventSource.onmessage = function (e){
+
+            if(e.data){
+                Notify.success(e.data);
+
+            }
+
+        }
+
+        eventSource.onerror = function(err) {
+            console.log('SSE 오류 발생, 재연결 시도 중...', err);
+            eventSource.close();
+            setTimeout(sseConnect, 3000);
+        };
+    }
+    sseConnect();
+
     // 날씨 정보를 서버에서 가져오는 함수
-   function fetchWeatherData() {
+    function fetchWeatherData() {
         $.ajax({
             url: '/weather/current',
             type: 'GET',
             dataType: 'json',
             success: function (data) {
-                // JSON 데이터 구조를 이용하여 각 항목에 대한 값을 추출
-                console.log(data); // 반환된 데이터를 콘솔에 출력
+                // JSON 데이터 구조를 이용하여 각 항목에 대한 값을 추출 
                 const fullAddress = data.address;
                 const shortAddress = fullAddress.split(" ")[0] + " " + fullAddress.split(" ")[1] + " " + fullAddress.split(" ")[2];
                 $('#area').text(shortAddress); // 지역 정보 표시
@@ -996,6 +763,7 @@
             }
         });
     }
+
     // 날씨 아이콘 업데이트 함수
     function updateWeatherIcon(skyValue, ptyValue) {
         // console.log("PTY Value:", ptyValue);
@@ -1034,303 +802,78 @@
         weatherIcon.attr('alt', altText);
 
     }
-</script>
 
-<script type="text/javascript">
- 
-    function deleteSelectField(inputField) {
-        // 입력 필드의 부모 요소(td)를 찾아서 삭제합니다.
-        var tdToDelete = inputField.parentElement;
-        tdToDelete.parentElement.removeChild(tdToDelete);
-    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const wrapper = document.getElementById('spjangSelectWrapper');
+        const savedSpjangcd = sessionStorage.getItem('spjangcd');
+        const select = document.createElement('select');
 
+        select.id = 'spjangcd';
+        select.name = 'spjangcd';
+        select.classList.add('select-no-border');
 
-    function updateNextSelect(param) {
-        let code = param.value;
-        let value = param.options[param.selectedIndex].text;
+        // 디폴트로 선택할 spjangcd 값
+        let defaultSpjangcd = null;
 
-        console.log(code);
-        console.log(value);
-
-        // param의 다음 형제 요소를 찾습니다.
-        let nextSelect = $(param).next('select');
-
-        if (nextSelect.length) {
-            let nextSelectId = nextSelect.attr('id');
-
-            $.ajax({
-                url: '/user-codes/code',
-                type: 'GET',
-                data: {code: code, value: value},
-                success: function (data) {
-                    nextSelect.empty();
-                    nextSelect.append('<option value="">선택하세요</option>');
-                    data.forEach(function (item) {
-                        nextSelect.append('<option value="' + item.code + '">' + item.value + '</option>');
-                    });
-                },
-                error: function (xhr, status, error) {
-                    // 통신 실패 시 처리
-
-                    // 선택 옵션을 비우거나 기본 옵션을 설정할 수 있습니다.
-                    nextSelect.empty();
-                    nextSelect.append('<option value=""></option>');
-                }
-            });
-        } else {
-            console.error('다음 select 요소를 찾을 수 없습니다.');
-        }
-    }
-
-    //내정보 클릭 함수
-    function UserInfo() {
-        const popup = document.getElementById('popup1');
-        const wrapper = document.getElementById('wrapper1');
-
-        $.ajax({
-            url: '/account/myinfo', // 사용자 정보를 가져올 URL
-            type: 'GET',
-            dataType: 'json', // 응답 데이터 형식 지정
-            success: function (response) {
-                // AJAX 호출 성공 시 처리할 로직
-                if (response && response.data) {
-                    // 응답 데이터를 폼 필드에 채우기
-                    $('#login_id').val(response.data.login_id || ''); // ID
-                    $('#prenm').val(response.data.prenm || ''); // 대표자 이름
-                    $('#email').val(response.data.email || ''); // 이메일
-                    $('#cltnm').val(response.data.cltnm || ''); // 업체명
-                    $('#biztypenm').val(response.data.biztypenm || ''); // 업태
-                    $('#bizitemnm').val(response.data.bizitemnm || ''); // 종목
-                    $('#loginPwd').val(response.data.loginPwd || '');
-                    $('#tel').val(response.data.tel || ''); // 전화번호
-                    $('#phone').val(response.data.phone || ''); // 핸드폰
-                    $('#postno').val(response.data.postno || ''); // 우편번호
-                    $('#address1').val(response.data.address1 || ''); // 도로명 주소
-                    $('#address2').val(response.data.address2 || ''); // 상세 주소
-                    // 비밀번호 필드 마스킹
-                    $('#loginPwd').val('*****');
-                }
-                console.log('사용자 정보 가져오기 성공: ', response);
-            },
-            error: function (xhr, status, error) {
-                // AJAX 호출 실패 시 처리할 로직
-                console.error('사용자 정보 가져오기 실패: ', error);
+        if (!savedSpjangcd && spjangList.length >= 2) {
+            const zzItem = spjangList.find(item => item.spjangcd === 'ZZ');
+            if (zzItem) {
+                defaultSpjangcd = 'ZZ';
+                sessionStorage.setItem('spjangcd', 'ZZ');
             }
-        });
-
-        // 팝업 표시
-        popup.style.display = 'block';
-        wrapper.style.display = 'block';
-    }
-
-    function UserInfoClose() {
-        let popup = document.getElementById('popup1');
-        let wrapper = document.getElementById('wrapper1');
-
-        popup.style.display = 'none';
-        wrapper.style.display = 'none';
-
-        let loginPwd2 = document.getElementById('loginPwd2');
-        loginPwd2.value = '';
-    }
-
-    //내정보 수정
-    $(document).ready(function () {
-        const csrfToken = $('input[name="_csrf"]').val(); // CSRF 토큰 가져오기
-
-        function validatePasswordPolicy(password) {
-            const passOption = {
-                length: [8, 20],
-                lower: 1,
-                upper: 1,
-                numeric: 1,
-                special: 1,
-                badWords: [],
-                badSequenceLength: 3,
-                noQwertySequences: true,
-                noSequential: true
-            };
-
-            return validatePassword(password, passOption);
         }
 
-        //내정보 수정
-        function saveUserInfo() {
-            const data = {
-                login_id: $('#login_id').val().trim(),
-                prenm: $('#prenm').val().trim(),
-                email: $('#email').val().trim(),
-                cltnm: $('#cltnm').val().trim(),
-                biztypenm: $('#biztypenm').val().trim(),
-                bizitemnm: $('#bizitemnm').val().trim(),
-                tel: $('#tel').val().trim(),
-                phone: $('#phone').val().trim(),
-                postno: $('#postno').val().trim(),
-                address1: $('#address1').val().trim(),
-                address2: $('#address2').val().trim(),
-            };
+        spjangList.forEach((item, index) => {
+            const option = document.createElement('option');
+            option.value = item.spjangcd;
+            option.textContent = item.spjangnm;
 
-            if ($('#loginPwd').val() !== '') {
-                const password = $('#loginPwd').val();
-                const confirmPassword = $('#loginPwd2').val();
-
-                if (!validatePasswordPolicy(password)) {
-                    Alert.alert('', '패스워드 정책을 위반했습니다. 요구 사항을 확인하세요.');
-                    return;
-                }
-
-                if (password !== confirmPassword) {
-                    Alert.alert('', '패스워드가 일치하지 않습니다.', function () {
-                        $('#loginPwd2').focus();
-                    });
-                    return;
-                }
-
-                data.password = password; // 비밀번호를 데이터에 추가
+            if (savedSpjangcd) {
+                option.selected = (item.spjangcd === savedSpjangcd);
+            } else if (defaultSpjangcd) {
+                option.selected = (item.spjangcd === defaultSpjangcd);
+            } else if (index === 0) {
+                option.selected = true;
+                sessionStorage.setItem('spjangcd', item.spjangcd); // 첫 항목 저장
             }
 
-            console.log("보낼 데이터:", JSON.stringify(data, null, 2));
-
-            $.ajax({
-                url: '/account/updateUserInfo',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken // CSRF 토큰 추가
-                },
-                success: function (response) {
-                    if (response.success) {
-                        Alert.alert('', '정보가 성공적으로 수정되었습니다.', function () {
-                            UserInfoClose(); // 팝업 닫기
-                            location.reload(); // 페이지 새로고침
-                        });
-                    } else {
-                        Alert.alert('', response.message || '정보 수정에 실패했습니다.');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('정보 수정 중 오류 발생: ', error);
-                    Alert.alert('', '서버와의 통신 중 오류가 발생했습니다.');
-                }
-            });
-        }
-
-        $('#btnSaveAuth').on('click', function () {
-            saveUserInfo();
+            select.appendChild(option);
         });
 
-        $('#userForm').validate({
-            submitHandler: function () {
-                saveUserInfo();
-            }
+        select.addEventListener('change', function () {
+            sessionStorage.setItem('spjangcd', this.value);
+            window.location.reload();
         });
+
+        wrapper.appendChild(select);
     });
 
-
-    function initializeSelect({
-                                  url,               // API 엔드포인트 URL
-                                  params = {},       // 요청 매개변수 (기본값은 빈 객체)
-                                  elementId,         // 셀렉트 요소의 ID
-                                  defaultOption = "선택하세요",  // 기본 옵션 텍스트
-                                  valueField = "code",    // 데이터의 값 필드 이름
-                                  textField = "value"     // 데이터의 표시 필드 이름
-                              }) {
-        $.get(url, params, function (data) {
-            let selectElement = $(`#${elementId}`);
-            selectElement.empty();
-            selectElement.append(`<option value="">${defaultOption}</option>`);
-            data.forEach(function (item) {
-                selectElement.append(`<option value="${item[valueField]}">${item[textField]}</option>`);
-            });
-        });
-    }
-
-
 </script>
 
-<script type="text/javascript">
-    var isChangeLang = 'N';
-
-
-    $(document).ready(function () {
-
-
-        initializeSelect({
-            url: '/user-codes/parent',
-            params: {parentId: 154},
-            elementId: 'agency'
-        })
-
-        initializeSelect({
-            url: '/user-codes/parent',
-            params: {parentId: 110},
-            elementId: 'firstSelect'
-        })
-
-        // let AuthCode = false;
-
-        // let _csrf = document.getElementsByName('_csrf');
-
-        // console.log(_csrf);
-
-
-        // let _CsrfValue = _csrf[0].value;
-
-
-        // if (localStorage.getItem('theme-top') === null && localStorage.getItem('theme-left') === null) {
-        //     dynamicLinkCss('/css/theme-top-a', '/css/theme-left-a');
-        // } else {
-        //     dynamicLinkCss(localStorage.getItem('theme-top'), localStorage.getItem('theme-left'));
-        // }
-
-
-       /* $('#loginFrm').validate({submitHandler: submitHandler});*/
-
-    });
-
-</script>/api/order_status
-<script type="text/javascript">
-    function isAdmin() {
-        $.ajax({
-            url: '/api/order_status/isAdmin',
-            type: 'GET',
-            success: function (response) {
-                console.log("response : ", response);
-
-                // '관리자' 텍스트를 포함하는 span 요소를 선택
-                const spans = document.querySelectorAll('.user span');
-
-                // '관리자' 및 관련된 "·" 요소를 숨김
-                spans.forEach((span, index) => {
-                    if (span.textContent.trim() === '관리자') {
-                        if (response.data !== 'admin') {
-                            // 숨김 처리
-                            span.style.display = 'none';
-
-                            // 이전 또는 다음 요소가 "·"일 경우 함께 숨김
-                            if (spans[index - 1]?.textContent.trim() === '·') {
-                                spans[index - 1].style.display = 'none';
-                            }
-                            if (spans[index + 1]?.textContent.trim() === '·') {
-                                spans[index + 1].style.display = 'none';
-                            }
-                        }
-                    }
-                });
-            },
-            error: function (xhr, status, error) {
-                console.error('사용자 관리자 여부 파악 중 오류 발생: ', error);
-                alert('서버와의 통신 중 오류가 발생했습니다.');
-            }
-        });
-    }
-
-
-    // 초기 실행
-    document.addEventListener('DOMContentLoaded', isAdmin);
-
-</script>
 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+<style>
+    .select-no-border {
+        font-size: 14px;
+        width: 110px;
+        max-width: 110px;
+        padding: 0 10px;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        appearance: none;
+        border-bottom: 1px solid;
+        border-radius: 0;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+    }
+
+    /* 포커스 시 은은한 회색 테두리 */
+    .select-no-border:focus {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        outline: none;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+    }
+</style>
 </body>
 </html>

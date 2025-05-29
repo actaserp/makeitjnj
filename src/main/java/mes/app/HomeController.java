@@ -56,7 +56,7 @@ public class HomeController {
 
         SystemOption sysOpt= this.systemOptionRepository.getByCode("LOGO_TITLE");
         String logoTitle = sysOpt.getValue();
-        
+		logoTitle = "제이앤제이 주문시스템";
         //q = this.systemOptionRepository.getByCode("main_menu");        
 
 

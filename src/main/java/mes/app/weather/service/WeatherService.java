@@ -93,12 +93,11 @@ public class WeatherService {
 		}*/
 		// 사용자 주소를 가져오기
 		String address = tbXClientService.getUserAddress(userId);
-
 		// 특정 사용자에 대해 대체 주소 가져오기
 		if (address == null || address.isEmpty()) {
 			address = fetchAlternativeAddress(userId); // 대체 소스에서 주소를 가져오기
 		}
-
+//		System.out.println("address222..." + address);
 		// 주소가 여전히 유효하지 않으면 오류 반환
 		if (address == null || address.isEmpty()) {
 			return ResponseEntity.badRequest().body("주소가 유효하지 않습니다.");
@@ -112,8 +111,8 @@ public class WeatherService {
 		double[] coordinates = getCoordinates(address, geocoderKey);
 		double latitude = coordinates[0]; // 위도
 		double longitude = coordinates[1]; // 경도
-		/*System.out.println("Latitude (위도): " + coordinates[0]);
-		System.out.println("Longitude (경도): " + coordinates[1]);*/
+		 System.out.println("Latitude (위도): " + coordinates[0]);
+		System.out.println("Longitude (경도): " + coordinates[1]);
 
 		// 초단기실황 조회
 		ResponseEntity<?> currentWeather = fetchWeatherData("/getUltraSrtNcst", date, time, "current", latitude, longitude);
@@ -124,7 +123,7 @@ public class WeatherService {
 	}
 
 	private String fetchAlternativeAddress(String username) {
-		if (username.equalsIgnoreCase("seong")) {
+		if (username.equalsIgnoreCase("admin")) {
 			return fetchAddressFromTbXa012(username); // TB_XA012 테이블에서 주소를 조회
 		}
 		return null; // 조건에 맞지 않으면 null 반환
@@ -133,7 +132,6 @@ public class WeatherService {
 	private String fetchAddressFromTbXa012(String username) {
 		// tbXClientService를 통해 주소 조회
 		String address = tbXClientService.getTbXa012Address();
-
 		// 주소가 null이거나 비어 있으면 처리
 		if (address == null || address.isEmpty()) {
 			return null;
