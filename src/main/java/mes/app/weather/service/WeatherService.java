@@ -51,7 +51,8 @@ public class WeatherService {
 	@Autowired
 	TB_XA012Repository tbXA012Repository;
 
-
+	@Autowired
+	TB_xusersService xusersService;
 
 /*	❍단기예보
 - Base_time : 0200, 0500, 0800, 1100, 1400, 1700, 2000, 2300 (1일 8회)
@@ -85,20 +86,8 @@ public class WeatherService {
 	// getWeatherData 메서드 내에서 fetchWeatherData 호출 시 latitude와 longitude를 인자로 전달
 	public ResponseEntity<?> getWeatherData(String userId){
 
-	/*	// 사용자 주소를 가져오기
-		String address = tbXClientService.getUserAddress(userId);
-//		System.out.println("조회된 사용자 주소: " + address);
-		if (address == null || address.isEmpty()) {
-			return ResponseEntity.badRequest().body("주소가 유효하지 않습니다.");
-		}*/
-		// 사용자 주소를 가져오기
-		String address = tbXClientService.getUserAddress(userId);
-		// 특정 사용자에 대해 대체 주소 가져오기
-		if (address == null || address.isEmpty()) {
-			address = fetchAlternativeAddress(userId); // 대체 소스에서 주소를 가져오기
-		}
-//		System.out.println("address222..." + address);
-		// 주소가 여전히 유효하지 않으면 오류 반환
+		// 사용자 주소를 가져오기(사업장 주소 사용)
+		String address = xusersService.getUserAddress(userId);
 		if (address == null || address.isEmpty()) {
 			return ResponseEntity.badRequest().body("주소가 유효하지 않습니다.");
 		}
@@ -111,8 +100,8 @@ public class WeatherService {
 		double[] coordinates = getCoordinates(address, geocoderKey);
 		double latitude = coordinates[0]; // 위도
 		double longitude = coordinates[1]; // 경도
-		 System.out.println("Latitude (위도): " + coordinates[0]);
-		System.out.println("Longitude (경도): " + coordinates[1]);
+		/*System.out.println("Latitude (위도): " + coordinates[0]);
+		System.out.println("Longitude (경도): " + coordinates[1]);*/
 
 		// 초단기실황 조회
 		ResponseEntity<?> currentWeather = fetchWeatherData("/getUltraSrtNcst", date, time, "current", latitude, longitude);
@@ -196,7 +185,7 @@ public class WeatherService {
 			URI uri = new URI(apiEndpoint + servicePath +
 					"?serviceKey=" + apiKey +
 					"&pageNo=1" +
-					"&numOfRows=10" +
+					"&numOfRows=100" +
 					"&dataType=json" +
 					"&base_date=" + date +
 					"&base_time=" + time +
@@ -225,7 +214,7 @@ public class WeatherService {
 			uri = new URI(apiEndpoint + servicePath +
 					"?serviceKey=" + apiKey +
 					"&pageNo=1" +
-					"&numOfRows=10" +
+					"&numOfRows=100" +
 					"&dataType=json" +
 					"&base_date=" + date +
 					"&base_time=" + time +
@@ -274,8 +263,15 @@ public class WeatherService {
 	}
 
 	private ResponseEntity<?> combineData(ResponseEntity<?> weatherData, ResponseEntity<?> forecastData, String address) {
-		Map<String, String> weatherResult = (Map<String, String>) weatherData.getBody();
-		Map<String, String> forecastResult = (Map<String, String>) forecastData.getBody();
+		Object body1 = weatherData.getBody();
+		Object body2 = forecastData.getBody();
+
+		if (!(body1 instanceof Map) || !(body2 instanceof Map)) {
+			return ResponseEntity.badRequest().body("날씨 데이터 파싱 실패 또는 응답 오류 발생");
+		}
+
+		Map<String, String> weatherResult = (Map<String, String>) body1;
+		Map<String, String> forecastResult = (Map<String, String>) body2;
 
 		// 예보 데이터와 실황 데이터를 병합
 		forecastResult.forEach((key, value) -> {
@@ -287,12 +283,10 @@ public class WeatherService {
 				weatherResult.put(key, value);
 			}
 		});
-		// 주소 추가
+
 		weatherResult.put("address", address);
-		//System.out.println("최종 응답 데이터: " + weatherResult);
 		return ResponseEntity.ok(weatherResult);
 	}
-
 
 	// 좌표를 얻기 위한 메서드
 	private double[] getCoordinates(String address, String apikey) {
