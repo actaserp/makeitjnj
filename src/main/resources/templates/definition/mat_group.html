@@ -192,7 +192,8 @@
                 type: 'GET',
                 data: {
                     'mat_grp': mat_grp,
-                    'mat_type': mat_type
+                    'mat_type': mat_type,
+                    spjangcd: sessionStorage.getItem('spjangcd'),
                 },
                 async: false,
                 success: function (data) {
@@ -269,7 +270,8 @@
                 type: 'GET',
                 data: {
                     'mat_grp': mat_grp,
-                    'mat_type': mat_type
+                    'mat_type': mat_type,
+                    spjangcd: sessionStorage.getItem('spjangcd'),
                 },
                 success: function (result) {
                     if (result.success) {
