@@ -1030,13 +1030,18 @@
                         let col = s.columns[e.col];
                         let item = s.rows[e.row].dataItem;
 
+                        // 품목코드는 숫자 형태라도 포맷 없이 표시
+                        if (col.binding === 'mat_code') {
+                            e.cell.textContent = item.mat_code;
+                        }
+
                         // 재고관리여부 (1 → 'Y', 0 또는 null → 'N')
-                        if (col.binding === "mtyn") {
+                        if (col.binding === 'mtyn') {
                             e.cell.textContent = (item.mtyn === 1 || item.mtyn === '1') ? 'Y' : 'N';
                         }
 
                         // 사용중지여부
-                        if (col.binding === "useyn") {
+                        if (col.binding === 'useyn') {
                             e.cell.textContent = (item.useyn === 1 || item.useyn === '1') ? 'Y' : 'N';
                         }
                     }
