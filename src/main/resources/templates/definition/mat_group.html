@@ -89,7 +89,7 @@
                                  <img src="/images/icon/ico-save.svg" alt="저장 아이콘">
                                  저장
                              </a>-->
-                            <button type="button" class="btn-excellt btn-default y_write_auth" id="btnSave"
+                            <button type="button" class="btn-excellt btn-default" id="btnSave"
                                     style="float:none; height: 36px; width:115px;">
                                 <i class="fas fa-save"></i>저장
                             </button>
@@ -101,7 +101,7 @@
                                   <img src="/images/icon/ico-delete.svg" alt="삭제 아이콘">
                                   삭제
                               </a>-->
-                            <button type="button" class="btn-delete btn-danger y_write_auth" id="btnDel"
+                            <button type="button" class="btn-delete btn-danger" id="btnDel"
                                     style="float:none; height: 36px; width:115px;"><i
                                     class="fas fa-trash"></i>삭제
                             </button>
@@ -300,6 +300,10 @@
         }
 
         function grid_binding(data) {
+
+            if (!Array.isArray(data)) {
+                data = [];
+            }
 
             let formattedData = data.map(item => ({
                 id: item.id,
