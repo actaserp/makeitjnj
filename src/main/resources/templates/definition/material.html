@@ -1031,8 +1031,8 @@
                         let item = s.rows[e.row].dataItem;
 
                         // 품목코드는 숫자 형태라도 포맷 없이 표시
-                        if (col.binding === 'mat_code') {
-                            e.cell.textContent = item.mat_code;
+                        if (col.binding === 'id') {
+                            e.cell.textContent = item.id;
                         }
 
                         // 재고관리여부 (1 → 'Y', 0 또는 null → 'N')
