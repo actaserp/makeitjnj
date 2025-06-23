@@ -91,8 +91,8 @@ public class MaterialService {
         if (StringUtils.isEmpty(matGroupId)==false) sql +="and m.\"MaterialGroup_id\" = (:mat_group_id)::int ";
         if (StringUtils.isEmpty(keyword)==false) {
         	sql += """  
-            		and ( m."Name" ilike concat('%',:keyword,'%')
-            		or m."Code" ilike concat('%',:keyword,'%'))
+            		and ( m."Name" like concat('%',:keyword,'%')
+            		or m."Code" like concat('%',:keyword,'%'))
     			""";
         }
         sql += "order by m.\"MaterialGroup_id\" , m.\"Name\" ";

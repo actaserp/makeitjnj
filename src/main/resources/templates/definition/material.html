@@ -134,13 +134,13 @@
             <div class="tab-wrap">
                 <ul class="tab-links">
                     <li><a href="#tab_basic" name="tabs_basic" id="tabs_basic">기본정보</a></li>
-                    <li><a href="#tab_production" name="tab_production" id="tabs_production" >생산/출하정보</a></li>
-                    <li><a href="#tab_inventory" name="tab_inventory" id="tabs_inventory">발주/재고정보</a></li>
+                    <!-- <li><a href="#tab_production" name="tab_production" id="tabs_production" >생산/출하정보</a></li> -->
+                    <!-- <li><a href="#tab_inventory" name="tab_inventory" id="tabs_inventory">발주/재고정보</a></li> -->
                     <li><a href="#tab_bom" name="tab_bom">BOM</a></li>
-                    <li><a href="#tab_bom_reverse" name="tab_bom_reverse">BOM(역전개)</a></li>
+                    <!-- <li><a href="#tab_bom_reverse" name="tab_bom_reverse">BOM(역전개)</a></li> -->
                     <li><a href="#tab_unitcost" name="tab_unitcost" id="tabs_unitcost">단가정보</a></li>
-                    <li><a href="#tab_test_master" name="tab_test_master">검사정보</a></li>
-                    <li><a href="#tab_routing" name="tab_routing">라우팅</a></li>
+                    <!-- <li><a href="#tab_test_master" name="tab_test_master">검사정보</a></li> -->
+                    <!-- <li><a href="#tab_routing" name="tab_routing">라우팅</a></li> -->
 
                     <div class="button-wrap button-list">
                         <ul>
@@ -186,7 +186,7 @@
                                         </td>
 
                                         <th>
-                                            <label for="Code"><span class="eq">*</span>품목코드(바코드)</label>
+                                            <label for="Code"><span class="eq">*</span>품목코드</label>
                                         </th>
                                         <td>
                                             <input type="text" id="Code" name="Code"
@@ -202,7 +202,7 @@
                                         </td>
 
                                         <th>
-                                            <label for="Unit_id"><span class="eq">*</span>단위(생상/투입)</label>
+                                            <label for="Unit_id"><span class="eq">*</span>단위</label>
                                         </th>
                                         <td>
                                             <select style="width: 100%;" id="Unit_id"
@@ -230,19 +230,16 @@
                                         </th>
                                         <td>
                                             <input type="checkbox" id="useyn" name="useyn" value="1" style="display: block; margin: auto; height: 26px; width: 26px;">
-                                        </td>
-
-
-                                        <th style="font-size: 14px;">
-                                            <label for="LotSize">(생산/발주)로트사이즈</label>
+                                        </td> 
+                                        <th>
+                                            <label for="Class1">작업방식</label>
                                         </th>
                                         <td>
-                                            <input type="text" id="LotSize" name="LotSize"
-                                                   style="width: 100%;">
-                                        </td>
+                                            <select style="width: 100%;" id="Class1" name="Class1"></select> 
+                                        </td> 
                                     </tr>
 
-                                    <tr>
+                                    <!-- <tr>
                                         <th>
                                             <label for="CustomerBarcode">고객바코드</label>
                                         </th>
@@ -272,9 +269,9 @@
                                             <input type="number" id="Length" name="Length"
                                                    style="width: 100%;">
                                         </td>
-                                    </tr>
+                                    </tr> -->
 
-                                    <tr>
+                                    <!-- <tr>
                                         <th>
                                             <label for="Height">높이(mm)</label>
                                         </th>
@@ -298,30 +295,22 @@
                                             <input type="text" id="Color" name="Color"
                                                    style="width: 100%;">
                                         </td>
-                                        <th>
-                                            <label for="Class1">분류1</label>
-                                        </th>
-                                        <td>
-                                            <input type="text" id="Class1" name="Class1"
-                                                   style="width: 100%;">
-                                        </td>
-                                    </tr>
+                                    </tr> -->
 
                                     <tr>
                                         <th>
-                                            <label for="Class2">분류2</label>
+                                            <label for="Standard1">규격1</label>
                                         </th>
                                         <td>
-                                            <input type="text" style="width: 100%;" id="Class2"
-                                                   name="Class2">
+                                            <input type="text" id="Standard1" name="Standard1"
+                                                   style="width: 100%;">
                                         </td>
-
                                         <th>
-                                            <label for="Class3">분류3</label>
+                                            <label for="Standard2">규격2</label>
                                         </th>
                                         <td>
-                                            <input type="text" style="width: 100%;" id="Class3"
-                                                   name="Class3">
+                                            <input type="text" style="width: 100%;" id="Standard2"
+                                                   name="Standard2">
                                         </td>
                                         <th>
                                             <label for="Usage">용도</label>
@@ -330,24 +319,31 @@
                                             <input type="text" id="Usage" name="Usage"
                                                    style="width: 100%;">
                                         </td>
-                                        <th>
-                                            <label for="Standard1">규격1</label>
-                                        </th>
-                                        <td>
-                                            <input type="text" id="Standard1" name="Standard1"
-                                                   style="width: 100%;">
-                                        </td>
 
                                     </tr>
 
                                     <tr>
                                         <th>
-                                            <label for="Standard2">규격2</label>
+                                            <label for="Class2">분류</label>
                                         </th>
                                         <td>
-                                            <input type="text" style="width: 100%;" id="Standard2"
-                                                   name="Standard2">
+                                            <input type="text" style="width: 100%;" id="Class2"
+                                                   name="Class2">
+                                        </td> 
+                                        <th style="font-size: 14px;">
+                                            <label for="LotSize">로트번호</label>
+                                        </th>
+                                        <td>
+                                            <input type="text" id="LotSize" name="LotSize"
+                                                   style="width: 100%;">
                                         </td>
+                                        <!-- <th>
+                                            <label for="Class3">분류3</label>
+                                        </th>
+                                        <td>
+                                            <input type="text" style="width: 100%;" id="Class3"
+                                                   name="Class3">
+                                        </td> -->
 
                                         <th>
                                             <label for="Description">비고</label>
@@ -366,12 +362,11 @@
 
 
                     <!--section 2-->
-                    <section class="tab-item" id="tab_production" style="border-top-left-radius: 0;">
+                    <!-- <section class="tab-item" id="tab_production" style="border-top-left-radius: 0;">
                         <div>
                             <form id="matProductionForm">
                                 <table class="write-table">
-                                    <caption style="text-align: left; margin-bottom: 8px;">생산/출하정보</caption>
-                                    <!--<input type="hidden" id="id" name="id"/>-->
+                                    <caption style="text-align: left; margin-bottom: 8px;">생산/출하정보</caption> 
                                     <tbody>
                                     <tr>
                                         <th>
@@ -447,7 +442,7 @@
                                 </table>
                             </form>
                         </div>
-                    </section>
+                    </section> -->
 
                     <!--section3-->
                     <section class="tab-item" id="tab_inventory" style="border-top-left-radius: 0;">
@@ -558,7 +553,7 @@
                                     </tr>
 
 
-                                    <tr>
+                                    <!-- <tr>
                                         <th>
                                             <label for="SafetyStock">안전재고</label>
                                         </th>
@@ -589,7 +584,7 @@
                                             <input type="number" style="width: 100%;" id="ValidDays"
                                                    name="ValidDays" value="1" required>
                                         </td>
-                                    </tr>
+                                    </tr> -->
 
                                     <tr>
                                         <th>
@@ -913,48 +908,48 @@
                         {binding: 'mat_code', header: '품목코드', width: 150, align: 'left'},
                         {binding: 'mat_name', header: '품목명', width: 200, align: 'left'},
                         {binding: 'unit_name', header: '단위', width: 100, align: 'center'},
+                        {binding: 'class1', header: '작업방식', width: 100, align: 'left'},
+                        {binding: 'class2', header: '분류', width: 100, align: 'left'},
+                        {binding: 'starndard1', header: '규격1', width: 150, align: 'right'},
+                        {binding: 'standard2', header: '규격2', width: 150, align: 'right'},
+                        {binding: 'unit_price', header: '평균단가', width: 100, align: 'right',},
+                        {binding: '_created', header: '등록일', width: 150, align: 'center'},
+                        {binding: 'description', header: '설명', width: 200, align: 'left'},
                         {binding: 'factory_name', header: '공장', width: 100, align: 'center'},
                         {binding: 'mtyn', header: '재고관리유무', width: 100, align: 'center'},
                         {binding: 'useyn', header: '사용중지여부', width: 100, align: 'center'},
-                        {binding: 'lotUseYn', header: 'LOT관리 유무', width: 150, align: 'center'},
-                        {binding: 'lot_size', header: '로트사이즈', width: 100, align: 'right',},
-                        {binding: 'customer_barcode', header: '고객바코드', width: 100, align: 'left'},
-                        {binding: 'thickness', header: '두께', width: 100, align: 'right'},
-                        {binding: 'width', header: '폭', width: 100, align: 'right',},
-                        {binding: 'length', header: '길이', width: 100, align: 'right',},
-                        {binding: 'height', header: '높이', width: 100, align: 'right',},
-                        {binding: 'color', header: 'Color', width: 100, align: 'center'},
-                        {binding: 'usage', header: '용도', width: 100, align: 'left'},
-                        {binding: 'class1', header: '분류1', width: 100, align: 'left'},
-                        {binding: 'class2', header: '분류2', width: 100, align: 'left'},
-                        {binding: 'class3', header: '분류3', width: 100, align: 'left'},
-                        {binding: 'starndard1', header: '규격1', width: 150, align: 'right'},
-                        {binding: 'standard2', header: '규격2', width: 150, align: 'right'},
-                        {binding: 'description', header: '설명', width: 200, align: 'left'},
-                        {binding: 'workcenter_name', header: '기본워크센터', width: 150, align: 'left'},
-                        {binding: 'standard_time', header: '표준생산시간', width: 150, align: 'right'},
-                        {binding: 'input_man_count', header: '기본작업자수', width: 150, align: 'right'},
-                        {binding: 'input_man_hour', header: '기본ManHour', width: 150, align: 'right'},
-                        {binding: 'vat_exempt_yn', header: '부가세면제', width: 150, align: 'center'},
-                        {binding: 'purchase_order_standard', header: '발주기준', width: 100, align: 'center'},
-                        {binding: 'leadtime', header: '리드타임(일)', width: 150, align: 'right'},
-                        {binding: 'min_order', header: '최소발주량', width: 100, align: 'right',},
-                        {binding: 'avrqty', header: '적정재고수량', width: 100, align: 'center'},
-                        {binding: 'max_order', header: '최대발주량', width: 100, align: 'right',},
-                        {binding: 'storehouse_name', header: '기본재고창고', width: 150, align: 'left'},
-                        {binding: 'storehouse_loc', header: '창고내위치', width: 120, align: 'left'},
-                        {binding: 'manage_level', header: '자재관리등급', width: 150, align: 'left'},
-                        {binding: 'packing_unit_qty', header: '포장수량', width: 100, align: 'right',},
-                        {binding: 'packing_unit_name', header: '포장단위', width: 100, align: 'right'},
-                        {binding: 'safety_stock', header: '안전재고', width: 100, align: 'right',},
-                        {binding: 'max_stock', header: '최대재고', width: 100, align: 'right',},
-                        {binding: 'process_safety_stock', header: '공정안전재고', width: 150, align: 'right',},
-                        {binding: 'unit_price', header: '평균단가', width: 100, align: 'right',},
-                        {binding: 'valid_days', header: '사용기한(일)', width: 100, align: 'right',},
-                        {binding: 'intest_yn', header: '수입검사필수', width: 150, align: 'center'},
-                        {binding: 'outtest_yn', header: '출하검사필수', width: 150, align: 'center'},
-                        {binding: 'routing_name', header: '라우팅', width: 100, align: 'left'},
-                        {binding: '_created', header: '등록일', width: 150, align: 'center'},
+                        // {binding: 'thickness', header: '두께', width: 100, align: 'right'},
+                        // {binding: 'width', header: '폭', width: 100, align: 'right',},
+                        // {binding: 'length', header: '길이', width: 100, align: 'right',},
+                        // {binding: 'height', header: '높이', width: 100, align: 'right',},
+                        // {binding: 'color', header: 'Color', width: 100, align: 'center'},
+                        // {binding: 'usage', header: '용도', width: 100, align: 'left'},
+                        // {binding: 'class3', header: '분류3', width: 100, align: 'left'},
+                        // {binding: 'lotUseYn', header: 'LOT관리 유무', width: 150, align: 'center'},
+                        // {binding: 'lot_size', header: '로트사이즈', width: 100, align: 'right',},
+                        // {binding: 'customer_barcode', header: '고객바코드', width: 100, align: 'left'},
+                        // {binding: 'workcenter_name', header: '기본워크센터', width: 150, align: 'left'},
+                        // {binding: 'standard_time', header: '표준생산시간', width: 150, align: 'right'},
+                        // {binding: 'input_man_count', header: '기본작업자수', width: 150, align: 'right'},
+                        // {binding: 'input_man_hour', header: '기본ManHour', width: 150, align: 'right'},
+                        // {binding: 'vat_exempt_yn', header: '부가세면제', width: 150, align: 'center'},
+                        // {binding: 'purchase_order_standard', header: '발주기준', width: 100, align: 'center'},
+                        // {binding: 'leadtime', header: '리드타임(일)', width: 150, align: 'right'},
+                        // {binding: 'min_order', header: '최소발주량', width: 100, align: 'right',},
+                        // {binding: 'avrqty', header: '적정재고수량', width: 100, align: 'center'},
+                        // {binding: 'max_order', header: '최대발주량', width: 100, align: 'right',},
+                        // {binding: 'storehouse_name', header: '기본재고창고', width: 150, align: 'left'},
+                        // {binding: 'storehouse_loc', header: '창고내위치', width: 120, align: 'left'},
+                        // {binding: 'manage_level', header: '자재관리등급', width: 150, align: 'left'},
+                        // {binding: 'packing_unit_qty', header: '포장수량', width: 100, align: 'right',},
+                        // {binding: 'packing_unit_name', header: '포장단위', width: 100, align: 'right'},
+                        // {binding: 'safety_stock', header: '안전재고', width: 100, align: 'right',},
+                        // {binding: 'max_stock', header: '최대재고', width: 100, align: 'right',},
+                        // {binding: 'process_safety_stock', header: '공정안전재고', width: 150, align: 'right',},
+                        // {binding: 'valid_days', header: '사용기한(일)', width: 100, align: 'right',},
+                        // {binding: 'intest_yn', header: '수입검사필수', width: 150, align: 'center'},
+                        // {binding: 'outtest_yn', header: '출하검사필수', width: 150, align: 'center'},
+                        // {binding: 'routing_name', header: '라우팅', width: 100, align: 'left'},
                     ],
                     itemsSource: this.viewData, // 데이터를 설정할 배열
                 });

@@ -29,10 +29,9 @@ public class MaterialGroupService {
 			select mg.id
             , mg."Name" as material_group_name
             , mg."Code" as material_group_code
-            , fn_code_name('mat_type', mg."MaterialType") as material_type
+            , dbo.fn_code_name('mat_type', mg."MaterialType") as material_type
             from mat_grp mg 
-            where 1=1
-            AND spjangcd = :spjangcd
+            where 1=1 
 		    """;
 		if (StringUtils.isEmpty(matType)==false) sql += " and mg.\"MaterialType\"= :mat_type ";
 		if (StringUtils.isEmpty(matGrp)==false) sql += " and upper(mg.\"Name\") like concat('%%',upper( :mat_grp ),'%%') ";
