@@ -1042,135 +1042,7 @@
                     }
                 });
 
-
-                /*let config = {
-                    target: $('[data-ax5grid="material-grid"]'),
-                    frozenColumnIndex: 5, // 열 고정
-                    frozenRowIndex: 0,    // 행 고정
-                    showLineNumber: false, // 열의 번호 보이기 여부
-                    showRowSelector: false,  // checkbox(선택) 보이기 여부
-                    multipleSelect: false, // 여러행 선택 가능 여부 (false시 단독 선택)
-                    sortable: true, // 모든 컬럼에 정렬 아이콘 표시 (columns에서 컬럼별 소팅여부 재설정 가능)
-                    multiSort: true, // 다중 정렬 여부
-                    header: {
-                        align: 'center',  // 헤더의 기본 정렬
-                        columnHeight: 30  // 헤더 높이
-                    },
-                    body: {
-                        columnHeight: 25, // body의 기본 높이
-                        onClick: function (e) {
-                            let mat_pk = e.item.id;
-                            _this.grid.select(this.dindex);
-
-                            _this.showDetail(mat_pk);
-                            //_this.showPriceList(e.item.id);
-                            _this.price_grid.setData([]);
-                            $('#companyPriceForm')[0].reset();
-                            _this.test_grid.setData([]);
-                            //_this.setPriceButtonDisabled(false, true, true);
-                            //_this.setPriceButtonDisabled(false, false, true);
-                            _this.setPriceButtonState();
-
-                            //let tab = $('.tab_links li:visible');
-                            if (_this.current_tab == 'tab_unitcost') {
-                                _this.showPriceList(mat_pk);
-                            }
-                            else if (_this.current_tab == 'tab_bom') {
-                                if (mat_pk)
-                                    page.showBomList(mat_pk);
-                            }
-                            else if (_this.current_tab == 'tab_bom_reverse') {
-                                if (mat_pk)
-                                    page.showBomReverseList(mat_pk);
-                            }
-                            else if (_this.current_tab == 'tab_routing') {
-                                let routing_pk = $('#Routing_id').val();
-                                //if (routing_pk)
-                                page.showRoutingProcessList(routing_pk);
-                            }
-                            else if (_this.current_tab == 'tab_test_master') {
-                                //if (mat_pk)
-                                page.showTestList(mat_pk);
-                            }
-                        },
-                    },
-                    page: {
-                        display: true,  // 페이징 보이기 여부
-                        statusDisplay: true,
-                    },
-                    columns: [
-                        { key: 'id', label: '품목번호', width: 50, align: 'right', hidden: false },
-                        { key: 'mat_type_name', label: '품목구분', width: 50, align: 'center' },
-                        { key: 'mat_grp_name', label: '품목그룹', width: 120, align: 'left' },
-                        { key: 'mat_code', label: '품목코드', width: 150, align: 'center' },
-                        { key: 'mat_name', label: '품목명', width: 200, align: 'left' },
-                        { key: 'unit_name', label: '단위', width: 50, align: 'center' },
-                        { key: 'factory_name', label: '공장', width: 100, align: 'left' },
-                        { key: 'lotUseYn', label: 'LOT관리 유무', width: 100, align: 'center' },
-                        { key: 'lot_size', label: '로트사이즈', width: 100, align: 'right', formatter:'money' },
-                        { key: 'customer_barcode', label: '고객바코드', width: 100, align: 'left' },
-                        { key: 'thickness', label: '두께', width: 100, align: 'right' },
-                        { key: 'width', label: '폭', width: 100, align: 'right', formatter:'money' },
-                        { key: 'length', label: '길이', width: 100, align: 'right', formatter:'money' },
-                        { key: 'height', label: '높이', width: 100, align: 'right', formatter:'money' },
-                        { key: 'color', label: 'Color', width: 100, align: 'left' },
-                        { key: 'usage', label: '용도', width: 100, align: 'left' },
-                        { key: 'class1', label: '분류1', width: 100, align: 'left' },
-                        { key: 'class2', label: '분류2', width: 100, align: 'left' },
-                        { key: 'class3', label: '분류3', width: 100, align: 'left' },
-                        { key: 'starndard1', label: '규격1', width: 100, align: 'right' },
-                        { key: 'standard2', label: '규격2', width: 100, align: 'right' },
-                        { key: 'description', label: '설명', width: 100, align: 'right' },
-                        { key: 'workcenter_name', label: '기본워크센터', width: 150, align: 'left' },
-                        { key: 'standard_time', label: '표준생산시간', width: 50, align: 'right' },
-                        { key: 'input_man_count', label: '기본작업자수', width: 50, align: 'right' },
-                        { key: 'input_man_hour', label: '기본ManHour', width: 100, align: 'right' },
-                        { key: 'vat_exempt_yn', label: '부가세면제', width: 100, align: 'center' },
-                        { key: 'purchase_order_standard', label: '발주기준', width: 100, align: 'center' },
-                        { key: 'leadtime', label: '리드타임(일)', width: 150, align: 'right' },
-                        { key: 'min_order', label: '최소발주량', width: 100, align: 'right', formatter:'money' },
-                        { key: 'max_order', label: '최대발주량', width: 100, align: 'right', formatter:'money' },
-                        { key: 'storehouse_name', label: '기본재고창고', width: 100, align: 'left' },
-                        { key: 'storehouse_loc', label: '창고내위치', width: 100, align: 'left' },
-                        { key: 'manage_level', label: '자재관리등급', width: 100, align: 'left' },
-                        { key: 'packing_unit_qty', label: '포장수량', width: 100, align: 'right', formatter:'money' },
-                        { key: 'packing_unit_name', label: '포장단위', width: 100, align: 'center' },
-                        { key: 'safety_stock', label: '안전재고', width: 100, align: 'right', formatter:'money' },
-                        { key: 'max_stock', label: '최대재고', width: 100, align: 'right', formatter:'money' },
-                        { key: 'process_safety_stock', label: '공정안전재고', width: 100, align: 'right', formatter:'money' },
-                        { key: 'unit_price', label: '평균단가', width: 100, align: 'right', formatter:'money' },
-                        { key: 'valid_days', label: '사용기한(일)', width: 100, align: 'right', formatter:'money' },
-                        { key: 'intest_yn', label: '수입검사필수', width: 50, align: 'center' },
-                        { key: 'outtest_yn', label: '출하검사필수', width: 50, align: 'center' },
-                        { key: 'routing_name', label: '라우팅', width: 100, align: 'left' },
-                        { key: '_created', label: '등록일', width: 100, align: 'center' },
-                    ],
-                    contextMenu: {
-                        iconWidth: 20,
-                        acceleratorWidth: 100,
-                        itemClickAndClose: true,
-                        icons: {
-                            'arrow': '<i class="fa fa-caret-right"></i>'
-                        },
-                        items: [
-                            { action: 'settings', label: "컬럼설정" },
-                        ],
-                        popupFilter: function (item, param) {
-                            return false;
-
-                            //if(param.element) {
-                            //    return true;
-                            //}
-                            //else {
-                            //    return param.item.Material_Type == "부재료";
-                            //}
-                        },
-                        onClick: function (item, param) {
-                            //if (item.action == 'settings')
-                            //    return;
-                        }
-                    }
-                };*/
+ 
 
                 /*  this.grid_config = config;  // 컬럼설정 팝업에 넘기기 위한 용도로 저장해 놓음.
                   this.grid = new ax5.ui.grid(config);
@@ -1223,40 +1095,7 @@
 
                 new FlexGridContextMenu(this.price_grid);
                 this.grid.downloadFileName = '단가 정보';
-
-                /*let priceConfig = {
-                    target: $('[data-ax5grid="price-grid"]'),
-                    frozenColumnIndex: 0, // 열 고정
-                    frozenRowIndex: 0,    // 행 고정
-                    showLineNumber: false, // 열의 번호 보이기 여부
-                    showRowSelector: false,  // checkbox(선택) 보이기 여부
-                    multipleSelect: false, // 여러행 선택 가능 여부 (false시 단독 선택)
-                    , // 모든 컬럼에 정렬 아이콘 표시 (columns에서 컬럼별 소팅여부 재설정 가능)
-                    multiSort: true, // 다중 정렬 여부
-                    header: {
-                        align: 'center',  // 헤더의 기본 정렬
-                        columnHeight: 30  // 헤더 높이
-                    },
-                    body: {
-                        columnHeight: 25, // body의 기본 높이
-                        onClick: function (e) {
-                            _this.showPriceDetail(e.item.id);
-                        },
-                    },
-                    page: {
-                        display: true,  // 페이징 보이기 여부
-                        statusDisplay: true,
-                    },
-                    columns: [
-                        { binding: 'CompanyName', header: '업체명', width: 200, align: 'left',   },
-                        { binding: 'UnitPrice', header: '단가', width: 120, align: 'right',  },
-                        { binding: 'FormerUnitPrice', header: '이전단가', width: 120, align: 'right',  },
-                        { binding: 'ApplyStartDate', header: '적용시작일', width: 120, align: 'center',  },
-                        { binding: 'ApplyEndDate', header: '적용종료일', width: 120, align: 'center',  },
-                        { binding: 'ChangerName', header: '변경자', width: 120, align: 'left',  },
-                        { binding: 'ChangeDate', header: '변경일', width: 120, align: 'center',  },
-                    ]
-                };*/
+ 
 
                 /*this.price_grid = new ax5.ui.grid(priceConfig);
                 this.price_grid.setData([]);*/
@@ -1299,57 +1138,7 @@
                 new FlexGridContextMenu(this.bom_grid);
                 this.grid.downloadFileName = 'BOM 정보';
 
-
-                /*let bomConfig = {
-                    target: $('[data-ax5grid="bom-grid"]'),
-                    frozenColumnIndex: 0, // 열 고정
-                    frozenRowIndex: 0,    // 행 고정
-                    showLineNumber: false, // 열의 번호 보이기 여부
-                    showRowSelector: false,  // checkbox(선택) 보이기 여부
-                    multipleSelect: false, // 여러행 선택 가능 여부 (false시 단독 선택)
-                    sortable: false, // 모든 컬럼에 정렬 아이콘 표시 (columns에서 컬럼별 소팅여부 재설정 가능)
-                    multiSort: false, // 다중 정렬 여부
-                    header: {
-                        align: 'center',  // 헤더의 기본 정렬
-                        columnHeight: 30  // 헤더 높이
-                    },
-                    body: {
-                        columnHeight: 25, // body의 기본 높이
-                        onClick: function (e) {
-                        },
-                    },
-                    page: {
-                        display: true,  // 페이징 보이기 여부
-                        statusDisplay: true,
-                    },
-                    columns: [
-                        { binding: '_level', header: '레벨', width: 100, align: 'left' },
-                        { binding: 'my_key', header: 'my_key', width: 100, align: 'left' },
-                        { binding: 'mat_type', header: '구분', width: 100, align: 'center' },
-                        { binding: 'mat_name', header: '품목', width: 200, align: 'left', treeControl: true },
-                        { binding: 'unit', header: '단위', width: 100, align: 'center' },
-                        { binding: 'mat_code', header: '품목코드', width: 100, align: 'center' },
-                        { binding: 'bom_ratio', header: '소요량', width: 120, align: 'right' },
-                    ],
-                    tree: {
-                        use: true,
-                        indentWidth: 15,
-                        arrowWidth: 15,
-                        iconWidth: 18,
-                        icons: {
-                          openedArrow: '<i class="fa fa-caret-down" aria-hidden="true"></i>',
-                          collapsedArrow: '<i class="fa fa-caret-right" aria-hidden="true"></i>',
-                          groupIcon: '<i class="fa fa-minus-square" aria-hidden="true"></i>',
-                          collapsedGroupIcon: '<i class="fa fa-plus-square" aria-hidden="true"></i>',
-                          //itemIcon: '-'
-                        },
-                        columnKeys: {
-                          parentbinding: 'parent_key',
-                          selfbinding: 'my_key'
-                        }
-                    },
-                };*/
-
+ 
                 /*  this.bom_grid = new ax5.ui.grid(bomConfig);
                   this.bom_grid.setData([]);*/
 
@@ -1390,55 +1179,7 @@
 
                 new FlexGridContextMenu(this.bom_reverse_grid);
                 this.grid.downloadFileName = 'BOM역전개 정보';
-
-                /*let bomReverseConfig = {
-                    target: $('[data-ax5grid="bom-reverse-grid"]'),
-                    frozenColumnIndex: 0, // 열 고정
-                    frozenRowIndex: 0,    // 행 고정
-                    showLineNumber: false, // 열의 번호 보이기 여부
-                    showRowSelector: false,  // checkbox(선택) 보이기 여부
-                    multipleSelect: false, // 여러행 선택 가능 여부 (false시 단독 선택)
-                    sortable: false, // 모든 컬럼에 정렬 아이콘 표시 (columns에서 컬럼별 소팅여부 재설정 가능)
-                    multiSort: false, // 다중 정렬 여부
-                    header: {
-                        align: 'center',  // 헤더의 기본 정렬
-                        columnHeight: 30  // 헤더 높이
-                    },
-                    body: {
-                        columnHeight: 25, // body의 기본 높이
-                        onClick: function (e) {
-                        },
-                    },
-                    page: {
-                        display: true,  // 페이징 보이기 여부
-                        statusDisplay: true,
-                    },
-                    columns: [
-                        { binding: '_level', header: '레벨', width: 100, align: 'left' },
-                        { binding: 'mat_type', header: '구분', width: 100, align: 'center' },
-                        { binding: 'mat_name', header: '모품목', width: 200, align: 'left', treeControl: true },
-                        { binding: 'unit', header: '단위', width: 100, align: 'center' },
-                        { binding: 'mat_code', header: '모품목코드', width: 100, align: 'center' },
-                        { binding: 'bom_ratio', header: '투입량', width: 120, align: 'right' },
-                    ],
-                    tree: {
-                        use: true,
-                        indentWidth: 15,
-                        arrowWidth: 15,
-                        iconWidth: 18,
-                        icons: {
-                          openedArrow: '<i class="fa fa-caret-down" aria-hidden="true"></i>',
-                          collapsedArrow: '<i class="fa fa-caret-right" aria-hidden="true"></i>',
-                          groupIcon: '<i class="fa fa-minus-square" aria-hidden="true"></i>',
-                          collapsedGroupIcon: '<i class="fa fa-plus-square" aria-hidden="true"></i>',
-                          //itemIcon: '-'
-                        },
-                        columnKeys: {
-                          parentbinding: 'parent_key',
-                          selfbinding: 'my_key'
-                        }
-                    },
-                };*/
+ 
 
                 /*   this.bom_reverse_grid = new ax5.ui.grid(bomReverseConfig);
                    this.bom_reverse_grid.setData([]);*/
@@ -1467,37 +1208,7 @@
 
                 new FlexGridContextMenu(this.routing_grid);
                 this.grid.downloadFileName = '라우팅 정보';
-
-                /*let RoutingConfig = {
-                    target: $('[data-ax5grid="routing-grid"]'),
-                    frozenColumnIndex: 0, // 열 고정
-                    frozenRowIndex: 0,    // 행 고정
-                    showLineNumber: false, // 열의 번호 보이기 여부
-                    showRowSelector: false,  // checkbox(선택) 보이기 여부
-                    multipleSelect: false, // 여러행 선택 가능 여부 (false시 단독 선택)
-                    sortable: false, // 모든 컬럼에 정렬 아이콘 표시 (columns에서 컬럼별 소팅여부 재설정 가능)
-                    multiSort: false, // 다중 정렬 여부
-                    header: {
-                        align: 'center',  // 헤더의 기본 정렬
-                        columnHeight: 30  // 헤더 높이
-                    },
-                    body: {
-                        columnHeight: 25, // body의 기본 높이
-                        onClick: function (e) {
-                        },
-                    },
-                    page: {
-                        display: true,  // 페이징 보이기 여부
-                        statusDisplay: true,
-                    },
-                    columns: [
-                        { binding: 'proc_order', header: '공정순서', width: 100, align: 'left' },
-                        { binding: 'proc_code', header: '공정코드', width: 100, align: 'left' },
-                        { binding: 'proc_name', header: '공정명', width: 200, align: 'left' },
-                        { binding: 'proc_type', header: '공정유형', width: 100, align: 'left' },
-                    ],
-                };*/
-
+ 
                 /*this.routing_grid = new ax5.ui.grid(RoutingConfig);
                 this.routing_grid.setData([]);*/
 
@@ -1537,43 +1248,7 @@
                 new FlexGridContextMenu(this.test_master_grid);
                 this.grid.downloadFileName = '검사정보 정보';
 
-
-                /*let testConfig = {
-                    target: $('[data-ax5grid="test-master-grid"]'),
-                    frozenColumnIndex: 0, // 열 고정
-                    frozenRowIndex: 0,    // 행 고정
-                    showLineNumber: false, // 열의 번호 보이기 여부
-                    showRowSelector: false,  // checkbox(선택) 보이기 여부
-                    multipleSelect: false, // 여러행 선택 가능 여부 (false시 단독 선택)
-                    sortable: false, // 모든 컬럼에 정렬 아이콘 표시 (columns에서 컬럼별 소팅여부 재설정 가능)
-                    multiSort: false, // 다중 정렬 여부
-                    header: {
-                        align: 'center',  // 헤더의 기본 정렬
-                        columnHeight: 30  // 헤더 높이
-                    },
-                    body: {
-                        columnHeight: 25, // body의 기본 높이
-                        onClick: function (e) {
-                            _this.selected_test_master_pk = e.item.test_master_id;
-                        },
-                    },
-                    page: {
-                        display: true,  // 페이징 보이기 여부
-                        statusDisplay: true,
-                    },
-                    columns: [
-                        { binding: 'id', header: '번호', width: 100, align: 'center' },
-                        {
-                            binding: 'delete', header: '삭제', width: 100, align: 'center',
-                            editor: { type: 'checkbox', config: { height: 17, trueValue: 'Y', falseValue: 'N' } },
-                        },
-                        { binding: 'test_master_id', header: '검사마스터번호', hidden:'false', width: 200, align: 'left' },
-                        { binding: 'test_class_name', header: '검사종류', width: 100, align: 'left' },
-                        { binding: 'test_master_group_name', header: '검사마스터그룹', width: 100, align: 'left' },
-                        { binding: 'test_master_name', header: '검사마스터', width: 100, align: 'left' },
-
-                    ],
-                };
+ 
 
                 this.test_grid = new ax5.ui.grid(testConfig);
                 this.test_grid.setData([]);*/
@@ -1592,6 +1267,7 @@
                         _this.searchDataBind();
                     }
                 });
+ 
 
                 this.initForm();
 
@@ -1604,6 +1280,7 @@
                 AjaxUtil.fillSelectOptions($('#Unit_id'), 'unit', '', false); // 단위
                 AjaxUtil.fillSelectOptions($('#StoreHouse_id'), 'store_house', '', false); // 창고
                 AjaxUtil.fillSelectOptions($('#WorkCenter_id'), 'workcenter', '', false); // 워크센터
+                AjaxUtil.fillSelectOptions($('#MaterialGroup_id'), 'material_group', '', false); // 품목그룹
 
 
                 $('#WorkCenter_id').change(function (e) {

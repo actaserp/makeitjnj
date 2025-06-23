@@ -1201,7 +1201,8 @@
                     'mat_group': $('#cboMaterialGroup').val(),
                     'bom_type': $('#cboBOMType').val(),
                     'mat_name': $('#txtMatName').val(),
-                    'not_past_flag': $('#not_past_flag').is(':checked') ? 'Y' : ''
+                    'not_past_flag': $('#not_past_flag').is(':checked') ? 'Y' : '',
+                    spjangcd: sessionStorage.getItem('spjangcd'),
                 };
 
                 let result = AjaxUtil.getSyncData(url, data);
