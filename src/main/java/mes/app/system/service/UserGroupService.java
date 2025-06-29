@@ -17,16 +17,21 @@ public class UserGroupService {
 
 	public List<Map<String,Object>> getUserGroupList(Boolean super_user) {
 		String sql = """
-				SELECT ug.id,\s
-				       ug.Code AS code,
-				       ug.Name AS name,
-				       ug.Description AS description,
-				       ug.Disabled AS disabled,
-				       ug.gmenu AS gmenu,
-				       mi.MenuName AS gmenuname,
-				       FORMAT(ug._created, 'yyyy-MM-dd HH:mm:ss') AS created
-				FROM user_group AS ug
-				LEFT JOIN menu_item AS mi ON mi.MenuCode = ug.gmenu
+				SELECT
+				    id,
+				    "Code" AS code,
+				    "Name" AS name,
+				    "Description" AS description,
+				    "Disabled" AS disabled,
+				    CASE
+				        WHEN EXISTS (SELECT 1 FROM user_profile up WHERE up."UserGroup_id" = ug.id) THEN 'Y'
+				        ELSE 'N'
+				    END AS flag,
+				    "gmenu" AS gmenu,
+				    mi."MenuName" AS gmenuname,
+				    FORMAT(ug."_created", 'yyyy-MM-dd HH:mm:ss') AS created  -- 또는 CONVERT(varchar, ug."_created", 120)
+				FROM user_group ug
+				LEFT JOIN menu_item mi ON mi."MenuCode" = ug.gmenu
 				WHERE 1 = 1
 			""";
 
@@ -44,7 +49,7 @@ public class UserGroupService {
 	
 	public Map<String, Object> getUserGroup(int id) {
 		String sql = """
-				SELECT id,\s
+				SELECT id,
 				       [Code] AS code,
 				       [Name] AS name,
 				       [Description] AS description,

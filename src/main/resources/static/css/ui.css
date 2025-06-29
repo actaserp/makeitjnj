@@ -798,3 +798,7 @@ button img, .btn img {margin-right: 10px;}
 .card-body select {
     width: 120px;
 }
+
+.select_input{
+    background: #EDEFF5 none !important;
+}

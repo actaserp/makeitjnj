@@ -1,50 +1,51 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns="http://www.w3.org/1999/xhtml" xmlns:layout="">
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>[KT FOMS] AI 기반 연료전지 인프라 구축</title>
+    <title>[JNJ]SCM</title>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1">
     <link rel="icon" type="image/png" href="/img/favicon.png">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.2/main.min.css"> <!-- Calendar -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>  <!-- Calendar -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" /> <!-- Slide css -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.2/main.min.css"> <!-- Calendar -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script> <!-- Slide js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" /> <!-- Slide css -->
     <link rel="stylesheet" href="/resource/ax5ui/ax5ui.all.css?v=1000">
     <link rel="stylesheet" href="/resource/timepicker/jquery.timepicker.min.css">
-<!--    <link rel="stylesheet" href="/resource/windowContainer/css/bootstrap.4.min.css">-->
+    <link rel="stylesheet" href="/resource/windowContainer/css/bootstrap.4.min.css">
+    <link rel="stylesheet" href="/css/animate.css">
+    <link rel="stylesheet" href="/resource/select2/select2.css">
     <link rel="stylesheet" href="/css/animate.css">
     <link rel="stylesheet" href="/resource/select2/select2.css">
 
     <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet">
     <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
-<!--    <script type="text/javascript">-->
-<!--        if (localStorage.getItem('theme-top') !== null) {-->
-<!--            document.write('<link rel="stylesheet" href="' + localStorage.getItem('theme-top') + '-content.css">');-->
-<!--        }-->
-<!--    </script>-->
-<!--    <link rel="stylesheet" href="/css/sf21_all_6.css?v=1000">-->
-<!--    <link rel="stylesheet" href="/css/sf21_all_5.css?v=1000">-->
-<!--    <link rel="stylesheet" href="/css/sf21_frame.css?v=1043">-->
+    <!--    <script type="text/javascript">-->
+    <!--        if (localStorage.getItem('theme-top') !== null) {-->
+    <!--            document.write('<link rel="stylesheet" href="' + localStorage.getItem('theme-top') + '-content.css">');-->
+    <!--        }-->
+    <!--    </script>-->
+        <link rel="stylesheet" href="/css/sf21_all_6.css?v=1000">
+        <link rel="stylesheet" href="/css/sf21_all_5.css?v=1000">
+        <link rel="stylesheet" href="/css/sf21_frame.css?v=1043">
 
     <link rel="stylesheet" type="text/css" href="/css/import.css">
-    <link rel="stylesheet" type="text/css" href="/css/Park.css">
-    <script src="/js/vendor/jquery-ui.min.js"></script>
     <script src="/js/vendor/jquery-3.6.0.js"></script>
+    <script src="/js/vendor/jquery-ui.min.js"></script>
     <script src="/js/ui.js"></script> <!-- Common js -->
-    <script src="/js/Park.js"></script>
+    <script src="/js/utilscript.js"></script>
 
     <script th:inline="javascript">
         var sandanData = /*[[${session.sandanList}]]*/ [];
     </script>
-    <script src="/js/Jung.js"></script>
+<!--    <script src="/js/Jung.js"></script>-->
     <script src="/js/nth-tabs.js"></script>
 
     <!-- Wijmo 레퍼런스 (필수) -->
-    <link th:href="@{/wijimo/styles/wijmo.min.css}" rel="stylesheet" />
+<!--    <link th:href="@{/wijimo/styles/wijmo.min.css}" rel="stylesheet" />-->
 
     <!-- wijmo.min.css 대신에 아래와 같이 사용자 정의 테마 사용가능 -->
     <!-- <link href="https://cdn.grapecity.com/wijmo/5.20202.732/styles/themes/wijmo.theme.modern.min.css" rel="stylesheet"/> -->
@@ -54,7 +55,7 @@
     <script>
         // wijmo 전역 객체 사용
         wijmo.setLicenseKey('actascld.co.kr,679493286538488#B0NsIOiwmbBJye0ICRiwiI34TQIVnWLNFMFFzLxMkMrIVTvZzd4ZFW7U6LKd4Tip5LIdHdmpmbThlShVzMr3WaSNUaxMzR7siVvp4LrhTMytUbWVUMjFGSaJjQ8k5bCFTN73GMZRVT4h4RO3CNp3WVwJmdth7VTd7MVxmQ74USPtWNxo5KLdmdrIkSZ3UYId4ND3mVWNjRDBlSLFTUiZFbhBDWrh4Swo5dtBFcxIHOQ36dRpHRL56VJRUa4tWWyVTdyMTZplFUYt6bpJUbkJkW6JUZS9WdvA5R5RHeFp4TNF4ZCBzQ5B7c7MzcxMzQQxGTwhFZstSRsNkczFkdh3WRZ9WVqRDaMpWTxlmeVVjaiZVSFhWeFV4M48GO5NHbkVFe8olUzd6Q8ZVQqF6TBZHT0JFNrg4cDhkcPplRad6UjhkVZN7UupkcKVGNQhlWBRne6t6KRJWbvc7SwlkV8h6dRhTNLNWVvMmI0IyUiwiIDZUQCZURwMjI0ICSiwSM9MTMwUTMwATM0IicfJye35XX3JSSwIjUiojIDJCLi86bpNnblRHeFBCI4VWZoNFelxmRg2Wbql6ViojIOJyes4nI5kkTRJiOiMkIsIibvl6cuVGd8VEIgIXZ7VWaWRncvBXZSBybtpWaXJiOi8kI1xSfis4N8gkI0IyQiwiIu3Waz9WZ4hXRgAydvJVa4xWdNBybtpWaXJiOi8kI1xSfiQjR6QkI0IyQiwiIu3Waz9WZ4hXRgACUBx4TgAybtpWaXJiOi8kI1xSfiMzQwIkI0IyQiwiIlJ7bDBybtpWaXJiOi8kI1xSfiUFO7EkI0IyQiwiIu3Waz9WZ4hXRgACdyFGaDxWYpNmbh9WaGBybtpWaXJiOi8kI1tlOiQmcQJCLiAzM6UTNwAyNyITM4IDMyIiOiQncDJCLiI7au26YuQGbjNXY4NWYiojIz5GRiwiIkqI1AOY1ReJ1iojIh94QiwiI8gDN8MTN6gjMzkDN9cjNiojIklkIs4XXbpjInxmZiwiIyYHMyAjMiojIyVmdiwSZzxWYmpjIhNYZ');
-        console.log('Wijmo 라이선스 키가 설정되었습니다.');
+        // console.log('Wijmo 라이선스 키가 설정되었습니다.');
     </script>
 
     <!-- Wijmo 컨트롤 (옵션, 필요한 컨트롤 만 추가) -->
@@ -76,7 +77,6 @@
     <script src="https://cdn.grapecity.com/wijmo/5.20202.732/controls/wijmo.grid.pdf.min.js"></script>
 
 
-
     <!-- Wijmo custom culture (옵션, 원하는 문화권을 추가) -->
     <!-- <script src="https://cdn.grapecity.com/wijmo/5.20202.732/controls/cultures/wijmo.culture.ja.min.js"></script> -->
 
@@ -84,49 +84,17 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
     <script src="https://cdn.grapecity.com/wijmo/5.20202.732/interop/angular/wijmo.angular.min.js"></script>
 
-    <link rel="stylesheet" href="https://cdn.grapecity.com/wijmo/5.20202.732/styles/wijmo.min.css">
 
-    <script src="https://cdn.grapecity.com/wijmo/5.20202.732/controls/wijmo.grid.cellmaker.min.js"></script>
+<!--    <script src="https://cdn.grapecity.com/wijmo/5.20202.732/controls/wijmo.grid.cellmaker.min.js"></script>-->
     <script src="https://cdn.grapecity.com/wijmo/5.20202.732/controls/wijmo.grid.selector.min.js"></script>
 
-    <!--    <link href="https://cdn.grapecity.com/wijmo/5.latest/styles/wijmo.min.css" rel="stylesheet">-->
+
+    <link rel="stylesheet" href="https://cdn.grapecity.com/wijmo/5.20202.732/styles/wijmo.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.0.0/jszip.min.js"></script>
-    <!--    <script src="https://cdn.grapecity.com/wijmo/5.latest/controls/wijmo.min.js"></script>-->
-    <!--    <script src="https://cdn.grapecity.com/wijmo/5.latest/controls/wijmo.grid.min.js"></script>-->
-    <!--    <script src="https://cdn.grapecity.com/wijmo/5.latest/controls/wijmo.xlsx.min.js"></script>-->
-    <!--    <script src="https://cdn.grapecity.com/wijmo/5.latest/controls/wijmo.grid.xlsx.min.js"></script>-->
-    <!--    <script src="https://cdn.grapecity.com/wijmo/5.latest/controls/wijmo.pdf.min.js"></script>-->
-    <!--    <script src="https://cdn.grapecity.com/wijmo/5.latest/controls/wijmo.grid.pdf.min.js"></script>-->
     <script src="/js/flex-grid-context-menu.js"></script>
-
-    <!-- 알메이트 -->
-<!--    <script src="https://www.riamore.net/HTML5demo/chart/LicenseKey/rMateChartH5License.js"></script>
-    <script src="https://www.riamore.net/HTML5demo/chart/rMateChartH5/JS/rMateChartH5.js"></script>
-    <link rel="stylesheet" href="https://www.riamore.net/HTML5demo/chart/rMateChartH5/Assets/Css/rMateChartH5.css"/>
-
-    <script src="https://demo.riamore.net/HTML5demo/chart/Samples/Web/jQuery/jquery-1.12.4.min.js"></script>
-    <script src="https://demo.riamore.net/HTML5demo/chart/Samples/Web/jQuery/jquery-ui.js"></script>-->
-
-    <script src="/rMateChart/LicenseKey/rMateChartH5License.js"></script>
-    <script src="/rMateChart/rMateChartH5/JS/rMateChartH5.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.1/jsmpg.js"></script>  <!--영상송출 -->
-<!--    <script src="https://cdn.tiny.cloud/1/7u1hg8ws4zgi4u6yjgxcvmxwiv1m4fo9zboacpvt2qbaerrh/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>&lt;!&ndash; tinymce 웹 에디터&ndash;&gt;-->
-    <link rel="stylesheet" href="/rMateChart/rMateChartH5/Assets/Css/rMateChartH5.css"/>
-
-
-
+    <script src="/js/wijmo-flex-grid.js"></script>
 </head>
 <style>
-    .time-group{
-        width: 10%;
-    }
-    .grid-cell-black2{
-        background: #f2f2f2;
-    }
-
-    /*#theGrid{*/
-    /*    max-height: 493px;*/
-    /*}*/
 
     .wj-flexgrid .wj-header {
         background-color: #EDEFF5;
@@ -137,42 +105,10 @@
         line-height: 150%;
     }
 
-    [id^="theGrid"].wj-flexgrid .wj-cell {
-        padding: 14px;
+    .wj-flexgrid .wj-cell {
+        padding: 9px;
+        font-size: 14px;
     }
-
-    /*#theGrid.wj-flexgrid .wj-cell {*/
-    /*    padding: 14px;*/
-
-    /*}*/
-
-
-    /*#theGridEvent.wj-flexgrid .wj-cell {*/
-    /*    padding: 14px;*/
-
-    /*}*/
-
-    /*#theGridDetect.wj-flexgrid .wj-cell {*/
-    /*    padding: 14px;*/
-
-    /*}*/
-
-    .wj-cell.high-value, .wj-cell.wj-alt {
-
-        /*font-size: 15px;*/
-        /*font-weight: 500;*/
-        line-height: 150%;
-
-        background-color: transparent;
-    }
-
-
-    <!-- -->
-    /*.wj-flexgrid .wj-header {*/
-    /*    background-color: #EDEFF5;*/
-    /*    color: black;*/
-    /*    font-weight:bold;*/
-    /*}*/
 
     .wj-cells .wj-cell.wj-state-multi-selected {
         background-color: #E5F9F9;
@@ -184,22 +120,18 @@
         color: black;
     }
 
-
-
-    /*  점검관리/전기안전관리/문서관리현황 전용  */
-    .filename{
-        color: dodgerblue;
-        cursor: pointer;
+    .wj-flexgrid .wj-cell input.wj-column-selector{
+        width: 16px;
+        height: 16px;
     }
 
-    /*삭제ㄴㄴ, 나중에 css 파일로 따로 빼겠음 순회점검 점검일지 업로드, 버튼*/
-    .fileuploaders { border: none }
-
-
-
-
+    .wj-flexgrid .wj-cell input.wj-column-selector:before{
+        width: 16px;
+        height: 16px;
+    }
 
 </style>
+<body class="animated fadeIn">
 <body class="animated fadeIn">
 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 <script src="/resource/jquery.min.js"></script>
@@ -207,11 +139,6 @@
 <script src="/resource/jquery-validation/1.17.0/additional-methods.min.js"></script>
 <script src="/resource/filedownload/jquery.fileDownload.js"></script>
 <script src="/resource/ax5ui/ax5ui.all.min.js"></script>
-<!-- Flatpickr CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<!-- Flatpickr JS -->
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
 <script src="/resource/se2/js/HuskyEZCreator.js"></script>
 <script src="/resource/timepicker/jquery.timepicker.min.js"></script>
 <script src="/resource/jquery.multi-select-ak.js"></script>
@@ -224,18 +151,9 @@
 <th:block th:replace="system_js :: system_js" ></th:block>
 
 <script type="text/javascript" src="/js/common.js?v=1100"></script>
-<!--<script type="text/javascript" src="/js/yumenu.js?v=1071"></script>-->
 <script type="text/javascript" src="/js/yuscript.js?v=1060"></script>
 <script type="text/javascript" src="/js/ax5commUtil.js?v=1060"></script>
-<script src="/js/jquery.datetimepicker.full.min.js"></script>
 
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script> <!-- Slide js -->
-
-<!-- 줌아웃 스타일-->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 <th:block layout:fragment="content"></th:block>
 <script type="text/javascript">
 

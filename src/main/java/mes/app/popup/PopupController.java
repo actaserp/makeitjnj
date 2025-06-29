@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.util.StringUtils;
@@ -16,6 +17,7 @@ import mes.domain.model.AjaxResult;
 import mes.domain.services.DateUtil;
 import mes.domain.services.SqlRunner;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/popup")
 public class PopupController {
@@ -73,6 +75,8 @@ public class PopupController {
 		paramMap.addValue("material_group", material_group, java.sql.Types.INTEGER);
 		paramMap.addValue("keyword", keyword);
 		result.data = this.sqlRunner.getRows(sql, paramMap);
+		log.info("read SQL: {}", sql);
+    log.info("SQL Parameters: {}", paramMap.getValues());
 		return result;
 	}	
 	
@@ -317,5 +321,57 @@ public class PopupController {
 		return items;
 		
 	}
-	
+
+	@RequestMapping("/search_Comp")
+	public AjaxResult getSearchComp(
+			@RequestParam(value = "compCode", required = false) String compCode,
+			@RequestParam(value = "compName", required = false) String compName,
+			@RequestParam(value = "business_number", required = false) String business_number){
+
+		MapSqlParameterSource paramMap = new MapSqlParameterSource();
+		paramMap.addValue("compCode", compCode);
+		paramMap.addValue("compName", compName);
+		paramMap.addValue("business_number", business_number);
+		AjaxResult result = new AjaxResult();
+
+		String sql = """
+            select id as id
+            , "Name" as compName
+            , "Code" as compCode
+            , "BusinessNumber" as business_number
+            , "TelNumber" as tel_number
+            , "CEOName" as invoiceeceoname
+            , "Address" as invoiceeaddr
+            , "BusinessType" as invoiceebiztype
+            , "BusinessItem" as invoiceebizclass
+            , "AccountManager" as invoiceecontactname1
+            , "AccountManagerPhone" as invoiceetel1
+            , "Email" as invoiceeemail1
+            from company
+            WHERE ("CompanyType" = 'sale'
+            OR "CompanyType" = 'sale-purchase')
+            and "relyn" = '0'
+			""";
+
+		if (compCode != null && !compCode.isEmpty()) {
+			sql += " AND \"Code\" ILIKE :compCode ";
+			paramMap.addValue("compCode", "%" + compCode + "%");
+		}
+
+		if (compName != null && !compName.isEmpty()) {
+			sql += " AND \"Name\" ILIKE :compName ";
+			paramMap.addValue("compName", "%" + compName + "%");
+		}
+
+		if (business_number != null && !business_number.isEmpty()) {
+			sql += " AND \"BusinessNumber\" ILIKE :business_number ";
+			paramMap.addValue("business_number", "%" + business_number + "%");
+		}
+
+		sql += " ORDER BY \"Name\" ASC ";
+
+		result.data = this.sqlRunner.getRows(sql, paramMap);
+
+		return result;
+	}
 }

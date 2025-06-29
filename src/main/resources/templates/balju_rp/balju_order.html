@@ -91,7 +91,7 @@
         </div>
       </div>
       <div class="container-fluid">
-        <div id="theGrid" style="height: 730px;" ></div>
+        <div id="theGrid" style="height: 730px;"></div>
       </div>
       <!--        <div class="grid_box">-->
 
@@ -262,6 +262,7 @@
       let formatted = cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ',');// 쉼표 넣기
       $(targetSelector).val(formatted);// 값 넣기
     }
+
     // 수량 또는 단가가 입력되었을 때 → 공급가/부가세/총액 계산
     function updateBaljuPrice() {
       const qtyStr = $('#SujuQty').val().replace(/,/g, '');
@@ -280,7 +281,7 @@
         $('#BaljuVat')
           .val('면세')
           .prop('readonly', true)
-          .css({ 'background-color': '', 'color': '' });
+          .css({'background-color': '', 'color': ''});
         totalPrice = supplyPrice;
       } else {
         if (isVatIncluded) {
@@ -294,12 +295,13 @@
         $('#BaljuVat')
           .val(vat.toLocaleString())
           .prop('readonly', true)
-          .css({ 'background-color': '', 'color': '', 'text-align': '' });
+          .css({'background-color': '', 'color': '', 'text-align': ''});
       }
 
       $('#BaljuPrice').val(supplyPrice.toLocaleString());
       $('#BaljuTotalPrice').val(totalPrice.toLocaleString());
     }
+
     // 총액이 입력된 경우 → 공급가/부가세를 역산
     function calculateFromTotalPrice() {
       const totalStr = $('#BaljuTotalPrice').val().replace(/,/g, '');
@@ -334,6 +336,7 @@
       // 선택사항: 총액 필드 보정
       // $('#BaljuTotalPrice').val((supply + vat).toLocaleString());
     }
+
     // 공급가 입력 시 → 총액 및 부가세 계산
     function calculateFromSupplyPrice() {
       const supplyStr = $('#BaljuPrice').val().replace(/,/g, '');
@@ -350,7 +353,7 @@
         $('#BaljuVat')
           .val('면세')
           .prop('readonly', true)
-          .css({ 'background-color': '', 'color': '' });
+          .css({'background-color': '', 'color': ''});
 
         totalPrice = supplyPrice; // 총액은 공급가 그대로
       } else {
@@ -367,11 +370,12 @@
         $('#BaljuVat')
           .val(vat.toLocaleString())
           .prop('readonly', true)
-          .css({ 'background-color': '', 'color': '', 'text-align': '' });
+          .css({'background-color': '', 'color': '', 'text-align': ''});
       }
 
       // $('#BaljuTotalPrice').val(totalPrice.toLocaleString());
     }
+
     // 수량 변경 시 → 단가 × 수량 → 공급가 계산
     function numberSujuQty(x) {
       formatNumberInput(x, "#SujuQty");
@@ -396,7 +400,7 @@
       calculateFromTotalPrice();
     }
 
-    class SujuUploadPage {
+    class BaljuUploadPage {
       constructor() {
         this.url = '/api/balju/balju_order';
         this.grid = null;
@@ -476,14 +480,16 @@
 
           if (selectedItems.length === 1) {
 
-            let data = {
-              id: selectedItems[0].id,
-              action: 'detail'
-            }; 
-            let fnsuccess = function (result) {
-              console.log(result)
-              result.data['mode'] = 'edit';
+            let selected = selectedItems[0];
 
+            let data = {
+              id: selected.id,
+              SujuQty3: selected.SujuQty3,
+              action: 'detail'
+            };
+            let fnsuccess = function (result) {
+              result.data['mode'] = 'edit';
+              result.data['SujuQty3'] = selected.SujuQty3;
               _this.showBaljuForm(result.data);
             };
             AjaxUtil.getAsyncData(_this.url + '/detail', data, fnsuccess);
@@ -569,6 +575,8 @@
         let $BaljuTotalPrice = $content.find('#BaljuTotalPri');
         let $vatCheck = $content.find('#VatIncluded');
 
+        let $sujuQty3 = $content.find('#sujuQty3');
+
         $content.find('#spjangcdHidden').val(data.spjangcd || '');
 
         if (data.mode === 'new') {
@@ -593,11 +601,11 @@
             $isVatExempt = item.VatExemptionYN === 'Y';
             // 부가세 UI 처리
             if (item.VatExemptionYN === 'Y') {
-              $BaljuVat.prop('readonly', true).val('면세').css({ 'background-color': '', 'color': ''});
+              $BaljuVat.prop('readonly', true).val('면세').css({'background-color': '', 'color': ''});
               $('#VatExempt').val('Y');
             } else {
               $BaljuVat.prop('readonly', true).val('')
-                .css({ 'background-color': '', 'color': '', 'text-align': '' });
+                .css({'background-color': '', 'color': '', 'text-align': ''});
               $('#VatExempt').val('N');
             }
 
@@ -617,11 +625,11 @@
             $content.find('#CompanyName').val(items.compname);
             $isVatExempt = items.VatExemptionYN === 'Y';
             if (items.VatExemptionYN === 'Y') {
-              $BaljuVat.prop('readonly', true).val('면세').css({ 'background-color': '', 'color': ''});
+              $BaljuVat.prop('readonly', true).val('면세').css({'background-color': '', 'color': ''});
               $('#VatExempt').val('Y');
             } else {
               $BaljuVat.prop('readonly', true).val('')
-                .css({ 'background-color': '', 'color': '', 'text-align': '' });
+                .css({'background-color': '', 'color': '', 'text-align': ''});
               $('#VatExempt').val('N');
             }
 
@@ -661,42 +669,50 @@
               $content.find('#unitPrice').prop('readonly', true).val(unitPrice);
               originalUnitPrice = unitPrice;
 
-              // 나머지 값 세팅
               $BaljuUnitPrice.val(unitPrice);
+              formatNumberInput(unitPrice.toString(), '#BaljuUnitPrice'); // 콤마 포맷 적용
+
               $BaljuPrice.val(supplyPrice);
+              formatNumberInput(supplyPrice.toString(), '#BaljuPrice');   // 콤마 포맷 적용
+
             } else {
-              // 데이터 없을 때 초기화
               $content.find('#unitPrice').val('0');
               originalUnitPrice = '0';
 
               $BaljuUnitPrice.val('');
               $BaljuPrice.val('');
-              $BaljuVat.val('').prop('readonly', true); // 상태 원복
+              $BaljuVat.val('').prop('readonly', true);
             }
           });
         }
 
-
         // 저장버튼
         let $btnPopBaljuSave = $('#btnPopBaljuSave');
-        let $btnPopBaljuStop = $('#btnPopBaljuStop');
+        // 중지 버튼
+        let $btnPopBaljuStop = $content.find('#btnPopBaljuStop');
+        // 상태 값 정리
+        const isCanceled = (data.State || '').toLowerCase() === 'canceled';
+        const isDraft = (data.State || '').toLowerCase() === 'draft';
+        const isFullyReceived = Number(data.SujuQty3 || 0) === 0;
+        // 등록 모드일 경우 → 버튼 숨김
         if (data.mode === 'new') {
           $btnProductSearch.removeAttr('disabled');
-          $btnPopBaljuStop.hide();  // 등록 모드 → 중지 버튼 숨김
+          $btnPopBaljuStop.hide();
         } else {
-          $btnPopBaljuStop.show();  // 수정 모드 → 중지 버튼 보이기
-          if (data.State && data.State !== 'draft') {
+          // 버튼 표시 여부
+          if (isCanceled || !isFullyReceived || isDraft) {
+            $btnPopBaljuStop.show();
+            $btnPopBaljuStop.text(isCanceled ? '중지취소' : '중지');
+          } else {
+            $btnPopBaljuStop.hide();
+          }
+          // 상태가 draft가 아니면 저장 버튼 숨기고 단가 읽기 전용
+          if (!isDraft) {
             $btnPopBaljuSave.hide();
             $BaljuUnitPrice.prop('readonly', true);
           }
         }
 
-        // 상태가 '중지'면 버튼 텍스트를 '중지취소'로 변경
-        if (data.State === 'canceled') {
-          $btnPopBaljuStop.text('중지취소');
-        } else {
-          $btnPopBaljuStop.text('중지');
-        }
         //발주구분
         AjaxUtil.fillSelectOptions($cboBaljuType, 'system_code', 'choose', null, 'Balju_type');
 
@@ -720,7 +736,6 @@
           $SujuQty.val(data.SujuQty.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
         }
 
-
         // 팝업 중지버튼 클릭
         $btnPopBaljuStop.click(function (e) {
           // 현재 버튼 텍스트로 상태 판단 (중지 / 중지취소)
@@ -738,7 +753,6 @@
               _this.searchMainData();
               modalContainer.close();
             };
-
             AjaxUtil.postAsyncData(url, data, fnSaveSuccess);
           });
         });
@@ -827,12 +841,36 @@
             }
           });
         });
+
+        FormUtil.BindDataForm(data, $baljuForm);
+
+        // 숫자 입력 필드 자동 포맷
+        const numberFields = [
+          '#BaljuPrice',
+          '#BaljuUnitPrice',
+          '#BaljuVat',
+          '#BaljuTotalPrice',
+          '#SujuQty'
+        ];
+
+        numberFields.forEach(selector => {
+          $content.find(selector).off('keyup').on('keyup', function () {
+            formatNumberInput($(this).val(), selector);
+          });
+
+          // 값이 있다면 콤마 포맷 바로 적용
+          let value = $content.find(selector).val();
+          if (value) {
+            formatNumberInput(value, selector);
+          }
+        });
+
       }
 
       deleteSujuData(id, state) {
         let _this = this;
         let url = _this.url + '/delete';
-        let data = {'id':id, 'State': state}
+        let data = {'id': id, 'State': state}
         let fnsuccess = function (res) {
           if (res.success) {
             Notify.success('삭제되었습니다.');
@@ -879,7 +917,7 @@
         $('#spjangcdHidden').val(spjangcd);  // hidden input이 있어야 함
       }
 
-      page = new SujuUploadPage();
+      page = new BaljuUploadPage();
 
 //        $('#divDate').ax5DatePicker({ direction: 'top' });
       $('#srchStartDt').val(CommonUtil.getYYYYMMDD(-7));

@@ -30,49 +30,52 @@ public class BaljuOrderService {
 
     String sql = """
         select b.id
-          , b."JumunNumber"
-          , b."Material_id" as "Material_id"
-          , mg."Name" as "MaterialGroupName"
-          , mg.id as "MaterialGroup_id"
-          , dbo.fn_code_name('mat_type', mg."MaterialType") as "MaterialTypeName"
-          , m.id as "Material_id"
-          , m."Code" as product_code
-          , m."Name" as product_name
-          , u."Name" as unit
-          , b."SujuQty" as "SujuQty"
-          , CASE 
-              WHEN (b.SujuQty - b.SujuQty2) > 0 
-              THEN (b.SujuQty - b.SujuQty2) 
-              ELSE 0 
-            END AS SujuQty3  
-          , FORMAT(b."JumunDate", 'yyyy-mm-dd') as "JumunDate"
-          , FORMAT(b."DueDate", 'yyyy-mm-dd') as "DueDate"
-          , b."CompanyName"
-          , b."Company_id"
-          , b."SujuType"
-          , dbo.fn_code_name('Balju_type', b."SujuType") as "BaljuTypeName"
-          , FORMAT(b."ProductionPlanDate", 'yyyy-mm-dd') as production_plan_date
-          , FORMAT(b."ShipmentPlanDate", 'yyyy-mm-dd') as shiment_plan_date
-          , b."Description"
-          , b."AvailableStock" as "AvailableStock"
-          , b."ReservationStock" as "ReservationStock"
-          , b."SujuQty2" as "SujuQty2"
-          , dbo.fn_code_name('balju_state', b."State") as "StateName"
-          , sh."Name" as "ShipmentStateName"
-          , b."State"
-          , b."UnitPrice" as "BaljuUnitPrice"
-          , b."Vat" as "BaljuVat"
-          , sum(b."Price"+ coalesce(b."Vat", 0)) as "BaljuTotalPrice"
-          , b."Price" as "BaljuPrice"
-          , FORMAT(b."_created", 'yyyy-mm-dd') as create_date
-          , case b."PlanTableName" when 'prod_week_term' then '주간계획' when 'bundle_head' then '임의계획' else b."PlanTableName" end as plan_state
-          from balju b
-          inner join material m on m.id = b."Material_id" and m.spjangcd = b.spjangcd
-          inner join mat_grp mg on mg.id = m."MaterialGroup_id" and mg.spjangcd = b.spjangcd
-          left join unit u on m."Unit_id" = u.id and u.spjangcd = b.spjangcd
-          left join company c on c.id= b."Company_id"  
-          LEFT JOIN store_house sh ON CAST(sh.id AS VARCHAR) = b.ShipmentState and sh.spjangcd = b.spjangcd
-          where 1 = 1
+            , b."JumunNumber"
+            , b."Material_id" as "Material_id"
+            , mg."Name" as "MaterialGroupName"
+            , mg.id as "MaterialGroup_id"
+            , dbo.fn_code_name('mat_type', mg."MaterialType") as "MaterialTypeName"
+            , m.id as "Material_id"
+            , m."Code" as product_code
+            , m."Name" as product_name
+            , u."Name" as unit
+            , b."SujuQty" as "SujuQty"
+            , mi."SujuQty2" as "SujuQty2"
+            , CASE 
+            WHEN (b.SujuQty - ISNULL(mi.SujuQty2, 0)) > 0 
+            THEN (b.SujuQty - ISNULL(mi.SujuQty2, 0)) 
+            ELSE 0 
+          END AS SujuQty3
+            , FORMAT(b."JumunDate", 'yyyy-mm-dd') as "JumunDate"
+            , FORMAT(b."DueDate", 'yyyy-mm-dd') as "DueDate"
+            , b."CompanyName"
+            , b."Company_id"
+            , b."SujuType"
+            , dbo.fn_code_name('Balju_type', b."SujuType") as "BaljuTypeName"
+            , FORMAT(b."ProductionPlanDate", 'yyyy-mm-dd') as production_plan_date
+            , FORMAT(b."ShipmentPlanDate", 'yyyy-mm-dd') as shiment_plan_date
+            , b."Description"
+            , b."AvailableStock" as "AvailableStock"
+            , b."ReservationStock" as "ReservationStock"
+            , dbo.fn_code_name('balju_state', b."State") as "StateName"
+            , sh."Name" as "ShipmentStateName"
+            , b."State"
+            , b."UnitPrice" as "BaljuUnitPrice"
+            , b."Vat" as "BaljuVat"
+            , sum(b."Price"+ coalesce(b."Vat", 0)) as "BaljuTotalPrice"
+            , b."Price" as "BaljuPrice"
+            , FORMAT(b."_created", 'yyyy-mm-dd') as create_date
+            from balju b
+            inner join material m on m.id = b."Material_id" and m.spjangcd = b.spjangcd
+            inner join mat_grp mg on mg.id = m."MaterialGroup_id" and mg.spjangcd = b.spjangcd
+            left join unit u on m."Unit_id" = u.id and u.spjangcd = b.spjangcd
+            left join company c on c.id= b."Company_id"
+            LEFT JOIN store_house sh ON CAST(sh.id AS VARCHAR) = b.ShipmentState AND sh.spjangcd = b.spjangcd
+            LEFT JOIN ( SELECT"SourceDataPk", SUM("InputQty") AS "SujuQty2"
+               FROM mat_inout
+               WHERE "SourceTableName" = 'balju'AND COALESCE("_status", 'a') = 'a'
+               GROUP BY "SourceDataPk") mi ON mi."SourceDataPk" = b.id
+                where 1 = 1
 			""";
 
     if (date_kind.equals("sales")) {
@@ -89,7 +92,7 @@ public class BaljuOrderService {
         group by
           b.id, b."JumunNumber", b."Material_id", mg."Name", mg.id,
           mg."MaterialType", m.id, m."Code", m."Name", u."Name",
-          b."SujuQty", b."SujuQty2", b."JumunDate", b."DueDate", b."CompanyName", 
+          b."SujuQty", mi."SujuQty2", b."JumunDate", b."DueDate", b."CompanyName", 
           b."Company_id", b."SujuType", b."ProductionPlanDate", b."ShipmentPlanDate",
           b."Description", b."AvailableStock", b."ReservationStock", 
           b."State", sh."Name", b."UnitPrice", b."Vat", b."Price", 

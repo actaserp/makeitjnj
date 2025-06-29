@@ -1,16 +1,14 @@
 package mes.domain.services;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-
+@Slf4j
 @Service
 public class ComboService {
 
@@ -80,6 +78,7 @@ public class ComboService {
 		this._dicFunc_.put("user_group", this.user_group);
 		this._dicFunc_.put("user_profile", this.user_profile);
 		this._dicFunc_.put("workcenter", this.workcenter);
+		this._dicFunc_.put("tb_xa012", this.tbXa012Combo);
 	}
 
 	public List<Map<String, Object>> getComboList(String comboType, String cond1, String cond2, String cond3){
@@ -356,7 +355,7 @@ public class ComboService {
 	//ComboDataFunction hmi_form = (String cond1, String cond2, String cond3)-> {	
 	//};
 	
-	ComboDataFunction material =(String cond1, String cond2, String cond3)-> { 
+	ComboDataFunction material =(String cond1, String cond2, String cond3)-> {
 		String sql ="select m.id as Value, m.\"Name\" as text from material m inner join mat_grp mg on mg.id = m.\"MaterialGroup_id\" where 1=1 ";
 		if (StringUtils.hasText(cond1)) {
 			sql+="and \"MaterialGroup_id\" = :cond1::int";
@@ -367,6 +366,7 @@ public class ComboService {
 		if (StringUtils.hasText(cond3)) {
 			//sql +="and mg.\"MaterialType\" = :cond3";
 			sql +=" and mg.\"MaterialType\" in (select unnest(string_to_array(:cond3, ',')))";
+
 		}
 		MapSqlParameterSource dicParam = new MapSqlParameterSource();
         dicParam.addValue("cond1", cond1);
@@ -374,31 +374,39 @@ public class ComboService {
         dicParam.addValue("cond3", cond3);
         return this.sqlRunner.getRows(sql, dicParam);
 	};
-	
-	ComboDataFunction material_group = (String cond1, String cond2, String cond3)-> { 
-		String sql ="""
-		select id as value,"Name" as text from mat_grp where 1=1
-		""";
-		if(StringUtils.hasText(cond1)) {
-			sql +=" and \"MaterialType\" in (select unnest(string_to_array(:cond1,',')))";
-			//sql +=" and \"MaterialType\" =:cond1 ";
+
+	ComboDataFunction material_group = (String cond1, String cond2, String cond3) -> {
+		String sql = "select id as value, [Name] as text from mat_grp where 1=1 ";
+
+		MapSqlParameterSource paramSource = new MapSqlParameterSource();
+
+		if (StringUtils.hasText(cond1)) {
+			sql += " and [MaterialType] in (:cond1List)";
+			List<String> cond1List = Arrays.asList(cond1.split("\\s*,\\s*")); // 공백 제거하고 split
+			paramSource.addValue("cond1List", cond1List);
 		}
+
 		if (StringUtils.hasText(cond2)) {
-			sql +=" and \"Code\" in (select unnest(string_to_array(:cond2, ',')))";
+			sql += " and [Code] in (:cond2List)";
+			List<String> cond2List = Arrays.asList(cond2.split("\\s*,\\s*"));
+			paramSource.addValue("cond2List", cond2List);
 		}
+
 		if (StringUtils.hasText(cond3)) {
-			sql +=" and \"Code\" not in (select unnest(stirng_to_array(:cond3, ',')))";
+			sql += " and [Code] not in (:cond3List)";
+			List<String> cond3List = Arrays.asList(cond3.split("\\s*,\\s*"));
+			paramSource.addValue("cond3List", cond3List);
 		}
-		
-		sql += " order by \"Name\" ";
-		
-		MapSqlParameterSource dicParam = new MapSqlParameterSource();
-		dicParam.addValue("cond1", cond1);
-		dicParam.addValue("cond2", cond2);
-		dicParam.addValue("cond3", cond3);
-		return this.sqlRunner.getRows(sql, dicParam);
-	};	
-	
+
+		sql += " order by [Name]";
+
+//		log.info("🔍 [Material Combo] 실행 SQL: {}", sql);
+//		log.info("🔍 [Material Combo] 파라미터: {}", paramSource.getValues());
+
+		return this.sqlRunner.getRows(sql, paramSource);
+	};
+
+
 	ComboDataFunction menu_code =(String cond1, String cond2, String cond3)-> { //확인
 		String sql = "";
 		if (StringUtils.hasText(cond1)) {
@@ -869,5 +877,21 @@ public class ComboService {
         return this.sqlRunner.getRows(sql, dicParam);		
 	};
 	*/
-	
+
+	ComboDataFunction tbXa012Combo = (cond1, cond2, cond3) -> {
+		String sql = """
+        SELECT spjangcd AS value, spjangnm AS text
+        FROM ELV_JNJ.dbo.tb_xa012
+        ORDER BY spjangnm
+    """;
+
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		params.addValue("cond1", cond1);
+		params.addValue("cond2", cond2);
+		params.addValue("cond3", cond3);
+
+		return this.sqlRunner.getRows(sql, params);
+	};
+
+
 }

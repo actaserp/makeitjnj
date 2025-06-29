@@ -145,11 +145,12 @@ public class UserGroupController{
 		return result;
 	}
 
+	/*
 	@GetMapping("/defaultMenu")
 	public List<MenuItem> getMenuItem() {
 		List<Integer> folderIds = Arrays.asList(54, 53);
 		List<MenuItem> defaultList = menuItemRepository.findByMenuFolderIdIn(folderIds);
 		return defaultList;
-	}
+	}*/
 
 }

@@ -128,45 +128,46 @@ public class CompanyService {
 		paramMap.addValue("comp_id", companyId);
 		
 		String sql = """
-			with A as 
-            (
-                select mcu.id 
-                , mcu."Material_id" 
-                , mcu."Company_id"
-                , mcu."UnitPrice" 
-                , mcu."FormerUnitPrice" 
-                , mcu."ApplyStartDate"
-                , mcu."ApplyEndDate"
-                , mcu."ChangeDate"
-                , mcu."ChangerName" 
-                , mcu."Type"
-                , row_number() over (partition by mcu."Company_id" order by mcu."ApplyStartDate" desc) as g_idx
-                , now() between mcu."ApplyStartDate" and mcu."ApplyEndDate" as current_check
-                , now() < mcu."ApplyStartDate" as future_check
-                from mat_comp_uprice mcu 
-                where mcu."Company_id" = :comp_id
-            )
-            select A.id as mcu_id
-            , A."Material_id" as mat_id
-            , dbo.fn_code_name('mat_type', mg."MaterialType") as mat_type_name
-            , mg."Name" as mat_grp_name
-            , m."Code" as mat_code
-            , m."Name" as mat_name
-            , u."Name" as unit_name
-            , A."UnitPrice" as unit_price
-            , A."FormerUnitPrice" as former_unit_price
-            , A."ApplyStartDate"::date as apply_start_date
-            , A."ApplyEndDate"::date as apply_end_date
-            , A."ChangeDate" as change_date
-            , A."ChangerName" as changer_name
-            , A."Company_id"
-            , A."Type" as type
-            from A 
-            inner join material m on m.id = A."Material_id"
-            left join mat_grp mg on mg.id = m."MaterialGroup_id"
-            left join unit u on u.id = m."Unit_id"
-            where ( A.current_check = true or A.future_check = true or A.g_idx = 1)
-            order by m."Name", A."ApplyStartDate" 
+				WITH A AS (
+					 SELECT 
+							 mcu.id, 
+							 mcu."Material_id", 
+							 mcu."Company_id",
+							 mcu."UnitPrice", 
+							 mcu."FormerUnitPrice", 
+							 mcu."ApplyStartDate",
+							 mcu."ApplyEndDate",
+							 mcu."ChangeDate",
+							 mcu."ChangerName", 
+							 mcu."Type",
+							 ROW_NUMBER() OVER (PARTITION BY mcu."Company_id" ORDER BY mcu."ApplyStartDate" DESC) AS g_idx,
+							 CASE WHEN GETDATE() BETWEEN mcu."ApplyStartDate" AND mcu."ApplyEndDate" THEN 1 ELSE 0 END AS current_check,
+							 CASE WHEN GETDATE() < mcu."ApplyStartDate" THEN 1 ELSE 0 END AS future_check
+					 FROM mat_comp_uprice mcu 
+					 WHERE mcu."Company_id" = :comp_id
+			 )
+			 SELECT 
+					 A.id AS mcu_id,
+					 A."Material_id" AS mat_id,
+					 dbo.fn_code_name('mat_type', mg."MaterialType") AS mat_type_name,
+					 mg."Name" AS mat_grp_name,
+					 m."Code" AS mat_code,
+					 m."Name" AS mat_name,
+					 u."Name" AS unit_name,
+					 A."UnitPrice" AS unit_price,
+					 A."FormerUnitPrice" AS former_unit_price,
+					 CAST(A."ApplyStartDate" AS DATE) AS apply_start_date,
+					 CAST(A."ApplyEndDate" AS DATE) AS apply_end_date,
+					 A."ChangeDate" AS change_date,
+					 A."ChangerName" AS changer_name,
+					 A."Company_id",
+					 A."Type" AS type
+			 FROM A
+			 INNER JOIN material m ON m.id = A."Material_id"
+			 LEFT JOIN mat_grp mg ON mg.id = m."MaterialGroup_id"
+			 LEFT JOIN unit u ON u.id = m."Unit_id"
+			 WHERE (A.current_check = 1 OR A.future_check = 1 OR A.g_idx = 1)
+			 ORDER BY m."Name", A."ApplyStartDate"
 			""";
 		
 		List<Map<String, Object>> items = this.sqlRunner.getRows(sql, paramMap);

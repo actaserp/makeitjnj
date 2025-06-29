@@ -218,11 +218,7 @@
                                     사업체명
                                 </th>
                                 <td>
-                                    <select id="spjType" name="spjType" class="wp30">
-                                        <option value="">선택하세요</option>
-                                        <option value="ZZ">성우에스피(주)</option>
-                                        <option value="PP">성우피앤비(주)</option>
-                                    </select>
+                                    <select id="cboSpjangcd" name="cboSpjangcd"></select>
                                 </td>
                                 <th>
                                 </th>
@@ -240,11 +236,7 @@
                                     사용자그룹
                                 </dt>
                                 <dd>
-                                    <select class="mg-r5" id="cboUserGroup" name="cboUserGroup" style="width: 100%">
-                                            <option value="">선택하세요</option>
-                                            <option value="1">시스템관리자</option>
-                                            <option value="14">주문 담당자</option>
-                                            <option value="35">일반거래처</option>
+                                    <select class="mg-r10" id="cboUserGroup" name="cboUserGroup" style="width: 100%">
                                     </select>
                                 </dd>
                             </dl>
@@ -366,7 +358,6 @@
         }
     </script>
     <script type="text/javascript">
-
         var theGrid;
         var viewdata;
         let csrfToken = $("[name=_csrf]").val();
@@ -443,9 +434,7 @@
             const minimumRows = 5;
             data2.forEach((item, index) => {
                 item.rownum = index + 1; // 순번 추가
-                item.spjType = spjTypeText(item.spjType); // 기본값 설정 후 매핑
             });
-
 
             if (data2.length < minimumRows) {
                 const additionalRows = minimumRows - data2.length;
@@ -495,7 +484,8 @@
                         {binding: 'Phone', header: '핸드폰', width: '*', align: 'center', visible: true},
                         {binding: 'email', header: '이메일', width: '*', align: 'center', visible: false},
                         {binding: 'is_active', header: '활성화', width: '*', align: 'center', isReadOnly: false,},
-                        {binding: 'spjType', header: '사업체명', width: '*', align: 'center', isReadOnly: true},
+                        {binding: 'spjangcd', header: '사업장코드', width: '*', align: 'center', visible: false},
+                        {binding: 'spjangnm', header: '사업체명', width: '*', align: 'center', isReadOnly: true},
                         {binding: 'date_joined', header: '생성일', width: '*', align: 'center', isReadOnly: true},
                     ],
                     itemsSource: viewdata,
@@ -524,15 +514,6 @@
             });
         }//fetchListData
 
-        function spjTypeText(spjType) {
-            const mapping = {
-                "PP": "성우피앤비(주)",
-                "ZZ": "성우에스피(주)"
-            };
-
-            return mapping[spjType]; // 기본값: "상태 없음"
-        }
-
         //날짜 포맷
         function formatDateString(dateString) {
             if (!dateString || typeof dateString !== 'string' || dateString.length < 8) {
@@ -549,7 +530,7 @@
         function showUserInfo(rowData) {
             // 필드 중 하나라도 비어있는지 확인하여 추가 데이터를 가져올지 결정
             const hasMissingFields = !rowData || !rowData.cltnm || !rowData.prenm || !rowData.biztypenm ||
-                !rowData.bizitemnm ||!rowData.userid || !rowData.email || !rowData.spjType;
+                !rowData.bizitemnm || !rowData.userid || !rowData.email || !rowData.spjType;
 
             if (hasMissingFields) {
                 // 데이터가 불완전하거나 비어 있을 때
@@ -559,7 +540,7 @@
                     $.ajax({
                         url: '/api/system/user/detail',
                         type: 'GET',
-                        data: { id: rowData.id },
+                        data: {id: rowData.id},
                         success: function (response) {
                             if (response && response.data) {
                                 populateFields(response.data); // 서버에서 가져온 데이터로 폼 채우기
@@ -596,20 +577,9 @@
 
             // authType(사용자 그룹) 설정
             document.getElementById('authType').value = data.group_id;
-
+            document.getElementById('cboSpjangcd').value = data.spjangcd;
             // 체크박스 설정
             document.getElementById("is_active").checked = data.is_active || false;
-
-            //사업체명
-            const spjTypeMapping = {
-                "성우에스피(주)": "ZZ",
-                "성우피앤비(주)": "PP"
-            };
-
-            const spjTypeElement = document.getElementById('spjType');
-            const spjangcd = spjTypeMapping[data.spjType] || ''; // 매핑 후 코드 값 반환
-            spjTypeElement.value = spjangcd;
-
             // 주소 관련 필드 설정
             const addressParts = splitAddress(data.cltadres || '');
             document.getElementById("postno").value = data.zipcd || '';
@@ -702,41 +672,6 @@
             theGrid.refresh();
         }
 
-        function grid_binding(data) {
-            var inspecDto = data;
-            var inspecData = [];
-            var cnt = 1;
-            for (let i = 0; i < inspecDto.length; i++) {
-                let item = inspecDto[i];
-                inspecData.push({
-                    id: item["id"],
-                    userid: item["userid"],            // 사용자ID
-                    prenm: item["prenm"],              // 대표자
-                    cltnm: item["cltnm"],              // 업체명
-                    group_name: item["group_name"],    // 사용자그룹
-                    group_id: item["group_id"],        // 사용자그룹 (보이지 않음)
-                    authType: item["UserGroup_id"],
-                    biztypenm: item["biztypenm"],      // 업태
-                    bizitemnm: item["bizitemnm"],      // 종목
-                    tel: item["tel"],                  // 전화번호 (보이지 않음)
-                    Phone: item["Phone"],              // 핸드폰
-                    email: item["email"],              // 이메일 (보이지 않음)
-                    date_joined: item["date_joined"],   // 생성일
-                    spjType: item['spjangcd']          //사업체명
-                });
-                cnt++
-            }
-            theGrid.columns.clear();
-            theGrid.autoGenerateColumns = false;
-
-            viewdata.sourceCollection = inspecData;
-
-            for (var i = 0; i < columns.length; i++) {
-                var col = new wijmo.grid.Column(columns[i]);
-                theGrid.columns.push(col);
-            }
-        }
-
         function clearForm() {
             ['id', 'userid', 'prenm', 'cltnm', 'authType', 'email',
                 'Phone', 'tel', 'divinm2', 'agencycd', 'firstSelect', 'placeAddress',
@@ -789,57 +724,7 @@
         }*/
 
 
-        $(document).ready(function (e) {
 
-            //검색 사용자 그룹
-            initializeSelect({
-                url: '/user-auth/type',
-                params: {},
-                elementId: 'cboUserGroup',
-                valueField: "id",
-                textField: "name"
-            })
-
-            initializeSelect({
-                url: '/user-auth/type',
-                params: {},
-                elementId: 'authType',
-                valueField: "id",
-                textField: "name"
-            })
-
-            initializeSelect({
-                url: '/user-codes/parent',
-                params: {parentId: 154},
-                elementId: 'agencycd',
-                valueField: "id"
-            })
-            initializeSelect2({
-                url: '/user-auth/type',
-                params: {},
-                elementId: 'authType',
-                valueField: "id",
-                textField: "name"
-            })
-
-            initializeSelect2({
-                url: '/user-codes/parent',
-                params: {parentId: 154},
-                elementId: 'agencycd',
-                valueField: "id"
-            })
-
-
-
-            $('#userid').on('input', function () {
-                let userid = $(this).val();
-                if (userid) {
-                    checkUserId(userid);
-                } else {
-                    $('#userid-check-message').hide();
-                }
-            });
-        });
 
         function checkUserId(userid) {
             $.ajax({
@@ -1066,7 +951,49 @@
             window.open(url, '_blank',
                 'width=1040,height=1000,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes');
         }
+        $(document).ready(function (e) {
 
+            AjaxUtil.fillSelectOptions($('#cboSpjangcd'), 'tb_xa012', 'choose', '', 'spjangnm');
+            AjaxUtil.fillSelectOptions($('#cboUserGroup'), 'user_group', 'choose', '', 'name');
+
+            initializeSelect({
+                url: '/user-auth/type',
+                params: {},
+                elementId: 'authType',
+                valueField: "id",
+                textField: "name"
+            })
+
+            initializeSelect({
+                url: '/user-codes/parent',
+                params: {parentId: 154},
+                elementId: 'agencycd',
+                valueField: "id"
+            })
+            initializeSelect2({
+                url: '/user-auth/type',
+                params: {},
+                elementId: 'authType',
+                valueField: "id",
+                textField: "name"
+            })
+
+            initializeSelect2({
+                url: '/user-codes/parent',
+                params: {parentId: 154},
+                elementId: 'agencycd',
+                valueField: "id"
+            })
+
+            $('#userid').on('input', function () {
+                let userid = $(this).val();
+                if (userid) {
+                    checkUserId(userid);
+                } else {
+                    $('#userid-check-message').hide();
+                }
+            });
+        });
     </script>
 </th:block>
 </html>

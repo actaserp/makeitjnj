@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -14,6 +15,7 @@ import mes.domain.entity.User;
 import mes.domain.entity.UserGroup;
 import mes.domain.services.SqlRunner;
 
+@Slf4j
 @Repository
 public class SystemService {
 
@@ -305,9 +307,8 @@ public class SystemService {
         MapSqlParameterSource dicParam = new MapSqlParameterSource();
         dicParam.addValue("folder_id", folderId);
         dicParam.addValue("group_id", userGroupId);
-//        System.out.println("Executing SQL: " + sql + " with folder_id=" + folderId);
-
-//        System.out.println("Executing SQL: " + sql);
+        log.info("사용자그룹 메뉴권한 목록 SQL: {}", sql);
+        log.info("SQL Parameters: {}", dicParam.getValues());
         return this.sqlRunner.getRows(sql, dicParam);
     }
 

@@ -164,9 +164,9 @@
                     </div>
                     <!-- 알람 -->
                     <!-- 사용자 로그인 상태-->
-                    <!-- <div id="spjangSelectWrapper">
+                     <div id="spjangSelectWrapper">
                         
-                    </div> -->
+                    </div>
                     <a class="user" title="사용자">
                         <span style="padding:0 5px">·</span>
                         <span th:text="${ groupname }"></span>
@@ -719,7 +719,7 @@
     function sseConnect(){
 
         const spjangcd = sessionStorage.getItem("spjangcd");
-
+        console.log("spjangcd in sessionStorage:", spjangcd);
         const eventSource = new EventSource("/sse/subscribe?spjangcd="  + spjangcd);
 
         eventSource.onmessage = function (e){

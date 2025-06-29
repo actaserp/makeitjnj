@@ -38,8 +38,8 @@ public class UnitPriceService {
             , mcu."ChangerName"
             , mcu."Material_id"
             , row_number() over (partition by mcu."Company_id" order by mcu."ApplyStartDate" desc) as g_idx
-            , now() between mcu."ApplyStartDate" and mcu."ApplyEndDate" as current_check
-            , now() < mcu."ApplyStartDate" as future_check
+            , GETDATE() between mcu."ApplyStartDate" and mcu."ApplyEndDate" as current_check
+            , GETDATE() < mcu."ApplyStartDate" as future_check
             from mat_comp_uprice mcu 
             where mcu."Material_id" = :mat_pk
             )

@@ -48,7 +48,7 @@ public class UserService {
 
         StringBuilder sql = new StringBuilder("""
             SELECT
-                au.id,
+            	au.id,
                 au.last_name,
                 txc.cltnm,
                 au.username AS userid,
@@ -61,22 +61,19 @@ public class UserService {
                 up.lang_code,
                 au.is_active,
                 au.Phone,
+                txc.cltcd,
                 txc.biztypenm,
                 txc.bizitemnm,
                 txc.prenm,
                 FORMAT(au.date_joined, 'yyyy-MM-dd') AS date_joined,
-                au.spjangcd AS spjType
-            FROM
-                auth_user au
-            LEFT JOIN
-                user_profile up ON up.User_id = au.id
-            LEFT JOIN
-                user_group ug ON ug.id = up.UserGroup_id
-            LEFT JOIN
-                TB_XCLIENT txc
-                ON au.username = txc.saupnum
-            WHERE
-                1 = 1
+                tx.spjangnm ,
+                au.spjangcd 
+            FROM auth_user au
+            LEFT JOIN user_profile up ON up.User_id = au.id
+            LEFT JOIN user_group ug ON ug.id = up.UserGroup_id
+            LEFT JOIN TB_XCLIENT txc ON au.username = txc.saupnum 
+            left join tb_xa012 tx on au.spjangcd =tx.spjangcd
+            WHERE 1 = 1
         """);
 
         if (spjangcd != null && !spjangcd.isEmpty()) {
@@ -105,10 +102,8 @@ public class UserService {
         }
 
         // SQL 디버깅 로그
-        //log.info("Executing SQL:\n{}\nWith Parameters: {}", sql, params.getValues());
-        // SQL 디버깅 로그
-        //log.info("Executing SQL: {} with params: {}", sql, params.getValues());
-
+        log.info("사용자 관리 read SQL: {}", sql);
+        log.info("SQL Parameters: {}", params.getValues());
         // SQL 실행 후 결과 반환
         return sqlRunner.getRows(sql.toString(), params);
     }
@@ -243,7 +238,7 @@ public class UserService {
         params.addValue("id", id);
 
         String sql = """
-        SELECT 
+            SELECT
             au.id ,
             au.last_name,
             au.username AS userid,
@@ -261,26 +256,20 @@ public class UserService {
             ug.id AS group_id,
             ug.Name AS group_name,
             up.lang_code ,
-            au.*,
             txc.zipcd AS postno,
-            txc.*,
-            CASE
-                    WHEN au.spjangcd = 'ZZ' THEN '성우에스피(주)'
-                    WHEN au.spjangcd = 'PP' THEN '성우피앤비(주)'
-                    ELSE '알 수 없음'
-                END AS spjType
-        FROM 
-            auth_user au
-        LEFT JOIN 
-            user_profile up ON up.User_id = au.id
-        LEFT JOIN 
-            user_group ug ON ug.id = up.UserGroup_id
-        LEFT JOIN 
-            TB_XCLIENT txc ON au.first_name = txc.cltnm 
-        WHERE 
-            au.id = :id
+            au.spjangcd,
+            tx.spjangnm,
+            au.*,
+            txc.*
+            FROM auth_user au
+            LEFT JOIN  user_profile up ON up.User_id = au.id
+            LEFT JOIN user_group ug ON ug.id = up.UserGroup_id
+            LEFT JOIN TB_XCLIENT txc ON au.first_name = txc.cltnm 
+            left join tb_xa012 tx on tx.spjangcd = au.spjangcd
+            WHERE au.id = :id
             """;
-//            System.out.println(sql);
+//        log.info("사용자 상세 SQL: {}", sql);
+//        log.info("SQL Parameters: {}", params.getValues());
         return sqlRunner.getRow(sql, params);
     }
 

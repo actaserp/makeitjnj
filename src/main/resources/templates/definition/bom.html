@@ -110,6 +110,9 @@
                     <button type="button" class="btn-excellt btn-default y_write_auth" id="btnBomRevision" data-labelCd="개정"
                             style="width: 90px; height: 36px; float: none;">
                     </button>
+                    <a class="btn" title="엑셀 업로드" id="btnShowUpload" style="width: 86px;">
+                        엑셀 업로드
+                    </a>
                 </div>
             </div>
 
@@ -135,23 +138,24 @@
                                 <li>
                                     <button type="button" class="btn-excellt btn-default" id="btnBomCompNew"
                                             style="width: 115px; height: 36px;"><i
-                                            class="fas fa-plus"></i>등록
+                                        class="fas fa-plus"></i>등록
                                     </button>
                                 </li>
 
                                 <li>
                                     <button type="button" class="btn-delete btn-danger y_write_auth" id="btnBomCompDelete"
                                             style="width: 115px; height: 36px;"><i
-                                            class="fas fa-trash"></i>삭제
+                                        class="fas fa-trash"></i>삭제
                                     </button>
                                 </li>
 
                                 <li>
                                     <button type="button" class="btn-edit btn-default" id="btnBomCompEdit"
                                             style="width: 115px; height: 36px;"><i
-                                            class="fas fa-edit"></i>수정
+                                        class="fas fa-edit"></i>수정
                                     </button>
                                 </li>
+
                                 <!--<li>
                                     <button type="button" class="btn-default" id="btnCompUp" title="순서 조정-위로"
                                             style="width: 150px; height: 36px;"><i
@@ -209,7 +213,7 @@
             </div>
         </div>
     </div>
-<!-- BOM 등록 스크립트 -->
+    <!-- BOM 등록 스크립트 -->
     <script type="text/x-tmpl" id="bomCreateTemplate">
         <div class="content_wrap popup">
             <!--<header>
@@ -338,7 +342,52 @@
           <button type="button" class="btn-popup" id="btnTest"><span data-labelCd="새로고침">새로고침</span></button>
         </div>
 </div>
-</script>
+    </script>
+    <!--    엑셀 등록 스크립트-->
+    <script type="text/x-tmpl" id="excelUploadTemplate">
+        <div class="content_wrap popup" id="div_excel_upload">
+
+            <div class="table-wrap">
+                <form id="excelUploadForm">
+                <table class="write-table">
+                    <colgroup>
+                        <col style="width: 25%;">
+                        <col style="width: 75%;">
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th style="text-align: center">
+                                <label>일자</label>
+                            </th>
+                            <td>
+                                <input style="width:300px;" type="date" id="data_date" name="data_date" value=""  />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th style="text-align: center">
+                                <label>첨부파일</label>
+                            </th>
+                            <td>
+                                <input style="width:300px; height: 44px;" type="file" id="upload_file" name="upload_file" enctype="multipart/form-data" accept=".xls, .xlsx"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </form>
+            </div>
+            <div class="pt-2">
+                <span style="padding-top:30px;">*미리 등록된 거래처만 엑셀 업로드가 가능합니다.</span>
+                <textarea id="upload_message" style='display:none;width:100%;height:150px;'></textarea>
+            </div>
+
+            </section>
+
+            <div class="popup-button">
+                <button type="button" class="btn-popup y_write_auth" id="btn_excel_save" >저장</button>
+                <button type="button" class="btn-popup" id="modal-close-button">닫기</button>
+            </div>
+        </div>
+    </script>
 
 
     <!-- 구성품목 등록 스크립트 -->
@@ -473,69 +522,6 @@
             init() {
                 let _this = this;
 
-                /*let configBom = {
-                    target: $('[data-ax5grid="bom-grid"]'),
-                    sortable: true,
-                    frozenColumnIndex: 0, // 열 고정
-                    frozenRowIndex: 0,    // 행 고정
-                    showLineNumber: true, // 열의 번호 보이기 여부
-                    showRowSelector: false,  // checkbox(선택) 보이기 여부
-                    multipleSelect: false, // 여러행 선택 가능 여부 (false시 단독 선택)
-                    sortable: true, // 모든 컬럼에 정렬 아이콘 표시 (columns에서 컬럼별 소팅여부 재설정 가능)
-                    multiSort: true, // 다중 정렬 여부
-                    header: {
-                        align: 'center',  // 헤더의 기본 정렬
-                        columnHeight: 30  // 헤더 높이
-                    },
-                    body: {
-                        columnHeight: 25, // body의 기본 높이
-                        onClick: function (e) {
-                            //e.colIndex
-                            //e.dindex
-                            //c.value
-                            //e.column
-                            //e.item
-                            //e.list
-                            _this.gridBom.select(this.dindex);
-                            _this.showBomCompList(e.item.id);
-                            //_this.showBomCompTreeList(e.item.id);
-                        },
-                    },
-                    page: {
-                        display: true,  // 페이징 보이기 여부
-                        statusDisplay: true,
-                    },
-                    columns: [
-                        {key: 'id', label: '번호', width: 50, align: 'left'},
-                        {key: 'mat_type', label: '품목구분', width: 110, align: 'center'},
-                        {key: 'mat_group_name', label: '품목그룹', width: 110, align: 'left'},
-                        {key: 'mat_code', label: '(반)제품코드', width: 110, align: 'center'},
-                        {key: 'mat_name', label: '(반)제품명', width: 200, align: 'left'},
-                        {key: 'bom_type_name', label: 'BOM종류', width: 120, align: 'center'},
-                        {
-                            key: 'Name', label: 'BOM명', width: 200, align: 'left',
-                            styleClass: function () {
-                                if (this.item.current_flag == 'current')
-                                    return 'back_current';
-                                if (this.item.current_flag == 'past')
-                                    return 'back_past';
-                                if (this.item.current_flag == 'future')
-                                    return 'back_future';
-                                if (this.item.current_flag == 'error')
-                                    return 'back_error';
-                                //return 'background-white';
-                            }
-                        },
-                        {key: 'OutputAmount', label: '기준수량', width: 110, align: 'right'},
-                        {key: 'unit', label: '단위', width: 110, align: 'center'},
-                        {key: 'Version', label: 'Ver.', width: 110, align: 'center'},
-                        {key: 'StartDate', label: '적용시작일', width: 130, align: 'center'},
-                        {key: 'EndDate', label: '적용종료일', width: 130, align: 'center'},
-                        //{ key: 'Description', label: '설명', width: 250, align: 'center' },
-                    ]
-
-                };*/
-
                 //메인 그리드
                 this.grid = new wijmo.grid.FlexGrid('#bom-grid', {
                     selectionMode: wijmo.grid.SelectionMode.Row,
@@ -563,16 +549,16 @@
                         }
                     },
                     columns: [
-                        {binding: 'id', header: '번호', width: 100, align: 'left'},
-                        {binding: 'mat_type', header: '품목구분', width: 110, align: 'center'},
-                        {binding: 'mat_group_name', header: '품목그룹', width: 140, align: 'left'},
-                        {binding: 'mat_code', header: '(반)제품코드', width: '*', align: 'left'},
-                        {binding: 'mat_name', header: '(반)제품명', width: 150, align: 'left'},
-                        {binding: 'bom_type_name', header: 'BOM종류', width: 120, align: 'center'},
-                        {binding: 'Name', header: 'BOM명', width: 160, align: 'left'},
-                        {binding: 'OutputAmount', header: '기준수량', width: 110, align: 'right'},
-                        {binding: 'unit', header: '단위', width: 110, align: 'center'},
-                        {binding: 'Version', header: 'Ver.', width: 110, align: 'center'},
+                        {binding: 'id', header: '번호', width: 70, align: 'center'},
+                        {binding: 'mat_type', header: '품목구분', width: 85, align: 'center'},
+                        {binding: 'mat_group_name', header: '품목그룹', width: 85, align: 'left'},
+                        {binding: 'mat_code', header: '(반)제품코드', width: 110, align: 'left'},
+                        {binding: 'mat_name', header: '(반)제품명', width: 300, align: 'left'},
+                        {binding: 'bom_type_name', header: 'BOM종류', width: 110, align: 'center'},
+                        {binding: 'Name', header: 'BOM명', width: '*', align: 'left'},
+                        {binding: 'OutputAmount', header: '기준수량', width: 80, align: 'right'},
+                        {binding: 'unit', header: '단위', width: 100, align: 'center'},
+                        {binding: 'Version', header: 'Ver.', width: 60, align: 'center'},
                         {binding: 'StartDate', header: '적용시작일', width: 130, align: 'center'},
                         {binding: 'EndDate', header: '적용종료일', width: 130, align: 'center'},
                     ],
@@ -586,7 +572,7 @@
                         let selectedItem = this.grid.rows[row].dataItem;
                         _this.showBomCompList(selectedItem.id)
                         _this.showBomCompTreeList(selectedItem.id)
-                       /* _this.showBomCompTreeList(selectedItem.id)*/
+                        /* _this.showBomCompTreeList(selectedItem.id)*/
                     }
                 });
 
@@ -614,6 +600,10 @@
                         {binding: 'mat_name', header: '품목명', width: 350, align: 'left'},
                         {binding: 'Amount', header: '필요수량', width: 120, align: 'right'},
                         {binding: 'unit', header: '단위', width: 100, align: 'center'},
+                        {binding: 'unit', header: '외주단가', width: 100, align: 'center'},
+                        {binding: 'unit', header: '납품단가', width: 100, align: 'center'},
+                        {binding: 'unit', header: '손익금액', width: 100, align: 'center'},
+                        {binding: 'unit', header: '수익율', width: 100, align: 'center'},
                         {
                             binding: 'Description',
                             header: '비고',
@@ -1280,10 +1270,10 @@
                         }
                     }
 
-                   /* let items = page.gridBom.getList("selected");
-                    if (items.length > 0) {
-                        _this.showBomCompList(items[0].id);
-                    }*/
+                    /* let items = page.gridBom.getList("selected");
+                     if (items.length > 0) {
+                         _this.showBomCompList(items[0].id);
+                     }*/
 
                 };
                 AjaxUtil.postAsyncData(url, data, fnSuccess);
@@ -1339,10 +1329,10 @@
                             }
                         }
 
-                      /*  let items = page.gridBom.getList("selected");
-                        if (items.length > 0) {
-                            _this.showBomCompList(items[0].id);
-                        }*/
+                        /*  let items = page.gridBom.getList("selected");
+                          if (items.length > 0) {
+                              _this.showBomCompList(items[0].id);
+                          }*/
                     } else {
                         Alert.alert('', res.message);
                     }
@@ -1435,12 +1425,70 @@
                 AjaxUtil.postAsyncData(url, data, fnsuccess);
             }
 
+            // 엑셀 업로드 버튼
+            showPopupExcelUpload(data) {
+                let _this = this;
+                let content = tmpl('excelUploadTemplate', data);
+                let $content = $(content);
+                $content.find('#data_date').val(data.data_date);
+                $content.find('#day_index').val(data.day_index);
+
+                //팝업공통모듈
+                let modalContainer = new PopupDraggable('엑셀 업로드');
+                modalContainer.open({ width: 440, height: 220, $content });
+
+
+
+                $content.find('#btn_excel_save').on('click', function () {
+                    let $form = $content.find('#excelUploadForm');
+                    Alert.confirm('',
+                        '저장하시겠습니까?',
+                        function () {
+                            _this.saveBomBulkData($form, modalContainer);
+                            //modalContainer.close();
+                        },
+                        function () { }
+                    );
+                });
+            }
+
+            // 엑셀 업로드 저장
+            saveBomBulkData($form, modalContainer) {
+                let _this = this;
+                var form = $('#excelUploadForm')[0];
+                var formData = new FormData(form);
+
+                formData['data_date'] = $('#srchStartDt').val();
+                formData.append("uploadfile", $('#upload_file')[0].files[0].name);
+
+                let result = AjaxUtil.postFileSyncData('/api/definition/bom' + '/upload_save', formData);
+
+                if (result) {
+                    let message = '저장되었습니다.';
+                    if (result.success) {
+                        Notify.success(message);
+                        _this.searchMainData();
+                        modalContainer.close();
+                    } else {
+
+                        Alert.alert('', result.message);
+
+                        /*let $divMessage = modalContainer.$content.find('#upload_message');
+                        $divMessage.text(JSON.stringify(result.error_items));
+                        $divMessage.show();*/
+                    }
+                }
+
+            }
+
 
         }
 
         let page = null;
 
         $(document).ready(function (e) {
+            console.log(userinfo.can_write());
+
             page = new BOMPage();
             //그리드 컬럼 설정
 
@@ -1475,7 +1523,7 @@
             });
 
             $('#btnBomReplicate').click(function () {
-              /*  let items = page.gridBom.getList("selected");*/
+                /*  let items = page.gridBom.getList("selected");*/
                 let grid = wijmo.Control.getControl('#bom-grid'); // 그리드 객체 가져오기
                 let selection = grid.selection; // 현재 선택된 셀의 정보 가져오기
 
@@ -1487,7 +1535,7 @@
 
                         Alert.confirm('', "선택한 BOM을 가지고 새 BOM을 복제하시겠습니까?",
                             function () {
-                        page.replicateBOM(id);
+                                page.replicateBOM(id);
                             },
                             function () {
                             }
@@ -1653,14 +1701,14 @@
                 }
 
 
-               /* let row = items[0];
-                if (row.parent_mat_id > 0) {
-                    Alert.alert('', '1레벨의 구성품만 삭제할 수 있습니다.');
-                    return;
-                }
-                Alert.confirm('', "삭제하시겠습니까?", function (e) {
-                    page.deleteMaterialData(row.id);
-                });*/
+                /* let row = items[0];
+                 if (row.parent_mat_id > 0) {
+                     Alert.alert('', '1레벨의 구성품만 삭제할 수 있습니다.');
+                     return;
+                 }
+                 Alert.confirm('', "삭제하시겠습니까?", function (e) {
+                     page.deleteMaterialData(row.id);
+                 });*/
 
             });
 
@@ -1704,7 +1752,7 @@
                         let id = item.id; // ID 값 가져오기
                         Alert.confirm('', "삭제하시겠습니까?",
                             function () {
-                        page.deleteBOM(id);
+                                page.deleteBOM(id);
                             },
                             function () {
                             }
@@ -1807,8 +1855,19 @@
             });
 
             //page.searchBomList();
+            // 엑셀 업로드 버튼
+            $('#btnShowUpload').click(function (e) {
+                let data = {
+                    'id': '',
+                    'data_date': CommonUtil.getYYYYMMDD(),
+                };
+                page.showPopupExcelUpload(data);
+            });
+
+
 
         });
+
     </script>
 
 

@@ -32,6 +32,7 @@ import mes.domain.repository.actasRepository.TB_XClientRepository;
 import org.hibernate.Hibernate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
@@ -133,9 +134,8 @@ public class AccountController {
 	public AjaxResult postLogin(
 			@RequestParam("username") final String username,
 			@RequestParam("password") final String password,
-			final HttpServletRequest request) throws UnknownHostException {
-
-		//System.out.println("로그인 데이터: " + username + " / " + password);
+			final HttpServletRequest request) {
+		// 여기로 들어오지 않음.
 
 		AjaxResult result = new AjaxResult();
 
@@ -144,24 +144,35 @@ public class AccountController {
 
 		UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(username, password);
 		CustomAuthenticationToken auth = null;
+
 		try{
 			auth = (CustomAuthenticationToken)authManager.authenticate(authReq);
+
+
+		} catch (InsufficientAuthenticationException e) {
+			data.put("code", "null");
+			return result;
 		}catch (AuthenticationException e){
 			//e.printStackTrace();
 			data.put("code", "NOUSER");
 			return result;
 		}
 
+
 		if(auth!=null) {
 			User user = (User)auth.getPrincipal();
-			user.getActive();
-			data.put("code", "OK");
 
-			try {
-				this.accountService.saveLoginLog("login", auth);
-			} catch (UnknownHostException e) {
-				// Handle the exception (e.g., log it)
-				e.printStackTrace();
+			if (!user.getActive()) {  // user.getActive()가 false인 경우
+				data.put("code", "noactive");
+			} else {
+				data.put("code", "OK");
+
+				try {
+					this.accountService.saveLoginLog("login", auth);
+				} catch (UnknownHostException e) {
+					// Handle the exception (e.g., log it)
+					e.printStackTrace();
+				}
 			}
 		} else {
 			result.success=false;
