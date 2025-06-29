@@ -1,4 +1,4 @@
-package mes.app.sse.Transaction;
+package mes.sse.Transaction;
 
 public interface SseObserver {
 

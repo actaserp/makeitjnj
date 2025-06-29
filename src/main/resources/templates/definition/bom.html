@@ -1092,39 +1092,6 @@
                 }
             }
 
-
-            /*showBomCompList(bom_id) {
-                let _this = this;
-
-                let param = {
-                    'id': bom_id,
-                    //"action": 'bom_comp_list'
-                };
-                let url = '/api/definition/bom/bom_comp_list';
-                let result = AjaxUtil.getSyncData(url, param);
-                if (result.success) {
-                    let count = result.data.length;
-                    _this.gridBomComp.setData([]);
-                    try {
-                        _this.gridBomComp.setData({
-                            list: result.data,
-                            page: {
-                                display: true,
-                                totalElements: count,
-                            }
-                        });
-                        let text = '';
-                        result.data.forEach(function (item, index) {
-                            text += item.mat_code + '\t' + item.Amount + '\t' + item.Description + '\n';
-                        });
-                        $('#txtCopyText').val(text);
-                    } catch (ex) {
-                        Notify.error('에러가 발생했습니다.' + ex);
-                        throw ex;
-                    }
-                }
-            }*/
-
             showBomCompTreeList(bom_id) {
                 let _this = this;
                 let url = '/api/definition/bom/material_tree_list';

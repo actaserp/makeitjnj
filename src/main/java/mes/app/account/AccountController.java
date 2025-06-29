@@ -188,12 +188,30 @@ public class AccountController {
 		return result;
 	}
 
+/*
 	@GetMapping("/account/myinfo")
 	public AjaxResult getUserInfo(Authentication auth){
 		User user = (User)auth.getPrincipal();
 		AjaxResult result = new AjaxResult();
 
 		Map<String, Object> dicData = userService.getUserInfo(user.getUsername());
+		result.data = dicData;
+		return result;
+	}
+*/
+
+
+	@GetMapping("/account/myinfo")
+	public AjaxResult getUserInfo(Authentication auth){
+		User user = (User)auth.getPrincipal();
+		AjaxResult result = new AjaxResult();
+
+		Map<String, Object> dicData = new HashMap<String, Object>();
+		dicData.put("login_id", user.getUsername());
+		dicData.put("name", user.getUserProfile().getName());
+		dicData.put("userHp", user.getTel());
+		dicData.put("email", user.getEmail());
+		dicData.put("spjangcd", user.getSpjangcd());
 		result.data = dicData;
 		return result;
 	}

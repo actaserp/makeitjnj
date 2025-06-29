@@ -24,7 +24,6 @@
 
     <script th:inline="javascript">
         var spjangList = /*[[${session.spjangList}]]*/ [];
-
     </script>
 
     <style>
@@ -716,28 +715,34 @@
     fetchWeatherData();
 
 
-    function sseConnect(){
+    function sseConnect() {
+        let spjangcd = sessionStorage.getItem("spjangcd");
 
-        const spjangcd = sessionStorage.getItem("spjangcd");
-        console.log("spjangcd in sessionStorage:", spjangcd);
-        const eventSource = new EventSource("/sse/subscribe?spjangcd="  + spjangcd);
-
-        eventSource.onmessage = function (e){
-
-            if(e.data){
-                Notify.success(e.data);
-
-            }
-
+        // spjangcd가 null이면 기본값 지정
+        if (!spjangcd) {
+            console.warn("⚠️ spjangcd가 null입니다. 기본값 'ZZ'를 사용합니다.");
+            spjangcd = "ZZ";
+            sessionStorage.setItem("spjangcd", spjangcd); // 저장도 해줌
         }
 
-        eventSource.onerror = function(err) {
-            console.log('SSE 오류 발생, 재연결 시도 중...', err);
+        console.log("✅ spjangcd in sessionStorage:", spjangcd);
+
+        const eventSource = new EventSource("/sse/subscribe?spjangcd=" + spjangcd);
+
+        eventSource.onmessage = function (e) {
+            if (e.data) {
+                Notify.success(e.data);
+            }
+        };
+
+        eventSource.onerror = function (err) {
+            console.log("SSE 오류 발생, 재연결 시도 중...", err);
             eventSource.close();
             setTimeout(sseConnect, 3000);
         };
     }
-    sseConnect();
+    // SSE 연결
+    //sseConnect();
 
     // 날씨 정보를 서버에서 가져오는 함수
     function fetchWeatherData() {
@@ -807,23 +812,30 @@
         const wrapper = document.getElementById('spjangSelectWrapper');
         const savedSpjangcd = sessionStorage.getItem('spjangcd');
         const select = document.createElement('select');
-
         select.id = 'spjangcd';
         select.name = 'spjangcd';
         select.classList.add('select-no-border');
 
-        // 디폴트로 선택할 spjangcd 값
-        let defaultSpjangcd = null;
-
-        if (!savedSpjangcd && spjangList.length >= 2) {
-            const zzItem = spjangList.find(item => item.spjangcd === 'ZZ');
-            if (zzItem) {
-                defaultSpjangcd = 'ZZ';
-                sessionStorage.setItem('spjangcd', 'ZZ');
-            }
+        // ✅ spjangList가 배열인지 확인
+        if (!Array.isArray(spjangList)) {
+            console.error('❌ spjangList is not an array. Check session or Thymeleaf context.');
+            return;
         }
 
-        spjangList.forEach((item, index) => {
+        let defaultSpjangcd = null;
+
+        const zzItem = spjangList.find(item => item.spjangcd === 'ZZ');
+        if (!savedSpjangcd && zzItem) {
+            defaultSpjangcd = 'ZZ';
+            sessionStorage.setItem('spjangcd', 'ZZ');
+        }
+
+        if (!savedSpjangcd && !defaultSpjangcd && spjangList.length > 0) {
+            defaultSpjangcd = spjangList[0].spjangcd;
+            sessionStorage.setItem('spjangcd', defaultSpjangcd);
+        }
+
+        spjangList.forEach((item) => {
             const option = document.createElement('option');
             option.value = item.spjangcd;
             option.textContent = item.spjangnm;
@@ -832,9 +844,6 @@
                 option.selected = (item.spjangcd === savedSpjangcd);
             } else if (defaultSpjangcd) {
                 option.selected = (item.spjangcd === defaultSpjangcd);
-            } else if (index === 0) {
-                option.selected = true;
-                sessionStorage.setItem('spjangcd', item.spjangcd); // 첫 항목 저장
             }
 
             select.appendChild(option);
@@ -846,7 +855,9 @@
         });
 
         wrapper.appendChild(select);
+        sseConnect();
     });
+
 
 </script>
 

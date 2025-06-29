@@ -1,5 +1,6 @@
 package mes.app.definition;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -44,52 +45,61 @@ public class BomController {
 	}
 
 
-
 	@PostMapping("/save")
 	public AjaxResult saveBom(
-			@RequestParam(value="id", required = false) Integer id,
-			@RequestParam(value="Name") String name,
-			@RequestParam(value="Material_id") int materialId,
-			@RequestParam(value="StartDate") String startDate,
-			@RequestParam(value="EndDate") String endDate,
-			@RequestParam(value="BOMType") String bomType,
-			@RequestParam(value="Version") String version,
-			@RequestParam(value="OutputAmount") float outputAmount,
-			@RequestParam(value ="spjangcd") String spjangcd,
+			@RequestParam(value = "id", required = false) Integer id,
+			@RequestParam(value = "Name") String name,
+			@RequestParam(value = "Material_id") int materialId,
+			@RequestParam(value = "StartDate") String startDate,
+			@RequestParam(value = "EndDate") String endDate,
+			@RequestParam(value = "BOMType") String bomType,
+			@RequestParam(value = "Version") String version,
+			@RequestParam(value = "OutputAmount") float outputAmount,
+			//@RequestParam(value = "spjangcd") String spjangcd,
 			Authentication auth
 	) {
-		spjangcd = "ZZ";
-		User user = (User)auth.getPrincipal();
 
+		User user = (User) auth.getPrincipal();
+		String spjangcd = user.getSpjangcd();
 		AjaxResult result = new AjaxResult();
 
+		// 문자열에 시간 추가
 		startDate = startDate + " 00:00:00";
 		endDate = endDate + " 23:59:59";
 
+		// 문자열 → Timestamp 변환
 		Timestamp startTs = Timestamp.valueOf(startDate);
 		Timestamp endTs = Timestamp.valueOf(endDate);
 
-		boolean isSameVersion = this.bomService.checkSameVersion(id, materialId, bomType, version);
+		// ✅ smalldatetime 범위 제한 적용
+		LocalDateTime maxDate = LocalDateTime.of(2079, 6, 6, 23, 59);
+		if (endTs.toLocalDateTime().isAfter(maxDate)) {
+			endTs = Timestamp.valueOf(maxDate);
+		}
 
-		if (isSameVersion==true) {
+		// checkSameVersion
+		boolean isSameVersion = this.bomService.checkSameVersion(id, materialId, bomType, version);
+		if (isSameVersion) {
 			result.success = false;
-			result.message="중복된 BOM버전이 존재합니다.";
+			result.message = "중복된 BOM버전이 존재합니다.";
 			return result;
 		}
 
-		boolean isDuplicated = this.bomService.checkDuplicatePeriod(id, materialId, bomType, startDate, endDate);
+		// ✅ checkDuplicatePeriod에 제한된 Timestamp를 넘김
+		boolean isDuplicated = this.bomService.checkDuplicatePeriod(id, materialId, bomType, startTs.toString(), endTs.toString());
 		if (isDuplicated) {
 			result.success = false;
-			result.message="기간이 겹치는 동일 제품의 \\n BOM이 존재합니다.";
+			result.message = "기간이 겹치는 동일 제품의 \n BOM이 존재합니다.";
 			return result;
 		}
 
-		Bom bom = null;
-		if (id!=null) {
+		// 저장 또는 업데이트
+		Bom bom;
+		if (id != null) {
 			bom = this.bomService.getBom(id);
-		}else {
+		} else {
 			bom = new Bom();
-			if (StringUtils.hasText(version)==false) {
+			if (!StringUtils.hasText(version)) {
 				version = "1.0";
 			}
 		}
@@ -104,12 +114,10 @@ public class BomController {
 		bom.set_audit(user);
 		bom.setSpjangcd(spjangcd);
 
-
 		this.bomService.saveBom(bom);
 		result.data = bom.getId();
 
 		return result;
-
 	}
 
 	@RequestMapping("/detail")

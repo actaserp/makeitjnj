@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -21,6 +22,7 @@ import mes.domain.services.CommonUtil;
 import mes.domain.services.DateUtil;
 import mes.domain.services.SqlRunner;
 
+@Slf4j
 @Repository
 public class BomService {
 
@@ -120,6 +122,9 @@ public class BomService {
 		paramMap.addValue("bom_type", bom_type);
 		paramMap.addValue("mat_name", mat_name);
 		paramMap.addValue("spjangcd", spjangcd);
+		log.info("🔍 [BOM Material List] 실행 SQL: {}", sql);
+		log.info("🔍 [BOM Material List] 파라미터: {}", paramMap.getValues());
+
 		return this.sqlRunner.getRows(sql, paramMap);
 
 	}
@@ -176,7 +181,7 @@ public class BomService {
 		paramMap.addValue("BOMType", bomType);
 		paramMap.addValue("Version", version);
 
-		String sql ="select 1 from bom where Material_id=:Material_id and BOMType=:BOMType and Version=:Version";
+		String sql ="select 1 from bom where \"Material_id\"=:Material_id and \"BOMType\"=:BOMType and \"Version\"=:Version";
 
 		if (id!=null) {
 			paramMap.addValue("id", id);
@@ -190,6 +195,7 @@ public class BomService {
 
 		return result;
 	}
+
 
 	/**
 	 *
@@ -205,27 +211,37 @@ public class BomService {
 		boolean result = true;
 
 		MapSqlParameterSource paramMap = new MapSqlParameterSource();
-		paramMap.addValue("materialId",materialId, java.sql.Types.INTEGER);
-		paramMap.addValue("bomType",bomType);
-		paramMap.addValue("startDate",startDate, java.sql.Types.TIMESTAMP);
-		paramMap.addValue("endDate",endDate, java.sql.Types.TIMESTAMP);
+		paramMap.addValue("materialId", materialId, java.sql.Types.INTEGER);
+		paramMap.addValue("bomType", bomType);
+		paramMap.addValue("startDate", startDate, java.sql.Types.TIMESTAMP);
+		paramMap.addValue("endDate", endDate, java.sql.Types.TIMESTAMP);
 
 		String sql = """
-		select count(*) as cnt from bom where Material_id = :materialId and BOMType = :bomType  and StartDate <= :endDate and EndDate >= :startDate 				
-		""";
+        select count(*) as cnt 
+        from bom 
+        where "Material_id" = :materialId 
+          and "BOMType" = :bomType  
+          and "StartDate" <= :endDate 
+          and "EndDate" >= :startDate
+    """;
 
-		if (id!=null) {
+		if (id != null) {
 			paramMap.addValue("bom_id", id);
-			sql+=" and id <> :bom_id";
+			sql += " and id <> :bom_id";
 		}
+
+		log.info("🔍 [중복 기간 체크] 실행 SQL: {}", sql);
+		log.info("🔍 [중복 기간 체크] 파라미터: {}", paramMap.getValues());
+
 		List<Map<String, Object>> mapList = this.sqlRunner.getRows(sql, paramMap);
 
-		if (mapList == null || (Long) mapList.get(0).get("cnt") == 0) {
+		if (mapList == null || ((Number) mapList.get(0).get("cnt")).longValue() == 0L) {
 			result = false;
 		}
 
 		return result;
 	}
+
 
 	public Bom saveBom(Bom bom){
 		return this.bomRepository.save(bom);
