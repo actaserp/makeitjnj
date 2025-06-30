@@ -43,34 +43,67 @@ public class HomeController {
 
 	}
 
-
 	@RequestMapping(value= "/", method=RequestMethod.GET)
-    public ModelAndView pageIndex(HttpServletRequest request, HttpSession session) {	
-		
-        SecurityContext sc = SecurityContextHolder.getContext();
-        Authentication auth = sc.getAuthentication();         
-        User user = (User)auth.getPrincipal();
+	public ModelAndView pageIndex(HttpServletRequest request, HttpSession session, HttpServletResponse response) {
+
+		// User-Agent 확인
+		String userAgent = request.getHeader("User-Agent").toLowerCase();
+		boolean isMobile = userAgent.contains("mobile") || userAgent.contains("android") || userAgent.contains("iphone");
+
+		String serverName = request.getServerName();
+
+		if (isMobile && serverName.equalsIgnoreCase("actascld.co.kr")) {
+			String redirectUrl = "https://mes.actascld.co.kr";
+			try {
+				response.sendRedirect(redirectUrl);
+				return null; // redirect 했으므로 이후 처리 중단
+			} catch (IOException e) {
+				e.printStackTrace(); // 로그로 출력하거나, 에러 뷰로 포워딩도 가능
+				return new ModelAndView("error/redirect_error"); // 예외 시 fallback 처리
+			}
+		}
+
+		SecurityContext sc = SecurityContextHolder.getContext();
+		Authentication auth = sc.getAuthentication();
+		User user = (User)auth.getPrincipal();
+		String username = user.getUserProfile().getName();
 		String userid = user.getUsername();
-        String username = user.getUserProfile().getName();;
+		Integer groupid = user.getUserProfile().getUserGroup().getId();
+		String groupname = user.getUserProfile().getUserGroup().getName();
+		String spjangcd = user.getSpjangcd();
 
+		SystemOption sysOpt= this.systemOptionRepository.getByCode("LOGO_TITLE");
+		String logoTitle = sysOpt.getValue();
 
-        SystemOption sysOpt= this.systemOptionRepository.getByCode("LOGO_TITLE");
-        String logoTitle = sysOpt.getValue();
-		logoTitle = "제이앤제이 주문시스템";
-        //q = this.systemOptionRepository.getByCode("main_menu");        
+		//q = this.systemOptionRepository.getByCode("main_menu");
 
+		List<Map<String, Object>> spjangList = null;
+		if (groupid == 1){ //관리자
+			spjangList = userService.getSpjangList();
+		} else {
+			spjangList = userService.getSpjang(spjangcd);
+		}
 
 		ModelAndView mv = new ModelAndView();
-		mv.addObject("userid", userid);
+		session.setAttribute("spjangList", spjangList);
 		mv.addObject("username", username);
+		mv.addObject("userid", userid);
+		mv.addObject("groupname", groupname);
+		session.setAttribute("spjangcd", spjangcd);
 		mv.addObject("userinfo", user);
 		mv.addObject("system_title", logoTitle);
-		session.setAttribute("spjangcd", "ZZ");
-//		mv.addObject("default_menu_code", "wm_dashboard_summary");
+		mv.addObject("default_menu_code", "wm_dashboard_summary");
 
 
+		String mqtt_host = settings.getProperty("mqtt_host");
+		String mqtt_web_port = settings.getProperty("mqtt_web_port");
+		String hmi_topic = settings.getProperty("hmi_topic");
+		mv.addObject("mqtt_host", mqtt_host);
+		mv.addObject("mqtt_web_port", mqtt_web_port);
+		mv.addObject("hmi_topic", hmi_topic);
 
-		mv.setViewName("index");
+		mv.setViewName(isMobile ? "mobile/mobile_main" : "index");
+
 		return mv;
 	}
 	

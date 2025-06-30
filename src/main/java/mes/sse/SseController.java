@@ -27,34 +27,17 @@ public class SseController {
     }*/
 
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@RequestParam(required = false) String spjangcd, Authentication auth) {
-        // 사용자 정보 가져오기
-        User user = (User) auth.getPrincipal();
-        String userid = user.getUsername();
-
-        // spjangcd가 null이면 DB에서 해당 사용자 기준으로 조회
-        if (spjangcd == null || spjangcd.trim().isEmpty()) {
-            spjangcd = getDefaultSpjangcdForUser(userid);
-        }
-
-        System.out.println("🔔 SSE 연결 요청 - userid: " + userid + ", spjangcd: " + spjangcd);
-
-        String resolvedSpjangcd = spjangcd;
-        if (resolvedSpjangcd == null || resolvedSpjangcd.trim().isEmpty()) {
-            resolvedSpjangcd = getDefaultSpjangcdForUser(userid);
-        }
-
-        final String targetSpjangcd = resolvedSpjangcd;
-
-        SseEmitter emitter = new SseEmitter(60 * 60 * 1000L);
+    public SseEmitter subscribe(@RequestParam String spjangcd){
+        SseEmitter emitter = new SseEmitter(60 * 60 * 1000L); // 1시간 타임아웃
         SseClient client = new SseClient(emitter);
 
-        subject.addObservers(targetSpjangcd, client);
+        System.out.println(spjangcd);
 
-        emitter.onCompletion(() -> subject.removeObserver(targetSpjangcd, client));
-        emitter.onTimeout(() -> subject.removeObserver(targetSpjangcd, client));
-        emitter.onError((e) -> subject.removeObserver(targetSpjangcd, client));
+        subject.addObservers(spjangcd, client);
 
+        emitter.onCompletion(() -> subject.removeObserver(spjangcd, client));
+        emitter.onTimeout(() -> subject.removeObserver(spjangcd, client));
+        emitter.onError((e) -> subject.removeObserver(spjangcd, client));
 
         try {
             emitter.send(SseEmitter.event().name("연결").data("연결"));

@@ -742,7 +742,7 @@
         };
     }
     // SSE 연결
-    //sseConnect();
+    sseConnect();
 
     // 날씨 정보를 서버에서 가져오는 함수
     function fetchWeatherData() {
@@ -812,30 +812,23 @@
         const wrapper = document.getElementById('spjangSelectWrapper');
         const savedSpjangcd = sessionStorage.getItem('spjangcd');
         const select = document.createElement('select');
+
         select.id = 'spjangcd';
         select.name = 'spjangcd';
         select.classList.add('select-no-border');
 
-        // ✅ spjangList가 배열인지 확인
-        if (!Array.isArray(spjangList)) {
-            console.error('❌ spjangList is not an array. Check session or Thymeleaf context.');
-            return;
-        }
-
+        // 디폴트로 선택할 spjangcd 값
         let defaultSpjangcd = null;
 
-        const zzItem = spjangList.find(item => item.spjangcd === 'ZZ');
-        if (!savedSpjangcd && zzItem) {
-            defaultSpjangcd = 'ZZ';
-            sessionStorage.setItem('spjangcd', 'ZZ');
+        if (!savedSpjangcd && spjangList.length >= 2) {
+            const zzItem = spjangList.find(item => item.spjangcd === 'ZZ');
+            if (zzItem) {
+                defaultSpjangcd = 'ZZ';
+                sessionStorage.setItem('spjangcd', 'ZZ');
+            }
         }
 
-        if (!savedSpjangcd && !defaultSpjangcd && spjangList.length > 0) {
-            defaultSpjangcd = spjangList[0].spjangcd;
-            sessionStorage.setItem('spjangcd', defaultSpjangcd);
-        }
-
-        spjangList.forEach((item) => {
+        spjangList.forEach((item, index) => {
             const option = document.createElement('option');
             option.value = item.spjangcd;
             option.textContent = item.spjangnm;
@@ -844,6 +837,9 @@
                 option.selected = (item.spjangcd === savedSpjangcd);
             } else if (defaultSpjangcd) {
                 option.selected = (item.spjangcd === defaultSpjangcd);
+            } else if (index === 0) {
+                option.selected = true;
+                sessionStorage.setItem('spjangcd', item.spjangcd); // 첫 항목 저장
             }
 
             select.appendChild(option);
@@ -855,18 +851,15 @@
         });
 
         wrapper.appendChild(select);
-        sseConnect();
     });
-
-
 </script>
 
 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 <style>
     .select-no-border {
         font-size: 14px;
-        width: 110px;
-        max-width: 110px;
+        width: 150px;
+        max-width: 150px;
         padding: 0 10px;
         border: none;
         outline: none;

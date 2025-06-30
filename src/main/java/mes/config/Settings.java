@@ -12,12 +12,10 @@ import lombok.RequiredArgsConstructor;
 @PropertySource("classpath:application.properties") 
 public class Settings {
 
-	private final Environment environment;
+  private final Environment environment;
 
+  public String getProperty(String key){
+    return environment.getProperty(key);
+  }
 
-
-    public String getProperty(String key){
-        return environment.getProperty(key);
-    }   
-    
 }
