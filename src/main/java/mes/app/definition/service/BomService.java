@@ -122,8 +122,8 @@ public class BomService {
 		paramMap.addValue("bom_type", bom_type);
 		paramMap.addValue("mat_name", mat_name);
 		paramMap.addValue("spjangcd", spjangcd);
-		log.info("🔍 [BOM Material List] 실행 SQL: {}", sql);
-		log.info("🔍 [BOM Material List] 파라미터: {}", paramMap.getValues());
+//		log.info("🔍 [BOM Material List] 실행 SQL: {}", sql);
+//		log.info("🔍 [BOM Material List] 파라미터: {}", paramMap.getValues());
 
 		return this.sqlRunner.getRows(sql, paramMap);
 
@@ -303,79 +303,90 @@ public class BomService {
 	public List<Map<String, Object>> getBomComponentTreeList(int bomId){
 
 		String sql = """
-            with recursive bom_tree as 
-            (
-              with bom as (
-                select b1.id as bom_pk, b1.Name, b1.Material_id as prod_pk
-                , nullif(b1."OutputAmount",0) as produced_qty
-                , row_number() over(partition by b1.Material_id order by b1.StartDate desc) as g_idx
-                from bom b1
-                inner join bom b on b1.BOMType = b.BOMType
-                where b.id = :id
-              )
-              select 1 as lvl
-                , bc.Material_id
-                , bc._order::integer as item_order
-                , bc.Material_id as parent_mat_id
-                , bc.Amount as quantity
-                , bom.produced_qty 
-                , bc.Amount / bom.produced_qty as bom_ratio
-                , bc."Description"
-                , 'base' as data_div
-                , bc.id as bc_id
-                , lpad(bc._order::text, 4, '0') as tot_order
-                , bc.Material_id::text as my_key
-                , '' as parent_key
-              from bom_comp bc
-              inner join bom on bom.bom_pk = bc.BOM_id
-              where bc.BOM_id = :id
-              union all
-              select bom_tree.lvl + 1 as lvl
-                , bc.Material_id
-                , bc._order::integer as item_order
-                , bom_tree.Material_id as parent_mat_id
-                , bc.Amount as quantity
-                --, (bom_tree.quantity * bc.Amount / bom.produced_qty)::numeric(10,2) as produced_qty
-                , bom.produced_qty 
-                , bc.Amount / bom.produced_qty * bom_tree.bom_ratio as bom_ratio
-                , bc.Description
-                , 'child' as data_div
-                , bc.id as bc_id
-                , bom_tree.tot_order ||'-'||lpad(bc._order::text, 4, '0') as tot_order
-                , bom_tree.my_key ||'-'||bc.Material_id::text as my_key
-                , bom_tree.my_key as parent_key
-                from bom_tree 
-                inner join bom on bom.prod_pk = bom_tree.Material_id
-                inner join bom_comp bc on bc.BOM_id = bom.bom_pk
-                where 1=1
-                and bom.g_idx = 1
-            )
-            select bom_tree.lvl
-                , bom_tree.my_key
-              , case when bom_tree.data_div = 'child' then bom_tree.parent_key end as parent_key
-              , bom_tree.Material_id as mat_id
-              , case when bom_tree.data_div = 'child' then bom_tree.parent_mat_id end as parent_mat_id
-              , dbo.fn_code_name('mat_type', mg.MaterialType) as mat_type
-              , m.Name as mat_name
-              , m.Code as mat_code
-              , bom_tree.quantity
-              , bom_tree.produced_qty
-              , bom_tree.bom_ratio::numeric(15,7)
-              , concat(bom_tree.quantity::decimal,'/', bom_tree.produced_qty::decimal) as bom_qty
-              , u.Name as unit
-              , bom_tree.Description
-              , bom_tree.bc_id
-              , bom_tree.tot_order
-            from bom_tree 
-            inner join material m on m.id = bom_tree.Material_id
-            left join unit u on u.id = m.Unit_id 
-            left join mat_grp mg on m.MaterialGroup_id=mg.id
-            order by bom_tree.tot_order asc		
+     WITH bom AS (
+				 SELECT
+						 b1.id AS bom_pk,
+						 b1.Name,
+						 b1.Material_id AS prod_pk,
+						 NULLIF(b1.OutputAmount, 0) AS produced_qty,
+						 ROW_NUMBER() OVER (PARTITION BY b1.Material_id ORDER BY b1.StartDate DESC) AS g_idx
+				 FROM bom b1
+				 INNER JOIN bom b ON b1.BOMType = b.BOMType
+				 WHERE b.id = :id
+		 ),
+		 bom_tree AS (
+				 -- base level
+				 SELECT
+						 1 AS lvl,
+						 bc.Material_id,
+						 CAST(bc._order AS INT) AS item_order,
+						 bc.Material_id AS parent_mat_id,
+						 bc.Amount AS quantity,
+						 bom.produced_qty,
+						 CAST(bc.Amount / NULLIF(bom.produced_qty, 0) AS FLOAT) AS bom_ratio,
+						 bc.Description,
+						 'base' AS data_div,
+						 bc.id AS bc_id,
+						 RIGHT(REPLICATE('0', :id) + CAST(bc._order AS VARCHAR), :id) AS tot_order,
+						 CAST(bc.Material_id AS VARCHAR) AS my_key,
+						 '' AS parent_key
+				 FROM bom_comp bc
+				 INNER JOIN bom ON bom.bom_pk = bc.BOM_id
+					 WHERE bc.BOM_id = :id
+
+				 UNION ALL
+
+				 -- recursive level
+				 SELECT
+						 bt.lvl + 1,
+						 bc.Material_id,
+						 CAST(bc._order AS INT),
+						 bt.Material_id AS parent_mat_id,
+						 bc.Amount,
+						 bom.produced_qty,
+						 CAST(bc.Amount / NULLIF(bom.produced_qty, 0) * bt.bom_ratio AS FLOAT),
+						 bc.Description,
+						 'child',
+						 bc.id,
+						 bt.tot_order + '-' + RIGHT(REPLICATE('0', :id) + CAST(bc._order AS VARCHAR), :id),
+						 bt.my_key + '-' + CAST(bc.Material_id AS VARCHAR),
+						 bt.my_key
+				 FROM bom_tree bt
+				 INNER JOIN bom ON bom.prod_pk = bt.Material_id AND bom.g_idx = 1
+				 INNER JOIN bom_comp bc ON bc.BOM_id = bom.bom_pk
+		 )
+
+		 SELECT
+				 bt.lvl,
+				 bt.my_key,
+				 CASE WHEN bt.data_div = 'child' THEN bt.parent_key END AS parent_key,
+				 bt.Material_id AS mat_id,
+				 CASE WHEN bt.data_div = 'child' THEN bt.parent_mat_id END AS parent_mat_id,
+				 dbo.fn_code_name('mat_type', mg.MaterialType) AS mat_type,
+				 m.Name AS mat_name,
+				 m.Code AS mat_code,
+				 bt.quantity,
+				 bt.produced_qty,
+				 CAST(bt.bom_ratio AS NUMERIC(15, 7)) AS bom_ratio,
+				 CAST(bt.quantity AS DECIMAL(15, 2))
+						 + '/' +
+				 CAST(bt.produced_qty AS DECIMAL(15, 2)) AS bom_qty,
+				 u.Name AS unit,
+				 bt.Description,
+				 bt.bc_id,
+				 bt.tot_order
+		 FROM bom_tree bt
+		 INNER JOIN material m ON m.id = bt.Material_id
+		 LEFT JOIN unit u ON u.id = m.Unit_id
+		 LEFT JOIN mat_grp mg ON m.MaterialGroup_id = mg.id
+	 ORDER BY bt.tot_order ASC;
 						
 		""";
 
 		MapSqlParameterSource paramMap = new MapSqlParameterSource();
 		paramMap.addValue("id", bomId);
+		log.info("getBomComponentTreeList: {} ", sql);
+		log.info("🔍 [getBomComponentTreeList] 파라미터: {}", paramMap.getValues());
 		return this.sqlRunner.getRows(sql, paramMap);
 	}
 

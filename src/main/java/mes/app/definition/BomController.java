@@ -2,6 +2,7 @@ package mes.app.definition;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import mes.domain.entity.User;
 import mes.domain.model.AjaxResult;
 import mes.domain.services.SqlRunner;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/definition/bom")
 public class BomController {
@@ -212,28 +214,30 @@ public class BomController {
 	) {
 		AjaxResult result = new AjaxResult();
 		String sql = """
-	            select bc.id
-	            , fn_code_name('mat_type', mg."MaterialType") as mat_type
-	            , mg."Name" as group_name
-	            , m."Name" as mat_name
-	            , m."Code" as mat_code
-	            , bc."Amount"
-	            , bc."Material_id" as mat_id
-	            , m."Unit_id"
-	            , u."Name" as unit
-	            , bc."Description"
-	            , bc."_order" 
-	            from bom_comp bc
-	            left join material m on bc."Material_id"=m.id
-	            left join unit u on u.id = m."Unit_id" 
-	            left join mat_grp mg on m."MaterialGroup_id" =mg.id
-	            where bc."BOM_id" = :bom_id
-	            order by bc."_order"
+				 select bc.id
+				, s."Value" as mat_type
+				, mg."Name" as group_name
+				, m."Name" as mat_name
+				, m."Code" as mat_code
+				, bc."Amount"
+				, bc."Material_id" as mat_id
+				, m."Unit_id"
+				, u."Name" as unit
+				, bc."Description"
+				, bc."_order"\s
+				from bom_comp bc
+				left join material m on bc."Material_id"=m.id
+				left join unit u on u.id = m."Unit_id"\s
+				left join mat_grp mg on m."MaterialGroup_id" =mg.id
+				left join sys_code s on s."Code" = mg."MaterialType" and s."CodeType" ='mat_type'
+				where bc."BOM_id" = :bom_id
+				order by bc."_order"
 	    """;
 		MapSqlParameterSource paramMap = new MapSqlParameterSource();
 		paramMap.addValue("bom_id", id);
 		result.data = this.sqlRunner.getRows(sql, paramMap);
-
+		log.info("🔍 [getBomCompList List] 실행 SQL: {}", sql);
+		log.info("🔍 [getBomCompList List] 파라미터: {}", paramMap.getValues());
 		return result;
 	}
 
