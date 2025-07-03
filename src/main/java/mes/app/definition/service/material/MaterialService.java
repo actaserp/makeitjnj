@@ -1,6 +1,7 @@
 package mes.app.definition.service.material;
 
 import io.micrometer.core.instrument.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import mes.domain.services.CommonUtil;
 import mes.domain.services.SqlRunner;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,96 +12,108 @@ import org.springframework.util.MultiValueMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class MaterialService {
 	
 	@Autowired
 	SqlRunner sqlRunner;
-	
-	
+
+
 	public List<Map<String, Object>> getMaterialList(String matType, String matGroupId, String keyword){
-		
-		MapSqlParameterSource paramMap = new MapSqlParameterSource();        
+
+		MapSqlParameterSource paramMap = new MapSqlParameterSource();
 		paramMap.addValue("mat_type", matType);
 		paramMap.addValue("mat_group_id", matGroupId);
 		paramMap.addValue("keyword", keyword);
-        
-        String sql = """
-			select m.id
-                --, mg."MaterialType" as mat_type
-                , dbo.fn_code_name('mat_type', mg."MaterialType" ) as mat_type_name
-                , mg."Name" as mat_grp_name
-                , m."Code" as mat_code
-                , m."Name" as mat_name
-                , u."Name" as unit_name
-                , f."Name" as factory_name
-                , m."LotSize" as lot_size
-                , m."CustomerBarcode" as customer_barcode
-                , m."Thickness" as thickness
-                , m."Width" as width
-                , m."Length" as length
-                , m."Height" as height
-                , m."Weight" as weight
-                , m."Color" as color
-                , m."Usage" as usage
-                , m."Class1" as class1
-                , m."Class2" as class2
-                , m."Class3" as class3
-                , m."Standard1" as starndard1
-                , m."Standard2" as standard2 
-                , m."Description" as description
-                , wc."Name" as workcenter_name
-                , e."Name" as equip_name
-                , concat(m."StandardTime",'(',m."StandardTimeUnit",')') as standard_time
-                , m."InputManCount" as input_man_count 
-                , m."InputManHour" as input_man_hour
-                , m."VatExemptionYN" as vat_exempt_yn 
-                , m."PurchaseOrderStandard" as purchase_order_standard
-                , m."LeadTime" as leadtime
-                , m."MinOrder" as min_order 
-                , m."MaxOrder" as max_order
-                , sh."Name" as storehouse_name
-                , m."StoreHouseLoc" as storehouse_loc
-                , m."ManagementLevel" as manage_level 
-                , m."PackingUnitQty" as packing_unit_qty
-                , m."PackingUnitName" as packing_unit_name
-                , m."SafetyStock" as safety_stock
-                , m."MaxStock" as max_stock
-                , m."ProcessSafetyStock" as process_safety_stock
-                , m."ValidDays" as valid_days
-                , m."InTestYN" as intest_yn
-                , m."OutTestYN" as outtest_yn 
-                , r."Name" as routing_name
-                , m."UnitPrice" as unit_price
-                , coalesce(m."LotUseYN",'N') as "lotUseYn"
-                , FORMAT(m._created, 'yyyy-mm-dd') as _created
-                , m."Mtyn" as mtyn
-                , m."Useyn" as useyn
-                , m."Avrqty" as avrqty
-            from material m
-            left join mat_grp mg on mg.id = m."MaterialGroup_id"
-            left join unit u on u.id = m."Unit_id"
-            left join factory f on f.id = m."Factory_id"
-            left join store_house sh on sh.id = m."StoreHouse_id"
-            left join work_center wc on wc.id = m."WorkCenter_id"
-            left join equ e on e.id = m."Equipment_id"
-            left join routing r on r.id = m."Routing_id"
-            where 1=1
+
+		String sql = """
+				SELECT
+						m.id,
+						sc.Value as mat_type_name,
+						mg.MaterialType AS mat_type,
+						mg.Name AS mat_grp_name,
+						m.Code AS mat_code,
+						m.Name AS mat_name,
+						u.Name AS unit_name,
+						f.Name AS factory_name,
+						m.LotSize AS lot_size,
+						m.CustomerBarcode AS customer_barcode,
+						m.Thickness AS thickness,
+						m.Width AS width,
+						m.Length AS length,
+						m.Height AS height,
+						m.Weight AS weight,
+						m.Color AS color,
+						m.Usage AS usage,
+						m.Class1 AS class1,
+						m.Class2 AS class2,
+						m.Class3 AS class3,
+						m.Standard1 AS starndard1,
+						m.Standard2 AS standard2,
+						m.Description AS description,
+						wc.Name AS workcenter_name,
+						e.Name AS equip_name,
+						(CAST(m.StandardTime AS VARCHAR) + '(' + m.StandardTimeUnit + ')') AS standard_time,
+						m.InputManCount AS input_man_count,
+						m.InputManHour AS input_man_hour,
+						m.VatExemptionYN AS vat_exempt_yn,
+						m.PurchaseOrderStandard AS purchase_order_standard,
+						m.LeadTime AS leadtime,
+						m.MinOrder AS min_order,
+						m.MaxOrder AS max_order,
+						sh.Name AS storehouse_name,
+						m.StoreHouseLoc AS storehouse_loc,
+						m.ManagementLevel AS manage_level,
+						m.PackingUnitQty AS packing_unit_qty,
+						m.PackingUnitName AS packing_unit_name,
+						m.SafetyStock AS safety_stock,
+						m.MaxStock AS max_stock,
+						m.ProcessSafetyStock AS process_safety_stock,
+						m.ValidDays AS valid_days,
+						m.InTestYN AS intest_yn,
+						m.OutTestYN AS outtest_yn,
+						r.Name AS routing_name,
+						m.UnitPrice AS unit_price,
+						ISNULL(m.LotUseYN, 'N') AS lotUseYn,
+						FORMAT(m._created, 'yyyy-MM-dd') AS _created,
+						m.Mtyn AS mtyn,
+						m.Useyn AS useyn,
+						m.Avrqty AS avrqty
+				FROM material m
+				LEFT JOIN mat_grp mg ON mg.id = m.MaterialGroup_id
+				LEFT JOIN unit u ON u.id = m.Unit_id
+				LEFT JOIN factory f ON f.id = m.Factory_id
+				LEFT JOIN store_house sh ON sh.id = m.StoreHouse_id
+				LEFT JOIN work_center wc ON wc.id = m.WorkCenter_id
+				LEFT JOIN equ e ON e.id = m.Equipment_id
+				LEFT JOIN routing r ON r.id = m.Routing_id
+				LEFT JOIN sys_code sc on sc.Code = mg.MaterialType and sc.CodeType = 'mat_type'
+				WHERE 1=1
         """;
-        if (StringUtils.isEmpty(matType)==false) sql +="and mg.\"MaterialType\" = :mat_type ";
-        if (StringUtils.isEmpty(matGroupId)==false) sql +="and m.\"MaterialGroup_id\" = (:mat_group_id)::int ";
-        if (StringUtils.isEmpty(keyword)==false) {
-        	sql += """  
-            		and ( m."Name" like concat('%',:keyword,'%')
-            		or m."Code" like concat('%',:keyword,'%'))
-    			""";
-        }
-        sql += "order by m.\"MaterialGroup_id\" , m.\"Name\" ";
-        
-        List<Map<String, Object>> items = this.sqlRunner.getRows(sql, paramMap);
-        
-        return items;
-		
+		if (!StringUtils.isEmpty(matType)) {
+			sql += " AND mg.MaterialType = :mat_type ";
+		}
+
+		if (!StringUtils.isEmpty(matGroupId)) {
+			sql += " AND m.MaterialGroup_id = CAST(:mat_group_id AS INT) ";
+		}
+
+		if (!StringUtils.isEmpty(keyword)) {
+			sql += """
+            AND (
+                m.Name LIKE '%' + :keyword + '%'
+                OR m.Code LIKE '%' + :keyword + '%'
+            )
+        """;
+		}
+		sql += "ORDER BY m.MaterialGroup_id, m.Name ";
+		log.info("품목정보 read SQL: {}", sql);
+		log.info("SQL Parameters: {}", paramMap.getValues());
+		List<Map<String, Object>> items = this.sqlRunner.getRows(sql, paramMap);
+
+		return items;
+
 	}
 	
     public Map<String, Object> getMaterial(int matPK){

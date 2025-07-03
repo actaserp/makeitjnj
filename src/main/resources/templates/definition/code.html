@@ -1,467 +1,811 @@
 <html layout:decorate="~{layout_page}">
 
+<head>
+    <style>
+        .btn-wrap ul {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            gap: 10px; /* 버튼 간 간격 조절 */
+        }
 
+        .btn-wrap ul li {
+            display: inline-block;
+        }
+
+    </style>
+</head>
 
 <th:block layout:fragment="content">
-<div class="content_wrap">
+    <div class="layout-contents">
 
-    <section class="section">
-        <div class="title_box ">
-            <div class="left_align">
-                <h3 data-labelCd="코드정보">코드 정보</h3>
+        <div class="page-title-wrap">
+            <div class="left">
+                <h2>코드정보</h2>
+                <a title="북마크" class="bookmark toggle">
+                    내 메뉴
+                </a>
             </div>
-            <button type="button" class="btn-default pull-right " id="btnHedaerFilter" title="필터 보이기/감추기"><i class="fas fa-filter"></i></button>
-            <button type="button" class="btn-default pull-right mr-1" id="btnHeaderCompress" title="화면 확대/축소"><i class="fas fa-compress" id="iCompress"></i></button>
+            <ul class="page-navi">
+                <li><img src="/images/icon/ico-nav-home.svg" alt="홈아이콘"></li>
+                <li>기준정보</li>
+                <li>코드정보</li>
+            </ul>
         </div>
 
-        <div class="table_box search" >
-            <div class="row">
-                <div class="col-6 col-md-3 col-lg-3 col-xl-2">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text fit_box_md" data-labelCd="코드명">코드명</span>
+        <div class="tab-wrap">
+            <ul class="tab-links">
+                <!--<li>
+                    <a href="#tab1" title="사용자코드" >사용자코드</a>
+                </li>-->
+                <li>
+                    <a href="#tab2" title="시스템코드">시스템코드</a>
+                </li>
+            </ul>
+            <div class="tab-contents">
+                <!--<section class="tab-item" id="tab1" style="height: 820px;" >
+                    <div class="section-top">
+                        <div class="search-wrap">
+                            <dl>
+                                <dt>
+                                    <label>코드명</label>
+                                </dt>
+                                <dd>
+                                    <input type="text" class="form-control2" id="txtCode" name="txtCode">
+                                </dd>
+                            </dl>
+
+                            <dl>
+                                <dt><span class="eq"></span></dt>
+                                <dd>
+                                    <li>
+                                        <a class="btn btn-delete" title="검색" id="btnSearch">
+                                            <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
+                                            검색
+                                        </a>
+                                    </li>
+                                </dd>
+                            </dl>
                         </div>
-                        <input class="form-control2" value="" id="txtCode" name="txtCode" placeholder="" title="" />
+                        <div class="btn-wrap" style="height: 67px;">
+                            <ul>
+                                <li>
+                                    <button type="button" class="btn-default " id="btnNew" name="btnNew"
+                                            style="width: 115px; height: 36px;"><i
+                                            class="fas fa-plus"></i>신규등록
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button" class="btn-default" id="btnNewChild"
+                                            name="btnNewChild" style="width: 115px; height: 36px;">하위추가
+                                    </button>
+                                </li>
+
+                                <li>
+                                    <button type="button" class="btn-default" id="btnNewBro"
+                                            name="btnNewBro" style="width: 115px; height: 36px;">형제추가
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button" class="btn-danger " id="btnDel"
+                                            style=" width: 115px; height: 36px;"><i
+                                            class="fas fa-trash"></i>삭제</button>
+                                </li>
+                                <li>
+                                    <button type="button" class="btn-default" id="btnSave"
+                                            style="width: 115px; height: 36px;"><i
+                                            class="fas fa-save"></i>저장</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div> &lt;!&ndash;//section-top end &ndash;&gt;
+
+                    <div class="row">
+                        <div class="wp70 mg-r20">
+                            <div class="container-fluid col">
+                                <p id="selectedItem"></p>
+                                <div id="code-grid" style="height: 700px; max-height: 700px;"></div>
+                            </div>
+                        </div>
+
+                        <div class="col wp30">
+                            <div class="section">
+                                <form id="codeForm">
+                                    <input type="hidden" id="parent_id" name="parent_id" value=""/>
+                                    <input class="form-control2" type="hidden" id="id" name="id" disabled/>
+                                    <div class="table-wrap">
+                                        <table class="view-table" id="selectedData">
+                                            <caption>코드등록 테이블</caption>
+                                            <colgroup>
+                                                <col class="wp20">
+                                                <col class="wauto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <th><label for="parent_name">상위코드</label></th>
+                                                <td>
+                                                    <input type="text" id="parent_name" name="parent_name" class="wp100" readonly>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><label for="code"><span class="eq">*</span>코드</label></th>
+                                                <td>
+                                                    <input type="text" id="code" name="code" class="wp100" >
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><label for="name"><span class="eq">*</span>코드명</label></th>
+                                                <td>
+                                                    <input type="text" id="name" name="name" class="wp100">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><label for="description">설명</label></th>
+                                                <td>
+                                                    <input type="text" id="description" name="description"
+                                                           class="wp100">
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </section>-->
 
-                <div class="col-1">
-                    <button type="button" class="btn-default" id="btnSearch" ><i class="fas fa-search"></i></button>
-                </div>
-            </div>
+                <section class="tab-item" id="tab2" style="height: 820px;">
+                    <div class="section-top">
+                        <div class="search-wrap">
 
+                            <dl>
+                                <dt>
+                                    <label>설명</label>
+                                </dt>
+                                <dd>
+                                    <input type="text" class="form-control2" id="txtDescription" name="txtDescription">
+                                </dd>
+                            </dl>
+
+                            <dl>
+                                <dt>
+                                    <label>코드타입</label>
+                                </dt>
+                                <dd>
+                                    <input type="text" class="form-control2" id="txtCodeType" name="txtCodeType">
+                                </dd>
+                            </dl>
+
+                            <dl>
+                                <dt>
+                                    <label>코드명</label>
+                                </dt>
+                                <dd>
+                                    <input type="text" class="form-control2" id="txtCode2" name="txtCode">
+                                </dd>
+                            </dl>
+
+                            <dl>
+                                <dt><span class="eq"></span></dt>
+                                <dd>
+                                    <li>
+                                        <a class="btn btn-delete" title="검색" id="btnSearch2">
+                                            <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
+                                            검색
+                                        </a>
+                                    </li>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="btn-wrap" style="height: 67px;">
+                            <ul>
+                                <li>
+                                    <button type="button" class="btn-excellt btn-default " id="btnNew2" name="btnNew"
+                                            style="width: 115px; height: 36px;"><i
+                                            class="fas fa-plus"></i>신규등록
+                                    </button>
+                                </li>
+
+                                <li>
+                                    <button type="button" class="btn-delete btn-danger " id="btnDel2"
+                                            style=" width: 115px; height: 36px;"><i
+                                            class="fas fa-trash"></i>삭제</button>
+                                </li>
+                                <li>
+                                    <button type="button" class="btn-excellt btn-default" id="btnSave2"
+                                            style="width: 115px; height: 36px;"><i
+                                            class="fas fa-save"></i>저장</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="wp70 mg-r20">
+                            <div class="container-fluid col">
+                                <p id="selectedItem"></p>
+                                <div id="syscode-grid" style="height: 700px; max-height: 700px;"></div>
+                            </div>
+                        </div>
+
+                        <div class="col wp30">
+                            <div class="section">
+                                <form id="SystemcodeForm">
+                                    <!--<input type="hidden" id="parent_id2" name="parent_id" value=""/>-->
+                                    <input class="form-control2" type="hidden" id="id2" name="id" disabled/>
+                                    <div class="table-wrap">
+                                        <table class="view-table">
+                                            <caption>코드등록 테이블</caption>
+                                            <colgroup>
+                                                <col class="wp20">
+                                                <col class="wauto">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <th><label for="code_type"><span class="eq">*</span>코드타입</label></th>
+                                                <td>
+                                                    <input type="text" id="code_type" name="code_type" class="wp100">
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><label for="code2"><span class="eq">*</span>코드</label></th>
+                                                <td>
+                                                    <input type="text" id="code2" name="code" class="wp100" >
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><label for="name2"><span class="eq">*</span>코드명</label></th>
+                                                <td>
+                                                    <input type="text" id="name2" name="name" class="wp100">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><label for="description2">설명</label></th>
+                                                <td>
+                                                    <input type="text" id="description2" name="description"
+                                                           class="wp100">
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div> <!--//tab-contens end-->
         </div>
-    </section>
 
-    <section>
-        <div class="grid_box" >
-            <div class="title_box">
-                <span class="right_align rpt" data-labelCd="코드 정보">코드 정보</span>
-                <button type="button" class="btn-default" id="btnExcel"><i class="fas fa-file-excel"></i></button>
-                <button type="button" class="btn-default" id="btnGridSetting" style="visibility:hidden"><i class="fas fa-cog"></i> Setting</button>
-            </div>
-                <div class="h-460" data-ax5grid="code-grid" ></div>  
-        </div>
-
-    </section>
-
-    <section>
-            <div class="title_box mb-2">
-                <span class="right_align rpt" data-labelCd="상세정보">상세 정보</span>
-                <button type="button" class="btn-default" id="btnNew" name="btnNew"><i class="fas fa-plus"></i></button>
-                <button type="button" class="btn-default" id="btnNewChild" name="btnNewChild">하위추가</button>
-                <button type="button" class="btn-default" id="btnNewBro" name="btnNewBro">형제추가</button>
-                <button type="button" class="btn-danger y_write_auth" id="btnDel" ><i class="fas fa-trash"></i></button>
-                <button type="button" class="btn-default y_write_auth" id="btnSave" ><i class="fas fa-save"></i></button>
-            </div>
-
-        <form id="codeForm">
-            <input type="hidden" id="parent_id" name="parent_id" value="" />
-            <div class="table_box sub">
-                <div class="row">
-
-                    <!--<div class="col-6 col-md-3 col-lg-2" >
-                        <div class="input-group" >
-                            <div class="input-group-prepend">
-                                <span class="input-group-text fit_box_md">번호</span>
-                            </div>-->
-                            <input class="form-control2" type="text" id="id" name="id" hidden />
-
-                        <!--</div>
-                    </div>-->
-
-                    <div class="col-6 col-md-3 col-lg-2" >
-                        <div class="input-group" >
-                            <div class="input-group-prepend">
-                                <span class="input-group-text fit_box_md" data-labelCd="상위코드">상위코드</span>
-                            </div>
-                            <input class="form-control2" type="text" id="parent_name" name="parent_name" readonly disabled  />
-
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-md-3 col-lg-2" >
-                        <div class="input-group" >
-                            <div class="input-group-prepend">
-                                <span class="input-group-text fit_box_md" data-labelCd="*코드">*코드</span>
-                            </div>
-                            <input class="form-control2" type="text" id="code"  name="code" disabled value="" required >
-
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-md-3 col-lg-2" >
-                        <div class="input-group" >
-                            <div class="input-group-prepend">
-                                <span class="input-group-text fit_box_md" data-labelCd="*코드명">*코드명</span>
-                            </div>
-                            <input class="form-control2" type="text" id="name" name="name" disabled value="" />
-
-                        </div>
-                    </div>
-
-                    <div class="col-12" >
-                        <div class="input-group" >
-                            <div class="input-group-prepend">
-                                <span class="input-group-text fit_box_md" data-labelCd="설명">설명</span>
-                            </div>
-                            <textarea  class="form-control2 h-26" id="description" name="description" disabled="disabled"></textarea>
-
-                        </div>
-                    </div>
-
-
-                </div>
-            </div>
-        </form>
-    </section>
-
-
-</div>
+    </div>
 
 </th:block>
 
 <th:block layout:fragment="scripts">
-<th:block th:replace="/common/columns_setting :: columns_setting"></th:block>
+    <th:block th:replace="/common/columns_setting :: columns_setting"></th:block>
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
 
-    class CodePage {
-        constructor() {
-            this.grid = null;
-            this.init();
-        }
+        class CodePage {
+            constructor() {
+                this.grid = null;
+                this.grid2 = null;
+                this.viewData = new wijmo.collections.CollectionView();
+                this.viewData2 = new wijmo.collections.CollectionView();
+                this.init();
+            }
 
-        init() {
-            let _this = this;
-            let config = {
-                target: $('[data-ax5grid="code-grid"]'),
-                //sortable: false,
-                frozenColumnIndex: 0, // 열 고정
-                frozenRowIndex: 0,    // 행 고정
-                showLineNumber: false, // 열의 번호 보이기 여부
-                showRowSelector: false,  // checkbox(선택) 보이기 여부
-                multipleSelect: false, // 여러행 선택 가능 여부 (false시 단독 선택)
-                sortable: true, // 모든 컬럼에 정렬 아이콘 표시 (columns에서 컬럼별 소팅여부 재설정 가능)
-                multiSort: true, // 다중 정렬 여부
-                header: {
-                    align: 'center',  // 헤더의 기본 정렬
-                    columnHeight: 38  // 헤더 높이
-                },
-                body: {
-                    columnHeight: 25, // body의 기본 높이
-                    onClick: function (e) {
-                        //e.colIndex
-                        //e.dindex
-                        //c.value
-                        //e.column
-                        //e.item
-                        //e.list
-                        //_this.grid.select(this.dindex, { __selected__: true });
-                        _this.showDetail(e.item.id);
+            init() {
+                let _this = this;
+
+                /*this.grid = new wijmo.grid.FlexGrid('#code-grid', {
+                    selectionMode: wijmo.grid.SelectionMode.Row,
+                    headersVisibility: wijmo.grid.HeadersVisibility.Column,
+                    autoGenerateColumns: false,
+                    showMarquee: true,
+                    isReadOnly: true,
+                    formatItem: (sender, e) => {
+                        if (e.panel.cellType === wijmo.grid.CellType.ColumnHeader) {
+                            e.cell.style.textAlign = 'center';
+                        }
+                        if (e.panel.cellType === wijmo.grid.CellType.Cell) {
+                            let item = sender.rows[e.row].dataItem; // 현재 행의 데이터 아이템
+                            if (item && item.children && item.children.length > 0) {
+                                // 부모(그룹) 행 배경색
+                                e.cell.style.backgroundColor = '#f0fcf7';
+                            } else {
+                                // 자식(일반) 행 배경색
+                                e.cell.style.backgroundColor = '#ffffff';
+                            }
+                        }
                     },
-                },
-                page: {
-                    display: true,  // 페이징 보이기 여부
-                    statusDisplay: true,
-                },
-                columns: [
-                    { key: 'id', label: '코드번호', width: 70, align: 'center', sortable: false, hidden: true  },
-                    { key: 'name', label: '코드명', width: 250, align: 'left', treeControl: true },
-                    { key: 'code', label: '코드', width: 100, align: 'left', sortable: false },
-                    { key: 'description', label: '설명', width: 350, align: 'left', sortable: false },
+                    columns: [
+                        {binding: 'id', header: '코드번호', width: 70, align: 'center', visible: false},
+                        {binding: 'name', header: '코드명', width: 250, align: 'left'},
+                        {binding: 'code', header: '코드', width: 300, align: 'left'},
+                        {binding: 'description', header: '설명', width: '*', align: 'left'},
+                        /!*{binding: '', header: '', width: '*', align: 'left'},*!/
 
-                ],
-                tree: {
-                    use: true,
-                    indentWidth: 15,
-                    arrowWidth: 15,
-                    iconWidth: 18,
-                    icons: {
-                      openedArrow: '<i class="fa fa-caret-down" aria-hidden="true"></i>',
-                      collapsedArrow: '<i class="fa fa-caret-right" aria-hidden="true"></i>',
-                      groupIcon: '<i class="fa fa-minus-square" aria-hidden="true"></i>',
-                      collapsedGroupIcon: '<i class="fa fa-plus-square" aria-hidden="true"></i>',
-                      itemIcon: '-'
-                    },
-                    columnKeys: {
-                      parentKey: 'parent_id',
-                      selfKey: 'id'
-                    }
-                },
-                //contextMenu: {
-                //    iconWidth: 20,
-                //    acceleratorWidth: 100,
-                //    itemClickAndClose: true,
-                //    icons: {
-                //        'arrow': '<i class="fa fa-caret-right"></i>'
-                //    },
-                //    items: [
-                //        { action: 'create', label: "하위추가" },
-                //        { divide: true },
-                //        { action: 'delete', label: "삭제" },
-                //    ],
-                //    popupFilter: function (item, param) {
-                //        if(param.element) {
-                //            return true;
-                //        }else{
-                //            return item.type == 1;
-                //        }
-                //    },
-                //    onClick: function (item, param) {
-                //        _this.clickContextMenu(item.action, param);
-                //        //close();
-                //        //또는 return true;
-                //    }
-                //}
-            };
+                    ],
+                    childItemsPath: 'children',
+                    itemsSource: this.viewData, // 데이터를 설정할 배열
+                });
 
-            this.grid = new ax5.ui.grid(config);
-            this.grid_config = config; 
-        }
-
-        //clickContextMenu(action, param) {
-        //    let _this = this;
-        //    let pk = param.item.id;
-        //    let parent_name = param.item.code;
-        //    let $codeForm = $('#codeForm');
-        //    if (action == 'create') {
-        //        let newItem = {
-        //            'parent_id': pk,
-        //            'parent_name': parent_name,
-        //            'id': '',
-        //            'code': '',
-        //            'name': '',
-        //        }
-        //        FormUtil.BindDataForm(newItem, $codeForm);
-        //        $('#description').text('');
-        //    }  else if (action == 'delete') {
-        //        Alert.confirm('', 
-        //            '삭제하시겠습니까?',
-        //            function () { _this.deleteCode(pk) },
-        //            function () { }
-        //        );
-        //    }
-        //}
-
-        //setButtonDisable(_boolnew, _boolsave, _booldel) {
-        //    $('#btnNew').prop('disabled', _boolnew);
-        //    $('#btnSave').prop('disabled', _boolsave);
-        //    $('#btnDel').prop('disabled', _booldel);
-
-        //}
-
-        //버튼 활성화 
-        setButtonState() {
-            let pk = $('#id').val();
-            $('#btnNew').prop('disabled', false);
-            $('#btnSave').prop('disabled', false);
-            if (pk) {
-                $('#btnDel').prop('disabled', false);
-                $('#btnNewChild').prop('disabled', false);
-                $('#btnNewBro').prop('disabled', false);
-            }
-            else {
-                $('#btnDel').prop('disabled', true);
-                $('#btnNewChild').prop('disabled', true);
-                $('#btnNewBro').prop('disabled', true);
-            }
-        }
-
-        showDetail(idx) {
-            let param = { 
-				'id': idx, 
-        		'action': 'detail' 
-    		};
-            let url = '/api/definition/code';
-            let result = AjaxUtil.getSyncData(url+'/detail', param);
-            if (result.success) {
-                FormUtil.BindDataForm(result.data, $('#codeForm'));
-                $('#description').text(result.description);
-            }
-
-            //page.setButtonDisable(false, false, false);
-            page.setButtonState();
-        }
-
-        searchMainData() {
-            let _this = this;
-            let data = {
-				'txtCode': $('#txtCode').val(),
-				'action': 'read'
-				};
-			
-            $('#codeForm')[0].reset();
-            $('#parent_id').val('');
-            $('#id').val('');
-            $('#description').text('');
-            let url = '/api/definition/code';
-
-            let result = AjaxUtil.getSyncData(url+'/read', data);
-       
-            if (result != null) {
-                let recordsTotal = result.data.length;
-                _this.grid.setData({
-                    list: result.data,
-                    page: {
-                        display: true,
-                        totalElements: recordsTotal,
+                this.grid.hostElement.addEventListener('dblclick', (e) => {
+                    let hitTest = this.grid.hitTest(e);
+                    if (hitTest.cellType === wijmo.grid.CellType.Cell) {
+                        let row = hitTest.row;
+                        let selectedItem = this.grid.rows[row].dataItem;
+                        _this.showDetail(selectedItem.id)
                     }
                 });
+
+                new FlexGridContextMenu(this.grid);
+                this.grid.downloadFileName = '코드정보';*/
+
+
+                this.grid2 = new wijmo.grid.FlexGrid('#syscode-grid', {
+                    selectionMode: wijmo.grid.SelectionMode.Row,
+                    headersVisibility: wijmo.grid.HeadersVisibility.Column,
+                    autoGenerateColumns: false,
+                    showMarquee: true,
+                    isReadOnly: true,
+                    formatItem: (sender, e) => {
+                        if (e.panel.cellType === wijmo.grid.CellType.ColumnHeader) {
+                            e.cell.style.textAlign = 'center';
+                        }
+                        if (e.panel.cellType === wijmo.grid.CellType.Cell) {
+                            let row = sender.rows[e.row]; // 현재 행
+                            if (row instanceof wijmo.grid.GroupRow) {
+                                //  그룹(부모) 행 배경색
+                                e.cell.style.backgroundColor = '#f0fcf7';
+                            } else {
+                                //  일반 데이터(자식) 행 배경색
+                                e.cell.style.backgroundColor = '#ffffff';
+                            }
+                        }
+                    },
+                    columns: [
+                        {binding: 'id', header: '코드번호', width: 70, align: 'center', visible: false},
+                        {binding: 'code_type', header: '코드타입', width: 250, align: 'left'},
+                        {binding: 'code', header: '코드', width: 250, align: 'left'},
+                        {binding: 'name', header: '코드명', width: 250, align: 'left'},
+                        {binding: 'description', header: '설명', width: '*', align: 'left'},
+
+                    ],
+
+                    itemsSource: this.viewData2, // 데이터를 설정할 배열
+                });
+
+                this.grid2.hostElement.addEventListener('dblclick', (e) => {
+                    let hitTest = this.grid2.hitTest(e);
+                    if (hitTest.cellType === wijmo.grid.CellType.Cell) {
+                        let row = hitTest.row;
+                        let selectedItem = this.grid2.rows[row].dataItem;
+                        _this.showDetail2(selectedItem.id)
+                    }
+                });
+
+                new FlexGridContextMenu(this.grid2);
+                this.grid2.downloadFileName = '시스템코드정보';
             }
 
-            //page.setButtonDisable(true, false, false);
-            page.setButtonState();
-        }//searchMainData
-
-        saveCode() {
-            let _this = this;
-            let url = '/api/definition/code/save';
-
-            //let data = $('#codeForm').serialize();
-            let data = FormUtil.extractForm($('#codeForm'));
-
-            if (!data.code || !data.name) {
-                Alert.alert('', '필수항목을 입력해주세요');
-                return;
+            //버튼 활성화
+            setButtonState() {
+                let pk = $('#id').val();
+                $('#btnNew').prop('disabled', false);
+                $('#btnSave').prop('disabled', false);
+                if (pk) {
+                    $('#btnDel').prop('disabled', false);
+                    $('#btnNewChild').prop('disabled', false);
+                    $('#btnNewBro').prop('disabled', false);
+                } else {
+                    $('#btnDel').prop('disabled', true);
+                    $('#btnNewChild').prop('disabled', true);
+                    $('#btnNewBro').prop('disabled', true);
+                }
             }
 
-            let fnSuccess = function (res) {
-                if (res.success) {
-                    Notify.success('저장되었습니다'); // Notification
-                    _this.searchMainData();
-                } else {
-                    Alert.alert('', res.message)
+
+            showDetail(idx) {
+                let param = {
+                    'id': idx,
+
+                };
+
+                let url = '/api/definition/code';
+                let result = AjaxUtil.getSyncData(url + '/detail', param);
+                if (result.success) {
+                    FormUtil.BindDataForm(result.data, $('#codeForm'));
+                    $('#description').text(result.description);
                 }
-            };
-           AjaxUtil.postAsyncData(url, data, fnSuccess);
+
+                //page.setButtonDisable(false, false, false);
+                page.setButtonState();
+            }
+
+            showDetail2(idx) {
+                let param = {
+                    'id': idx,
+                    spjangcd: sessionStorage.getItem('spjangcd'),
+                };
+
+                let url = '/api/definition/code';
+                let result = AjaxUtil.getSyncData(url + '/Systemcodedetail', param);
+                if (result.success) {
+                    FormUtil.BindDataForm(result.data, $('#SystemcodeForm'));
+                    /*console.log(result.data);*/
+                    $('#description2').text(result.description);
+                }
+
+                //page.setButtonDisable(false, false, false);
+                /*page.setButtonState();*/
+            }
+
+            searchMainData() {
+                let _this = this;
+                let data = {
+                    'txtCode': $('#txtCode').val(),
+
+                };
+
+                $('#codeForm')[0].reset();
+                $('#parent_id').val('');
+                $('#id').val('');
+                $('#description').text('');
+                let url = '/api/definition/code';
+
+                let result = AjaxUtil.getSyncData(url + '/read', data);
+
+                /*console.log(JSON.stringify(result, null, 2));*/
+
+                if (result && result.data) {
+                    let treeData = _this.buildTree(result.data); // 계층 구조 변환
+                    _this.viewData.sourceCollection = treeData;
+                }
+
+                page.setButtonState();
+            }
+
+
+            searchMainData2() {
+                let _this = this;
+                let data = {
+                    'txtCode': $('#txtCode2').val(),
+                    'txtCodeType': $('#txtCodeType').val(),
+                    'txtDescription': $('#txtDescription').val(),
+                };
+
+                $('#SystemcodeForm')[0].reset();
+                $('#id2').val('');
+                $('#description2').text('');
+                let url = '/api/definition/code';
+
+                let result = AjaxUtil.getSyncData(url + '/SystemCoderead', data);
+
+                if (result != null) {
+                    // CollectionView 생성
+                    let cv = new wijmo.collections.CollectionView(result.data);
+
+                    // 그룹화 적용 (code_type 기준)
+                    cv.groupDescriptions.push(new wijmo.collections.PropertyGroupDescription('code_type'));
+
+                    // FlexGrid에 CollectionView 적용
+                    _this.viewData2 = cv;
+                    _this.grid2.itemsSource = cv; // 여기서 grid2에 직접 설정해야 적용됨
+                }
+            }
+
+
+
+            /**
+             * 부모-자식 관계를 반영하여 계층 구조로 변환하는 함수
+             */
+            buildTree(flatData) {
+                let tree = [];
+                let map = {};
+
+                // 모든 항목을 id 기준으로 매핑
+                flatData.forEach(item => {
+                    map[item.id] = {...item, children: []};
+                });
+
+                // 부모-자식 관계 설정
+                flatData.forEach(item => {
+                    if (item.parent_id !== null && map[item.parent_id]) {
+                        map[item.parent_id].children.push(map[item.id]);
+                    } else {
+                        tree.push(map[item.id]); // 최상위 레벨
+                    }
+                });
+
+                return tree;
+            }
+
+
+            saveCode() {
+                let _this = this;
+                let url = '/api/definition/code/save';
+
+                //let data = $('#codeForm').serialize();
+                let data = FormUtil.extractForm($('#codeForm'));
+
+                /*if (!data.code || !data.name) {
+                    Alert.alert('', '필수항목을 입력해주세요');
+                    return;
+                }*/
+
+                if (!data.code) {
+                    Alert.alert('', '코드를 입력해 주세요');
+                    $('#codeForm #code').focus();
+                    return;
+                }
+                if (!data.name) {
+                    Alert.alert('', '코드명을 입력해 주세요');
+                    $('#codeForm #name').focus();
+                    return;
+                }
+
+
+
+                let fnSuccess = function (res) {
+                    if (res.success) {
+                        Alert.alert('', '저장되었습니다'); // Notification
+                        _this.searchMainData();
+                    } else {
+                        Alert.alert('', res.message)
+                    }
+                };
+                AjaxUtil.postAsyncData(url, data, fnSuccess);
+            }
+
+
+            saveCode2() {
+                let _this = this;
+                let url = '/api/definition/code/Systemcodesave';
+
+                //let data = $('#codeForm').serialize();
+                let data = FormUtil.extractForm($('#SystemcodeForm'));
+
+                if (!data.code_type) {
+                    Alert.alert('', '코드타입를 입력해 주세요');
+                    $('#SystemcodeForm #code_type').focus();
+                    return;
+                }
+
+                if (!data.code) {
+                    Alert.alert('', '코드을 입력해 주세요');
+                    $('#SystemcodeForm #code').focus();
+                    return;
+                }
+
+
+                if (!data.name) {
+                    Alert.alert('', '코드명을 입력해 주세요');
+                    $('#SystemcodeForm #name').focus();
+                    return;
+                }
+
+                data.spjangcd=sessionStorage.getItem('spjangcd')
+
+                let fnSuccess = function (res) {
+                    if (res.success) {
+                        Alert.alert('', '저장되었습니다'); // Notification
+                        _this.searchMainData2();
+                    } else {
+                        Alert.alert('', res.message)
+                    }
+                };
+                AjaxUtil.postAsyncData(url, data, fnSuccess);
+            }
+
+
+            deleteCode(id) {
+                let _this = this;
+                let url = '/api/definition/code/delete';
+                let data = {id: id};
+                let fnSuccess = function (res) {
+                    if (res.success) {
+                        Alert.alert('', '삭제되었습니다'); // Notification
+                        _this.searchMainData();
+                    } else {
+                        Alert.alert('', res.message);
+                    }
+                };
+                AjaxUtil.postAsyncData(url, data, fnSuccess);
+            }
+
+            deleteCode2(id) {
+                let _this = this;
+                let url = '/api/definition/code/SystemCodedelete';
+                let data = {id: id};
+                let fnSuccess = function (res) {
+                    if (res.success) {
+                        Alert.alert('', '삭제되었습니다'); // Notification
+                        _this.searchMainData2();
+                    } else {
+                        Alert.alert('', res.message);
+                    }
+                };
+                AjaxUtil.postAsyncData(url, data, fnSuccess);
+            }
+
         }
 
-        deleteCode(id) {
-            let _this = this;
-            let url = '/api/definition/code/delete';
-            let data = { id: id };
-            let fnSuccess = function (res) {
-                if (res.success) {
-                    Notify.success('삭제되었습니다'); // Notification
-                    _this.searchMainData();
-                } else {
-                    Alert.alert('', res.message);
-                }
-            };
-            AjaxUtil.postAsyncData(url, data,fnSuccess);
-        }
-    }
+        let page = null;
 
-    let page = null;
+        $(document).ready(function (e) {
+            page = new CodePage();
 
-    $(document).ready(function (e) {
-        page = new CodePage();
+            $('#btnSearch').click(function (ex) {
+                page.searchMainData();
+            });
 
-        $('#btnSearch').click(function (ex) {
-            page.searchMainData();
-        });
+            $('#btnSearch2').click(function (ex) {
+                page.searchMainData2();
+            });
 
 
-        $('#btnNew').click(function (e) {
-            $('#codeForm')[0].reset();
-            $('#parent_id').val('');
-            $('#id').val('');
-            $('#description').text('');
-
-            $('#codeForm #code').attr('readonly', false);
-            $('#codeForm input').each(function () {
-                if ($(this).is(':disabled')) {
-                    $(this).removeAttr('disabled');
+            $('#txtCode').on('keypress', function (e) {
+                if (event.keyCode == 13) {
+                    page.searchMainData();
                 }
             });
 
-            $('#codeForm textarea').each(function () {
-                if ($(this).is(':disabled')) {
-                    $(this).removeAttr('disabled');
+            $('#txtCodeType, #txtCode2').on('keydown', function (e) {
+                if (e.keyCode === 13) {
+                    page.searchMainData2();
                 }
             });
-            //page.setButtonDisable(true, false, true);
-            page.setButtonState();
 
-            //$('#codeForm').reset();
+
+            $('#btnNew').click(function (e) {
+                $('#codeForm')[0].reset();
+                $('#parent_id').val('');
+                $('#id').val('');
+                $('#description').text('');
+
+                $('#codeForm #code').attr('readonly', false);
+                $('#codeForm input').each(function () {
+                    if ($(this).is(':disabled')) {
+                        $(this).removeAttr('disabled');
+                    }
+                });
+
+                $('#codeForm textarea').each(function () {
+                    if ($(this).is(':disabled')) {
+                        $(this).removeAttr('disabled');
+                    }
+                });
+                //page.setButtonDisable(true, false, true);
+                page.setButtonState();
+
+                //$('#codeForm').reset();
+
+            });
+
+            $('#btnNew2').click(function (e) {
+                $('#SystemcodeForm')[0].reset();
+                $('#id2').val('');
+                $('#description2').text('');
+
+                $('#SystemcodeForm #code2').attr('readonly', false);
+                $('#SystemcodeForm input').each(function () {
+                    if ($(this).is(':disabled')) {
+                        $(this).removeAttr('disabled');
+                    }
+                });
+
+                $('#SystemcodeForm textarea').each(function () {
+                    if ($(this).is(':disabled')) {
+                        $(this).removeAttr('disabled');
+                    }
+                });
+                //page.setButtonDisable(true, false, true);
+                /*page.setButtonState();*/
+
+                //$('#codeForm').reset();
+
+            });
+
+            $('#btnSave').click(function (e) {
+                Alert.confirm('',
+                    '저장하시겠습니까?',
+                    function () {
+                        page.saveCode();
+                    },
+                    function () {
+                    }
+                );
+            });
+
+            $('#btnSave2').click(function (e) {
+                Alert.confirm('',
+                    '저장하시겠습니까?',
+                    function () {
+                        page.saveCode2();
+                    },
+                    function () {
+                    }
+                );
+            });
+
+
+            $('#btnDel').click(function (e) {
+                let id = $('#codeForm').find('#id').val()
+                Alert.confirm('',
+                    '삭제하시겠습니까?',
+                    function () {
+                        page.deleteCode(id)
+                    },
+                    function () {
+                    }
+                );
+            });
+
+            $('#btnDel2').click(function (e) {
+                let id = $('#SystemcodeForm').find('#id2').val()
+
+                /*console.log("id값 확인"+id);*/
+
+                Alert.confirm('',
+                    '삭제하시겠습니까?',
+                    function () {
+                        page.deleteCode2(id)
+                    },
+                    function () {
+                    }
+                );
+            });
+
+
+
+            // 엑셀 다운로드
+            $('#btnExcel').click(function (e) {
+                page.grid.exportExcel('코드정보.xls');
+            });
+
+            // 하위추가
+            $('#btnNewChild').click(function (e) {
+                let data = FormUtil.extractForm($('#codeForm'))
+                let newItem = {
+                    'parent_id': data.id,
+                    'parent_name': data.code,
+                    'id': '',
+                    'code': '',
+                    'name': '',
+                    'description': ''
+                }
+                FormUtil.BindDataForm(newItem, $('#codeForm'));
+                $('#btnNewChild').prop('disabled', true);
+                $('#btnNewBro').prop('disabled', true);
+            });
+            // 형제추가
+            $('#btnNewBro').click(function (e) {
+                let data = FormUtil.extractForm($('#codeForm'))
+                let newItem = {
+                    'parent_id': data.parent_id,
+                    'parent_name': data.parent_name,
+                    'id': '',
+                    'code': '',
+                    'name': '',
+                    'description': ''
+                }
+                FormUtil.BindDataForm(newItem, $('#codeForm'));
+                $('#btnNewChild').prop('disabled', true);
+                $('#btnNewBro').prop('disabled', true);
+            });
+
+            page.searchMainData2();
 
         });
-
-        $('#btnSave').click(function (e) {
-            Alert.confirm('', 
-                '저장하시겠습니까?',
-                function () {
-                    page.saveCode();
-                },
-                function () { }
-            );
-        });
-
-        $('#btnDel').click(function (e) {
-            let id = $('#codeForm').find('#id').val()
-            Alert.confirm('', 
-                '삭제하시겠습니까?',
-                function () { page.deleteCode(id) },
-                function () { }
-            );
-        });
-
-        // 엑셀 다운로드
-        $('#btnExcel').click(function (e) {
-            page.grid.exportExcel('코드정보.xls');
-        });
-
-        // 하위추가 
-        $('#btnNewChild').click(function (e) {
-            let data = FormUtil.extractForm($('#codeForm'))
-            let newItem = {
-                'parent_id': data.id,
-                'parent_name': data.code,
-                'id': '',
-                'code': '',
-                'name': '',
-                'description':''
-            }
-            FormUtil.BindDataForm(newItem, $('#codeForm'));
-            $('#btnNewChild').prop('disabled', true);
-            $('#btnNewBro').prop('disabled', true);
-        });
-        // 형제추가
-        $('#btnNewBro').click(function (e) {
-            let data = FormUtil.extractForm($('#codeForm'))
-            let newItem = {
-                'parent_id': data.parent_id,
-                'parent_name': data.parent_name,
-                'id': '',
-                'code': '',
-                'name': '',
-                'description':''
-            }
-            FormUtil.BindDataForm(newItem, $('#codeForm'));
-            $('#btnNewChild').prop('disabled', true);
-            $('#btnNewBro').prop('disabled', true);
-        });
-
-		//그리드 컬럼 설정
-        page.popColSetting = new popColSetting();
-        let columns = page.popColSetting.loadColumnData(gui.gui_code, gui.template_key, 'grid',  page.grid);
-		
-        if (userinfo.group_code == 'admin') {
-            $('#btnGridSetting').css('visibility','visible');  
-        }		
-	
-        $('#btnGridSetting').click(function (e) {
-            let _this = this;
-            let fix_cols = page.grid_config.frozenColumnIndex;
-            page.popColSetting.show(gui.gui_code, gui.template_key, 'grid', page.grid_config.columns, page.grid, { 'order_fix':false,  'fix_cols' : fix_cols });
-        });	
-
-        page.searchMainData();
-
-    });
-</script>
+    </script>
 
 </th:block>
 

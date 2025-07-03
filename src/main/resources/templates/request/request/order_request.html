@@ -1,18 +1,118 @@
-<html layout:decorate="~{layout_page}" xmlns:layout="http://www.w3.org/1999/xhtml">
+<html layout:decorate="~{layout_page}">
 <style>
+    /* 우선순위 높게 덮어쓰기 */
+    #OrderRequestForm .write-table input[type="text"],
+    #OrderRequestForm .write-table select {
+        width: 100% !important;  /* colgroup 기준으로 꽉 차게 */
+        box-sizing: border-box;
+    }
 
+    /* 검색 버튼 너비 고정 */
+    #OrderRequestForm .input-with-button a.btn {
+        width: 32px;
+        height: 32px;
+        flex: 0 0 auto;
+    }
+
+    /* input-flex 구조 조정 */
+    #OrderRequestForm .input-with-button {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+    }
+
+    #OrderRequestForm {
+        border: 2px solid #dcdcdc;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        overflow-x: auto;
+    }
+
+    #OrderRequestForm table.write-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    #OrderRequestForm th,
+    #OrderRequestForm td {
+        padding: 6px 8px;
+        text-align: left;
+        vertical-align: middle;
+        border-bottom: 1px solid #e6e6e6;
+    }
+
+    #OrderRequestForm input[type="text"],
+    #OrderRequestForm select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 6px 8px;
+        font-size: 14px;
+    }
+
+    #OrderRequestForm td:nth-child(4) select {
+        width: 100%;
+        background-color: #eef;
+    }
+
+    #OrderRequestForm .input-with-button {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+    }
+
+    #OrderRequestForm .btn.in_btn img {
+        width: 16px;
+        height: 16px;
+        align-items: center;
+    }
+    /* 삭제 버튼이 있는 셀 자체를 가운데 정렬 */
+    #OrderRequestForm td.al_c.item_border {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    /* 삭제 버튼을 수직/수평 가운데 배치 */
+    #OrderRequestForm .btn.in_btn.del {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 28px;
+        height: 32px;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    /* 삭제 아이콘 이미지 크기 조정 */
+    #OrderRequestForm .btn.in_btn.del img {
+        width: 16px;
+        height: 16px;
+    }
+
+    #OrderRequestForm td:nth-child(1) input {
+        width: 95%; /* 모델명 입력칸 좁게 */
+    }
+
+    #OrderRequestForm td:nth-child(2) input {
+        width: 100%; /* 부품명 넓게 */
+    }
+    #OrderRequestForm .input-with-button input[type="text"] {
+        width: 100%;
+        box-sizing: border-box;
+    }
 </style>
+
 <th:block layout:fragment="content">
 
   <!--- (레이아웃) Contents 영역 -->
   <div class="layout-contents">
-    <!-- Page Title -->
     <div class="page-title-wrap">
       <div class="left">
         <h2>주문 등록</h2>
-        <!--                <a href="#" title="북마크" class="bookmark toggle">-->
-        <!--                    내메뉴-->
-        <!--                </a>-->
+        <a title="북마크" class="bookmark toggle">
+          내 메뉴
+        </a>
       </div>
       <ul class="page-navi">
         <li><img src="/images/icon/ico-nav-home.svg" alt="홈아이콘"></li>
@@ -20,7 +120,6 @@
         <li>주문등록</li>
       </ul>
     </div>
-    <!-- Select -->
 
     <div class="tab-wrap">
       <ul class="tab-links">
@@ -39,9 +138,6 @@
           <div class="section-top">
             <div class="title-wrap">
               <h3>주문등록</h3>
-<!--              <img src="/images/icon/exclamation/exclamation-circle.svg"-->
-<!--                   class="zoom-img" style="margin-left: 5px"-->
-<!--                   onclick="openPopup('https://foms.atlassian.net/wiki/external/YzNmYmE3MTkyYTFlNGU2OGIwOTY5YTEyNDFiZjcwZmE')" alt="도움말">--> 
             </div>
             <div class="button-wrap">
               <ul>
@@ -58,13 +154,13 @@
                   </a>
                 </li>
                 <li>
-                  <a class="btn btn-delete" id="deleteButton" title="삭제">
+                  <a class="btn btn-delete" id="btnDelete" title="삭제">
                     <img src="/images/icon/ico-delete.svg" alt="삭제 아이콘">
                     삭제
                   </a>
                 </li>
                 <li>
-                  <a class="btn btn-edit" id="btnSave" title="저장" onclick="saveOrder()">
+                  <a class="btn btn-edit" id="btnAddNew" title="저장" >
                     <img src="/images/icon/ico-save.svg" alt="저장 아이콘">
                     저장
                   </a>
@@ -80,12 +176,20 @@
               <tbody>
               <tr>
                 <th style="text-align: center">
-                  <label for="cltnm">
+                  <label for="cboCompany">
                     고객사
                   </label>
                 </th>
-                <td>
-                  <input type="text" id="cltnm" name="reqdate" value="" style="width: 200px"  >
+                <td style="white-space: nowrap;">
+                  <input id="cboCompany" name="cboCompany" type="hidden">
+                  <input id="cboCompanyHidden" name="cboCompanyHidden" type="hidden">
+                  <input class="form-control2" type="text" id="CompanyName" name="CompanyName"
+                         placeholder="검색버튼을 클릭하여 구매처를 검색하세요"
+                         style="display: inline-block;  width: 200px; vertical-align: middle;" />
+                  <a class="btn btn-delete" title="구매처검색" id="btnCompanySearch"
+                     style="display: inline-block; width: 32px; height: 32px; vertical-align: middle;">
+                    <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
+                  </a>
                 </td>
                 <th style="text-align: center">
                   <label for="reqdate">
@@ -107,13 +211,14 @@
                 </td>
                 <th style="text-align: center">
                   <label for="telno">
-                    연락처
+                    Project No
                   </label>
                 </th>
                 <td>
-                  <input type="text" id="telno" name="telno">
+                  <input type="text" id="telno" name="telno" style="width: 200px">
                 </td>
               </tr>
+
               <tr>
                 <th style="text-align: center">
                   <label for="perid">
@@ -137,89 +242,98 @@
                   <span id="guide" style="color:#999;display:none"></span>
                 </td>
               </tr>
+
               <tr>
                 <th style="text-align: center">
-                  <label for="remark">
-                    제&ensp;&ensp;&ensp;&nbsp;목
-                    <br>
-                    <small style="font-size: 0.85em; color: #666;">(메&ensp;&ensp;&ensp;모)</small>
-                  </label>
-                </th>
-                <td colspan="7">
-                  <input type="text" id="remark" name="remark" style="width: 62%">
-                </td>
-              </tr>
-               <tr>
-                <th style="text-align: center">
-                  <label for="panel_ht">
+                  <label for="setsamt">
                     공급기준
                   </label>
                 </th>
                 <td>
-                  <input type="number" id="panel_ht" name="panel_ht" style="width: 200px">
+                  <input type="number" id="setsamt" name="setsamt" style="width: 200px">
                 </td>
+
                 <th style="text-align: center">
-                  <label for="panel_hw">
+                  <label for="TotQTY">
                     수량
                   </label>
                 </th>
                 <td>
-                  <input type="number" id="panel_hw" name="panel_hw" style="width: 200px">
+                  <input type="number" id="TotQTY" name="TotQTY" style="width: 200px">
                 </td>
+
                 <th style="text-align: center">
-                  <label for="panel_hl">
+                  <label for="amount">
                     공급계
                   </label>
                 </th>
                 <td>
-                  <input type="number" id="panel_hl" name="panel_hl" style="width: 200px">
+                  <input type="number" id="amount" name="amount" style="width: 200px">
                 </td>
+
+                 <th style="text-align: center">
+                   <label for="outamt">
+                     외주계
+                   </label>
+                 </th>
+                 <td>
+                   <input type="number" id="outamt" name="outamt" style="width: 200px">
+                 </td>
+              </tr>
+
+              <tr>
                 <th style="text-align: center">
-                  <label for="panel_hh">
+                  <label for="eyunamt">
                     이윤
                   </label>
                 </th>
                 <td>
-                  <input type="number" id="panel_hh" name="panel_hh" style="width: 200px">
+                  <input type="number" id="eyunamt" name="eyunamt" style="width: 200px">
                 </td>
-              </tr>  
-              <tr>
-               <th style="text-align: center">
-                 <label for="panel_ht">
+
+                <th style="text-align: center">
+                 <label for="pereyunamt">
                    개당이윤
                  </label>
-               </th>
-               <td>
-                 <input type="number" id="panel_ht" name="panel_ht" style="width: 200px">
-               </td>
-               <th style="text-align: center">
-                 <label for="panel_hw">
+                </th>
+                <td>
+                 <input type="number" id="pereyunamt" name="pereyunamt" style="width: 200px">
+                </td>
+
+                <th style="text-align: center">
+                 <label for="eyunyul">
                    이윤율
                  </label>
-               </th>
-               <td>
-                 <input type="number" id="panel_hw" name="panel_hw" style="width: 200px">
-               </td>
-               <th style="text-align: center">
-                 <label for="panel_hl">
+                </th>
+                <td>
+                 <input type="number" id="eyunyul" name="eyunyul" style="width: 200px">
+                </td>
+
+                <th style="text-align: center">
+                 <label for="toteyunamt">
                    전체이윤
                  </label>
-               </th>
-               <td>
-                 <input type="number" id="panel_hl" name="panel_hl" style="width: 200px">
-               </td>
-               <th style="text-align: center">
-                 <label for="panel_hh">
-                   비고
-                 </label>
-               </th>
-               <td>
-                 <input type="number" id="panel_hh" name="panel_hh" style="width: 200px">
-               </td>
-             </tr>  
+                </th>
+                <td>
+                 <input type="number" id="toteyunamt" name="toteyunamt" style="width: 200px">
+                </td>
+              </tr>
+
+              <tr>
+                <th style="text-align: center">
+                  <label for="modeltxt">
+                    Model
+                  </label>
+                </th>
+                <td colspan="7">
+                  <input type="text" id="modeltxt" name="modeltxt" style="width: 70%">
+                </td>
+              </tr>
+
               </tbody>
             </table>
           </div>
+
           <div class="section-top">
             <div class="title-wrap">
               <h3>세부사항</h3>
@@ -228,19 +342,19 @@
             <div class="button-wrap" style="margin-bottom: 10px; margin-top: 10px">
               <ul>
                 <li>
-                  <a class="btn btn-saverow" id="btn-saverow" name="saverow" title="세부사항 추가" onclick="addBody()">
+                  <a class="btn btn-saverow" id="btn-saverow" name="saverow" title="세부사항 추가" >
                     <img src="/images/icon/ico-plus.svg" alt="등록 아이콘">
-                    세부사항 추가
+                    모델 생성
                   </a>
                 </li>
                 <li>
-                  <a class="btn btn-saverow" id="btn-addrow" name="addrow" title="행 복사" onclick="copyLastRow()">
+                  <a class="btn btn-saverow" id="btn-addrow" name="addrow" title="행 복사" >
                     <img src="/images/icon/ico-edit.svg" alt="등록 아이콘">
-                    행 복사
+                    부품 추가
                   </a>
                 </li>
                 <li>
-                  <a class="btn btn-deleterow" id="btn-deleterow" name="deleterow" title="행삭제" onclick="deleteBody()">
+                  <a class="btn btn-deleterow" id="btn-deleterow" name="deleterow" title="행삭제" >
                     <img src="/images/icon/ico-delete.svg" alt="삭제 아이콘">
                     행 삭제
                   </a>
@@ -248,132 +362,108 @@
               </ul>
             </div>
           </div>
-          <div class="table-wrap">
-            <!-- <table class="write-table">
-              <caption>세부사항 테이블</caption>
-              <input type="hidden" id="reqseq" name="reqseq">
-              <input type="hidden" id="isnew" name="isnew">
-              <tbody>
-              <tr>
-                <th style="text-align: center">
-                  <label for="hgrb">
-                    제품구성
-                  </label>
-                </th>
-                <td>
-                  <select id="hgrb" name="hgrb" style="width: 100px" onchange="changeHgrb()">
-                    <option value="" selected disabled>선택</option>
-                  </select>
-                </td>
-                <th style="text-align: center">
-                  <label for="qty">
-                    수&ensp;량
-                  </label>
-                </th>
-                <td>
-                  <input type="number" id="qty" name="qty" style="width: 100px">
-                </td>
-                <th style="text-align: center">
-                  <label for="panel_t">
-                    T (두께)
-                  </label>
-                </th>
-                <td>
-                  <input type="number" id="panel_t" name="panel_t" style="width: 100px">
-                </td>
-                <th style="text-align: center">
-                  <label for="panel_w">
-                    W/H (폭 또는 높이)
-                  </label>
-                </th>
-                <td>
-                  <input type="number" id="panel_w" name="panel_w" style="width: 100px">
-                </td>
 
-                <th style="text-align: center">
-                  <label for="panel_l">
-                    L (길이)
-                  </label>
-                </th>
-                <td>
-                  <input type="number" id="panel_l" name="panel_l" style="width: 100px">
-                </td>
-              </tr>
-              <tr>
-                <th style="text-align: center">
-                  <label for="exfmtypedv">
-                    외부마감재
-                  </label>
-                </th>
-                <td>
-                  <select id="exfmtypedv" name="exfmtypedv" style="width: 100px">
-                    <option value="" selected>없음</option>
-                    <option value="MAC">GRP</option>
-                    <option value="MAA">AL</option>
-                    <option value="MAB">GI</option>
-                    <option value="MAI">SUS</option>
-                    <option value="MAZ">기타</option>
-                  </select>
-                </td>
-                <th style="text-align: center">
-                  <label for="infmtypedv">
-                    외부보강재
-                  </label>
-                </th>
-                <td>
-                  <select id="infmtypedv" name="infmtypedv" style="width: 100px">
-                    <option value="" selected>없음</option>
-                    <option value="MCA">합판</option>
-                    <option value="MCD">LTP</option>
-                    <option value="MCE">기타</option>
-                  </select>
-                </td>
-                <th style="text-align: center">
-                  <label for="stframedv">
-                    내부보강재
-                  </label>
-                </th>
-                <td>
-                  <select id="stframedv" name="stframedv" style="width: 100px">
-                    <option value="" selected>없음</option>
-                    <option value="MCA">합판</option>
-                    <option value="MCD">LTP</option>
-                    <option value="MCE">기타</option>
-                  </select>
-                </td>
-                <th style="text-align: center">
-                  <label for="stexplydv">
-                    내부마감재
-                  </label>
-                </th>
-                <td>
-                  <select id="stexplydv" name="stexplydv" style="width: 100px">
-                    <option value="" selected>없음</option>
-                    <option value="MAC">GRP</option>
-                    <option value="MAA">AL</option>
-                    <option value="MAB">GI</option>
-                    <option value="MAI">SUS</option>
-                    <option value="MAZ">기타</option>
-                  </select>
-                </td>
-                <th style="text-align: center">
-                  <label for="ordtext">
-                    옵션 및 요청사항
-                  </label>
-                </th>
-                <td>
-                  <a class="btn btn-request" title="요청사항" data-popup="popup2"
-                     onclick="validateFieldsAndShowPopup(this)">
-                    요청사항 작성
-                  </a>
-                </td>
-              </tr>
-              </tbody>
-            </table> -->
-            <div class="container-fluid">
-              <p id=""></p>
-              <div id="theGrid2" style="max-height: 714px; height: 300px"></div>
-            </div>
+          <div class="table-wrap">
+            <form id="OrderRequestForm">
+              <table class="write-table">
+                <caption>주문 등록 테이블</caption>
+                <colgroup>
+                  <col style="width: 15%"> <!-- 모델명: -->
+                  <col style="width: 15%"> <!-- 부품명:-->
+                  <col style="width: 10%"> <!-- 비고 -->
+                  <col style="width: 10%"> <!-- 작업방식 -->
+                  <col style="width: 10%"> <!-- 1set/원가 -->
+                  <col style="width: 10%"> <!-- 판매단가 -->
+                  <col style="width: 7%">  <!-- 수량 -->
+                  <col style="width: 10%"> <!-- 제품가 -->
+                  <col style="width: 8%">  <!-- 단가이력 -->
+                  <col style="width: 3%">  <!-- 삭제 버튼 -->
+                </colgroup>
+                <thead>
+                <tr id="itemHeaderRow">
+                  <th>모델명</th>
+                  <th>부품명</th>
+                  <th>비고</th>
+                  <th>작업방식</th>
+                  <th>1set/원가</th>
+                  <th>판매단가</th>
+                  <th>수량</th>
+                  <th>제품가</th>
+                  <th>단가이력</th>
+                  <th>
+                    <a class="btn in_btn plus" id="addRemark" title="추가" style="width: 35px; height: 35px;">
+                      <img src="/images/icon/ico-plus.svg" alt="등록 아이콘" style="width: 12px; height: 12px; margin-left: 7px" />
+                    </a>
+                  </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="item-template-row" style="display: none;">
+                  <td>
+                    <div class="input-with-button" style="display: flex; gap: 4px;">
+                      <input type="text" name="txtModelNm" placeholder="입력 후 엔터" style="flex: 1; width: 170px;" />
+                      <a class="btn in_btn" title="모델 검색" id="btnModelSearch" style="width: 28px; height: 32px;">
+                        <img src="/images/icon/btn-srch-black.svg" alt="검색 아이콘" />
+                      </a>
+                      <input type="hidden" name="MaterialGroupName"/>
+                      <input type="hidden" name="Material_id" />
+                      <input type="hidden" name="product_code" />
+                    </div>
+                  </td>
+                  <td>
+                    <div class="input-with-button" style="display: flex; gap: 4px;">
+                    <input type="text" name="pname" placeholder="부품명" style="flex: 1; width: 170px;"  />
+                    <a class="btn in_btn" title="부품 검색" id="btnpartSearch" style="width: 28px; height: 32px;">
+                      <img src="/images/icon/btn-srch-black.svg" alt="검색 아이콘" />
+                    </a>
+                    </div>
+                  </td>
+                  <td><input type="text" name="remark" placeholder="비고" style="width: 100%;" /></td>
+                  <td>
+                    <select class="jobflag-select" name="jobflag_" style="width: 100%;">
+                      <option value="j01">외주</option>
+                      <option value="j02">POGO PIN</option>
+                      <option value="j03">자재</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="number" name="setamt" placeholder="1SET / 단가" style="width: 100%;" />
+                    <input type="hidden" name="SetAmtUnitPrice" />
+                  </td>
+                  <td><input type="number" name="saleamt" placeholder="판매단가" style="width: 100%;" /></td>
+                  <td><input type="number" name="QTY" placeholder="수량" style="width: 100%;" /></td>
+                  <td><input type="number" name="uamt" placeholder="제품가" style="width: 100%;" /></td>
+                  <td>
+                    <input type="hidden" name="State" />
+                    <input type="text" name="balju_StateName" readonly placeholder="단가이력" style="width: 100%;" />
+                  </td>
+                  <td class="al_c item_border" style="text-align: center; vertical-align: middle;">
+                    <a class="btn in_btn del" title="행 삭제"
+                       style="display: flex; justify-content: center; align-items: center; width: 35px; height: 35px; margin: 0 auto;">
+                      <img src="/images/icon/ico-delete.svg" alt="삭제 아이콘"
+                           style="width: 15px; height: 15px; margin-left: 7px" />
+                    </a>
+                  </td>
+                </tr>
+                <tfoot>
+                <tr class="sum-row" style="background-color: #f2f2f2; font-weight: bold;">
+                  <td colspan="4" style="text-align: center;">합계</td>
+                  <td><input type="text" id="sum_setamt" readonly style="width: 100%; text-align: right;" /></td>
+                  <td><input type="text" id="sum_saleamt" readonly style="width: 100%; text-align: right;" /></td>
+                  <td><input type="text" id="sum_qty" readonly style="width: 100%; text-align: right;" /></td>
+                  <td><input type="text" id="sum_uamt" readonly style="width: 100%; text-align: right;" /></td>
+                  <td colspan="2"></td>
+                </tr>
+                </tfoot>
+                </tbody>
+              </table>
+
+              <input type="hidden" id="bh_id" name="bh_id">
+              <input type="hidden" id="spjangcdHidden" name="spjangcd" />
+            </form>
+          </div>
+
+        </section>
           </div>
         </section>
         <!--       주문등록 탭 종료   / 주문 의뢰현황 시작       -->
@@ -401,15 +491,20 @@
               </dl>
               <dl>
                 <dt>
-                  <label for="searchComnm">
+                  <label for="cboCompany2">
                     고객사<span class="eq">*</span>
                   </label>
                 </dt>
                 <dd>
                   <div class="srch-box">
-                    <input type="text" id="searchComnm" name="searchComnm" class="input-srch"
-                           placeholder="고객사" style="border-radius: 5px;" readonly>
-                    <!--                                        <a href="#a" class="btn-srch" title="검색" onclick="searchData()"></a>-->
+                    <input id="cboCompany2" name="cboCompany2" type="hidden">
+                    <input class="form-control2" type="text" id="CompanyName2" name="CompanyName"2
+                           placeholder="검색버튼을 클릭하여 구매처를 검색하세요" readonly/>
+                    &nbsp;
+                    <a class="btn btn-delete" title="구매처검색" id="btnCompanySearch2">
+                      <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
+                      구매처 검색
+                    </a>
                   </div>
                 </dd>
               </dl>
@@ -435,13 +530,7 @@
                 <dd>
                   <div class="srch-box">
                     <select id="searchOrdflag" name="searchOrdflag">
-                      <option value="">전체</option>
-                      <option value="0">주문등록</option>
-                      <option value="1">주문확인</option>
-                      <option value="2">주문확정</option>
-                      <option value="3">제작진행</option>
-                      <option value="4">출고</option>
-                      <option value="5">주문취소</option>
+
                     </select>
                     <!--                                        <a href="#a" class="btn-srch" title="검색" onclick="searchData()"></a>-->
                   </div>
@@ -571,59 +660,7 @@
 </th:block>
 
 <th:block layout:fragment="scripts">
-  <th:block th:replace="/common/columns_setting :: columns_setting"></th:block>
-<!--  <script>-->
-<!--    tinymce.init({-->
-<!--      language: "ko_KR",-->
-<!--      selector: "#ordtext",-->
-<!--      plugins: "image",-->
-<!--      height: 500,-->
-<!--      width: 900,-->
-<!--      toolbar: "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | image",-->
-<!--      paste_data_images: false,-->
-<!--      file_picker_types: 'image',-->
-<!--      automatic_uploads: false, // 자동 업로드 비활성화-->
-
-<!--      // 파일 선택기 콜백-->
-<!--      file_picker_callback: function (callback, value, meta) {-->
-<!--        if (meta.filetype === 'image') {-->
-<!--          const input = document.createElement('input');-->
-<!--          input.setAttribute('type', 'file');-->
-<!--          input.setAttribute('accept', 'image/*');-->
-
-<!--          input.onchange = function () {-->
-<!--            const file = input.files[0];-->
-<!--            if (file) {-->
-<!--              const formData = new FormData();-->
-<!--              formData.append('file', file);-->
-
-<!--              // 업로드 요청-->
-<!--              fetch('/api/request/request/uploadEditor', {-->
-<!--                method: 'POST',-->
-<!--                body: formData,-->
-<!--                headers: {-->
-<!--                  'X-CSRF-Token': csrfToken // CSRF 토큰 추가-->
-<!--                }-->
-<!--              })-->
-<!--                      .then(response => response.json())-->
-<!--                      .then(data => {-->
-<!--                        if (data.location) {-->
-<!--                          // 업로드된 URL을 에디터에 삽입-->
-<!--                          callback(data.location, { alt: file.name });-->
-<!--                        }-->
-<!--                      })-->
-<!--                      .catch(error => {-->
-<!--                        console.error('Image upload failed:', error);-->
-<!--                        alert('이미지 업로드에 실패했습니다.');-->
-<!--                      });-->
-<!--            }-->
-<!--          };-->
-
-<!--          input.click(); // 파일 탐색기 열기-->
-<!--        }-->
-<!--      }-->
-<!--    });-->
-<!--  </script>-->
+  <th:block th:replace="/common/popup_company :: popup_company"></th:block>
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <script>
     //본 예제에서는 도로명 주소 표기 방식에 대한 법령에 따라, 내려오는 데이터를 조합하여 올바른 주소를 구성하는 방법을 설명합니다.
@@ -676,1127 +713,161 @@
     }
   </script>
   <script type="text/javascript">
+    const ProductInputHandler = {
+      bind: function ({ rowSelector, $content, tryShowBaljuPrice }) {
+        const $row = $(rowSelector); // jQuery 객체로 변환 – 안전함
 
-    var theGrid;
-    var theGrid2;
-    var viewdata1;
-    var viewdata2;
-    let SelectItem;
-    let csrfToken = $("[name=_csrf]").val();
+        const $unit = $row.find('input[name^="BaljuUnitPrice"]');
+        const $qty = $row.find('input[name^="QTY"]');
+        const $uamt = $row.find('input[name^="uamt"]');
 
-    document.readyState === 'complete' ? init() : window.onload = init;
-
-    // 오늘 날짜 설정
-    const date = new Date();
-    date.setHours(date.getHours() + 9); // UTC+9로 한국 시간 설정
-    const today = date.toISOString().split('T')[0];
-
-    // 현재 년도와 월을 가져옵니다
-    const currentYear = date.getFullYear();
-    const currentMonth = (date.getMonth() + 1).toString().padStart(2, '0'); // 1월은 0부터 시작하므로 +1 처리
-
-    // 이번 달 1일을 설정
-    const firstDayOfMonth = `${currentYear}-${currentMonth}-01`;
-
-    // input 값 설정
-    document.getElementById('startDate').value = firstDayOfMonth;
-    document.getElementById('endDate').value = today;
-    document.getElementById('reqdate').value = today;
-
-    <!-- 초반 페이지 진입시 그리드 바인딩 끝-->
-    function init() {
-      // 🔹 sessionStorage에서 데이터 가져오기
-      const rowData = sessionStorage.getItem("selectedRowData");
-      const tabAction = sessionStorage.getItem("tabAction"); // ✅ 추가: tabAction 값 가져오기
-      const sessionDate = sessionStorage.getItem("sessionDate");
-
-      if (rowData) {
-        // 🔹 JSON 파싱하여 데이터 추출
-        const parsedData = JSON.parse(rowData);
-        console.log("✅ sessionStorage 데이터 있음:", parsedData);
-
-        // 필요한 값들 추출
-        const { saupnum, reqnum, reqdate, cltnm } = parsedData;
-
-        console.log("사업자번호 (saupnum):", saupnum);
-        document.getElementById("saupnumHidden").value = saupnum;
-        document.getElementById("reqnum").value = reqnum;
-        document.getElementById("reqdate").value = reqdate;
-        document.getElementById("searchComnm").value = cltnm;
-        document.getElementById("startDate").value = reqdate;
-        document.getElementById("endDate").value = reqdate;
-        // `saupnum`을 포함해서 데이터 요청
-        // 고객사 readonly 제거
-        document.getElementById("searchComnm").removeAttribute("readonly");
-        // 신규등록버튼 제거
-        document.getElementById("newdataBtn").style.display = "none";
-        //`saupnum`을 포함해서 데이터 요청
-        fetchListData(saupnum);
-        fetchListData2(saupnum);
-        getMyInfo(saupnum);
-        activateSection();
-
-        // 2초 후에 sessionStorage 데이터 삭제
-        setTimeout(() => {
-          sessionStorage.removeItem("selectedRowData");
-          console.log("🗑️ sessionStorage 데이터 삭제 완료");
-        }, 2000);
-      } else {
-        if(sessionDate != null){
-          document.getElementById("startDate").value = sessionDate;
-          document.getElementById("endDate").value = sessionDate;
+        function calculate() {
+          const unit = parseFloat($unit.val()) || 0;
+          const qty = parseInt($qty.val()) || 0;
+          $uamt.val((unit * qty).toFixed(2));
         }
-        console.warn("⚠️ sessionStorage에 저장된 데이터 없음. 기본 요청 실행");
 
-        // 🔹 기존 방식대로 실행 (인자 없이)
-        async function fetchData() {
-          try {
-            await getMyInfo();   // ✅ getMyInfo()가 완료될 때까지 기다림
-            fetchListData();  // ✅ getMyInfo 완료 후 실행
-            fetchListData2(); // ✅ fetchListData 완료 후 실행
-          } catch (error) {
-            console.error("❌ 오류 발생:", error);
+        $unit.on('input', calculate);
+        $qty.on('input', calculate);
+
+        $row.find('input[name^="balju_StateName"]').on('dblclick', function () {
+          if (typeof tryShowBaljuPrice === 'function') {
+            tryShowBaljuPrice();
           }
-        }
-        // 실행
-        fetchData();
+        });
+
+
+      }
+    };//ProductInputHandler
+
+    class OrderRequestPage {
+      constructor() {
+        this.itemIndex = 0;  // 🔥 클래스 수준으로 선언
+        this.theGrid = null;
+        this.$btnEdit = $('#btnEdit');
+        this.$btnAddNew = $('#btnAddNew');
+        this.spjangcd = $('#spjangcdHidden');
+        this.viewData = new wijmo.collections.CollectionView();
+        this.init();
       }
 
-      // ✅ tabAction 값이 있으면 실행 후 삭제
-      if (tabAction) {
-        setTimeout(() => {
-        console.log("🔄 tabAction 값 존재, init 실행!");
-        sessionStorage.removeItem("tabAction"); // 실행 후 제거
-        sessionStorage.removeItem("selectedRowData");
-        sessionStorage.removeItem("sessionDate")
-          console.log("🗑️ sessionStorage.tabAction 데이터 삭제 완료");
-        }, 2000);
-      }
-    }
+      init() {
+        let _this = this;
+        let $content = $('#tab1');
+        // 발주등록
+        this.$btnAddNew.click(function () {
+          let defaultData = {
+            spjangcd: _this.spjangcd.val()
+          };
+          _this.save(defaultData);
+        });
 
-    // ✅ 탭이 활성화될 때 `tabAction` 값을 확인하고 `init()` 실행
-    window.addEventListener("storage", function (event) {
-      if (event.key === "tabAction" && event.newValue) {
-        console.log("📢 tabAction 감지됨! init 실행");
-        init();
-      }
-    });
-
-    function activateSection() {
-      $(".tab-item").hide(); // 모든 섹션 숨기기
-      $("#tab1").show(); // 해당 섹션 표시
-      $(".tab-links li").removeClass("active"); // 모든 탭에서 active 제거
-
-      // 특정 title을 가진 <a> 태그를 찾아 해당 <li>에 active 추가
-      $(".tab-links a[title='주문 등록']").parent("li").addClass("active");
-    }
-
-    // 주문현황 더블클릭 이벤트 기존탭 최신화
-    document.addEventListener("DOMContentLoaded", function () {
-      console.log("✅ order_request.html DOMContentLoaded 완료");
-
-      window.addEventListener("message", function (event) {
-        console.log("📩 메시지 수신! Origin:", event.origin);
-        console.log("📩 메시지 내용:", event.data);
-
-        if (event.data.action === "init") {
-          console.log("📩 init 실행 요청 받음");
-          init(); // `init()` 함수 실행
-        }
-      });
-
-      // index.html에서 보낸 메시지가 iframe이 로드되기 전에 도착했을 경우 대비
-      setTimeout(() => {
-        window.parent.postMessage({ action: "requestInit" }, "*");
-      }, 200);
-    });
-
-
-    // 주문/진행현황 그리드
-    function fetchListData(saupnum) {
-      let data2 = [];
-      const transformedData = []; // 변환된 데이터를 저장할 배열
-      $.ajax({
-        url: '/api/request/request/order_read',
-        type: 'GET',
-        data: {
-          'saupnum':saupnum,
-          'saupnumHidden': $('#saupnumHidden').val(),
-          'search_startDate': $('#startDate').val(),
-          'search_endDate': $('#endDate').val(),
-          'search_remark': $('#searchRemark').val(),
-          'search_ordflag': $('#searchOrdflag').val(),
-          'search_comnm': $('#searchComnm').val()
-        },
-        async: false,
-        success: function (data) {
-          data2 = data.data;
-        }
-      })
-      // bd_details를 파싱하여 배열로 변환
-      // bd_details가 유효한 JSON 문자열일 때만 파싱
-
-      const seenReqnum = new Set(); // reqnum을 기준으로 중복을 확인
-      data2.forEach(item => {
-        item.bd_hgrb = getHgrb((item.bd_hgrb));
-        item.bd_exfmtypedv = getListCgrb2(item.bd_exfmtypedv);
-        item.bd_infmtypedv = getListCgrb2(item.bd_infmtypedv);
-        item.bd_stframedv = getListCgrb2(item.bd_stframedv);
-        item.bd_stexplydv = getListCgrb2(item.bd_stexplydv);
-        item.originOrdtext = item.bd_ordtext;
-      });
-      viewdata1 = new wijmo.collections.CollectionView(data2); // 변환된 데이터를 CollectionView로 변환
-      const minRows = 12; // 최소 행 수
-      const rowTemplate = {
-        ordflag: null,
-        reqdate: null,
-        deldate: null,
-        panel_ht: null,
-        panel_hw: null,
-        panel_hl: null,
-        panel_hh: null,
-        remark: null,
-        downloads: null,
-        bd_hgrb: null,
-        bd_qty: null,
-        bd_panel_t: null,
-        bd_panel_w: null,
-        bd_panel_l: null,
-        bd_exfmtypedv: null,
-        bd_infmtypedv: null,
-        bd_stframedv: null,
-        bd_stexplydv: null,
-        bd_ordtext: null,
-        telno: null,
-        perid: null,
-        cltaddr: null,
-        reqnum: null,
-        isdownload: null,
-        hd_files: null,
-        saupnum:null,
-        originOrdtext: null
-      }; // 필요한 데이터 구조
-
-// 빈 행 추가
-      while (viewdata1.sourceCollection.length < minRows) {
-        viewdata1.sourceCollection.push({ ...rowTemplate });
-      }
-
-      if (!theGrid) {
-        // 데이터 그리드에 바인딩
-        theGrid = new wijmo.grid.FlexGrid('#theGrid', {
-          autoGenerateColumns: false,
-          showMarquee: true,
-          isReadOnly: true,
-          selectionMode: wijmo.grid.SelectionMode.Row,
-          columns: [
-            {binding: 'ordflag', header: '진행구분', width: '*', minWidth: 100, align: 'center'},
-            {binding: 'cltnm', header: '고객사', width: '*', minWidth: 105, align: 'center'},
-            {binding: 'reqdate', header: '주문일자', width: '*', minWidth: 120, align: 'center'},
-            {binding: 'deldate', header: '납품희망일', width: '*', minWidth: 120, align: 'center'},
-            // {binding: 'panel_ht', header: '두께', width: '*', minWidth: 70, align: 'right'},
-            // {binding: 'panel_hw', header: '폭', width: '*', minWidth: 70, align: 'right'},
-            // {binding: 'panel_hl', header: '길이', width: '*', minWidth: 70, align: 'right'},
-            // {binding: 'panel_hh', header: '높이', width: '*', minWidth: 70, align: 'right'},
-            {binding: 'remark', header: '제목', width: '*', minWidth: 250, align: 'left'},
-            {binding: 'downloads', header: '첨부파일', width: '*', minWidth: 105, align: 'center'},
-
-            {binding: 'reqnum', visible: false},  // 숨길 컬럼
-            {binding: 'isdownload', visible: false},
-            {binding: 'hd_files', visible: false},
-            {binding: 'originOrdtext', visible: false},
-            {binding: 'saupnum', visible: false},
-          ],
-          itemsSource: viewdata1,
-          itemFormatter: function (panel, r, c, cell) {
-            if (panel.cellType === wijmo.grid.CellType.Cell) {
-              var item = panel.rows[r].dataItem; // 현재 행의 데이터 항목
-              if (panel.columns[c].binding === 'downloads') {
-                cell.innerHTML = ''; // 셀 내용 초기화
-                if (item.isdownload) {
-                  cell.innerHTML = '<a title="다운로드" class="btn-filedown" onclick="downloadFile_order()">다운로드</a>';
-                }
-              }
-              if (panel.columns[c].binding === 'bd_ordtext') {
-                if (item.bd_ordtext) {
-                  cell.innerHTML = '<a title="수정팝업" class="" onclick="showPopup2(\'popup2\')" style="color: #03428E">요청사항 확인</a>';
-                }
-              }
+        // 삭제 버튼
+        $('#btnDelete').click(function () {
+          let items = _this.grid.selectedItems;
+          if (items.length > 0) {
+            let id = items[0].bh_id;
+            let state = (items[0].BalJuHeadType || '').toLowerCase();
+            if (state !== 'draft') {
+              Alert.alert('', '미입고 상태일 때만 삭제할 수 있습니다.');
+              return;
             }
-          }
-        });
-        // 헤더를 중앙 정렬하는 이벤트 핸들러
-        theGrid.formatItem.addHandler(function (s, e) {
-          if (e.panel === s.columnHeaders) {
-            e.cell.style.textAlign = 'center';
-          }
-        });
-        // 더블클릭 이벤트
-        theGrid.hostElement.addEventListener('dblclick', function (e) {
-          // 그리드의 셀 정보 가져오기
-          let hitTest = theGrid.hitTest(e);
-          if (hitTest.cellType === wijmo.grid.CellType.Cell) {
-            // 행(row), 행의 데이터(item) 정보 가져오기
-            let row = hitTest.row;
-            let item = theGrid.rows[row].dataItem;
-            if (!item.ordflag && item.reqnum) {
-              let hdRow = viewdata1.items.find(data => data.reqnum === item.reqnum && data.ordflag);
-              if (hdRow) {
-                document.getElementById('reqdate').value = hdRow.reqdate;
-                document.getElementById('deldate').value = hdRow.deldate;
-                document.getElementById('telno').value = hdRow.telno;
-                document.getElementById('perid').value = hdRow.perid;
-                document.getElementById('postno').value = hdRow.cltzipcd;
-                document.getElementById('address1').value = hdRow.cltaddr;
-                // document.getElementById('panel_ht').value = hdRow.panel_ht;
-                // document.getElementById('panel_hw').value = hdRow.panel_hw;
-                // document.getElementById('panel_hl').value = hdRow.panel_hl;
-                // document.getElementById('panel_hh').value = hdRow.panel_hh;
-                document.getElementById('remark').value = hdRow.remark;
-              }
-            }else {
-              document.getElementById('reqdate').value = item.reqdate;
-              document.getElementById('deldate').value = item.deldate;
-              document.getElementById('telno').value = item.telno;
-              document.getElementById('perid').value = item.perid;
-              document.getElementById('postno').value = item.cltzipcd;
-              document.getElementById('address1').value = item.cltaddr;
-              // document.getElementById('panel_ht').value = item.panel_ht;
-              // document.getElementById('panel_hw').value = item.panel_hw;
-              // document.getElementById('panel_hl').value = item.panel_hl;
-              // document.getElementById('panel_hh').value = item.panel_hh;
-              document.getElementById('remark').value = item.remark;
-            }
-            let fileList = Array.isArray(item.hd_files) ? item.hd_files : [];
-
-            deletedFiles2 = [];
-            uploadedFiles2 = [];
-
-            fileList.forEach(file => {
-              let newFile = {
-                name: file.fileornm,
-                type: file.fileextns,
-                size: file.filesize,
-                fileid: file.fileid,
-                reqseq: item.reqseq,
-                lastModified: new Date().getTime(),
-              };
-              uploadedFiles2.push(newFile); // 파일 리스트에 추가
-            });
-
-
-            $('.filelist2').empty(); // 파일 리스트 초기화
-            updateFileCount2();
-            updateFileListUI2();
-
-            // document.getElementById('qty').value = item.bd_details.qty;
-            // document.getElementById('panel_t').value = item.bd_details.panel_t;
-            // document.getElementById('panel_w').value = item.bd_details.panel_w;
-            // document.getElementById('panel_l').value = item.bd_details.panel_l;
-            // document.getElementById('ordtext').value = item.bd_details.ordtext;
-            //
-            // const selectHgrb = document.getElementById('hgrb');
-            // const selectExfmtypedv = document.getElementById('exfmtypedv');
-            // const selectInfmtypedv = document.getElementById('infmtypedv');
-            // const selectStframedv = document.getElementById('stframedv');
-            // const selectStexplydv = document.getElementById('stexplydv');
-            //
-            // const selectedItem = item;
-            //
-            // setSelectedIndex(selectHgrb, selectedItem.bd_details.hgrb);
-            // setSelectedIndex(selectExfmtypedv, selectedItem.bd_details.exfmtypedv);
-            // setSelectedIndex(selectInfmtypedv, selectedItem.bd_details.infmtypedv);
-            // setSelectedIndex(selectStframedv, selectedItem.bd_details.stframedv);
-            // setSelectedIndex(selectStexplydv, selectedItem.bd_details.stexplydv);
-            document.getElementById('btnSave').title = "수정";
-            document.getElementById('reqnum').value = item.reqnum;
-            resetBodyField();
-            const tab1Link = document.getElementById('listTabLink');
-            tab1Link.click();
-            fetchListData2();
-          }
-        })
-        // FlexGrid의 최대 높이를 제한하여 스크롤바를 활성화
-        theGrid.hostElement.style.maxHeight = '650px'; // 약 12개의 행 높이에 맞게 설정
-        theGrid.hostElement.style.overflowY = 'auto';
-        // 선택이 변경될 때, 현재 항목 업데이트
-        theGrid.rowHeaders.columns.splice(0, 1);  //맨 앞에 헤더부분 없애기
-        new FlexGridContextMenu(theGrid);
-        window.downloadFileName = '주문등록 첨부파일';
-      } else {
-        // 이미 FlexGrid이 존재하는 경우, 데이터만 업데이트
-        theGrid.itemsSource = viewdata1;
-      }
-    }
-
-    // 주문등록 세부내용 그리드
-    function fetchListData2(saupnum) {
-      let data2 = [];
-
-      $.ajax({
-        url: '/api/request/request/read',
-        type: 'GET',
-        data: {
-          'saupnumHidden': $('#saupnumHidden').val(),
-          'saupnum':saupnum,
-          'reqnum': $('#reqnum').val(),
-          'reqdate': $('#reqdate').val()
-        },
-        async: false,
-        success: function (data) {
-          data2 = data.data;
-          data2.forEach(item =>{
-            item.hgrb = getHgrb((item.hgrb));
-            item.exfmtypedv = getListCgrb2(item.exfmtypedv);
-            item.infmtypedv = getListCgrb2(item.infmtypedv);
-            item.stframedv = getListCgrb2(item.stframedv);
-            item.stexplydv = getListCgrb2(item.stexplydv);
-            item.originOrdtext = item.ordtext;
-          })
-        }
-      })
-
-      viewdata2 = new wijmo.collections.CollectionView(data2);
-
-      if (!theGrid2) {
-
-        // 데이터 그리드에 바인딩
-        theGrid2 = new wijmo.grid.FlexGrid('#theGrid2', {
-          autoGenerateColumns: false,
-          showMarquee: true,
-          isReadOnly: true,
-          selectionMode: wijmo.grid.SelectionMode.Row,
-          columns: [
-            {binding: 'hgrb', header: '제품구성', width: '*', minWidth: 100, align: 'center'},
-            {binding: 'qty', header: '수량', width: 80, align: 'right'},
-            {binding: 'panel_t', header: 'T', width: 80, align: 'right'},
-            {binding: 'panel_w', header: 'W/H', width: 80, align: 'right'},
-            {binding: 'panel_l', header: 'L', width: 80, align: 'right'},
-            {binding: 'exfmtypedv', header: '외부마감재', width: '*', minWidth: 100, align: 'center'},
-            {binding: 'infmtypedv', header: '외부보강재', width: '*', minWidth: 100, align: 'center'},
-            {binding: 'stframedv', header: '내부보강재', width: '*', minWidth: 100, align: 'center'},
-            {binding: 'stexplydv', header: '내부마감재', width: '*', minWidth: 100, align: 'center'},
-            {binding: 'ordtext', header: '옵션 및 요청사항', width: '*', minWidth: 100, align: 'left'},
-            {binding: 'originOrdtext', visible: false},
-            {binding: 'reqseq', visible: false},
-            {binding: 'isnew', visible: false},
-            {binding: 'saupnum',visible: false}
-          ],
-          itemsSource: viewdata2,
-          itemFormatter: function (panel, r, c, cell) {
-            if (panel.cellType === wijmo.grid.CellType.Cell) {
-              var item = panel.rows[r].dataItem; // 현재 행의 데이터 항목
-              if (panel.columns[c].binding === 'ordtext') {
-                cell.innerHTML = ''; // 셀 내용 초기화
-                if (item.ordtext) {
-                  cell.innerHTML = '<a title="수정팝업" class="" onclick="showPopup3(\'popup2\')" style="color: #03428E">요청사항 확인</a>';
-                }
-              }
-            }
-          }
-        });
-        // 헤더를 중앙 정렬하는 이벤트 핸들러
-        theGrid2.formatItem.addHandler(function (s, e) {
-          if (e.panel === s.columnHeaders) {
-            e.cell.style.textAlign = 'center';
-          }
-        });
-        // 첫열에 selectBox 추가
-        let selector = new wijmo.grid.selector.Selector(theGrid2, {
-          itemChecked: (e, ctx) => {
-            SelectItem = theGrid2.rows.filter(r => r.isSelected);
-
-          }
-        })
-        // 더블클릭 이벤트
-        theGrid2.hostElement.addEventListener('dblclick', function (e) {
-          // 그리드의 셀 정보 가져오기
-          let hitTest = theGrid2.hitTest(e);
-          if (hitTest.cellType === wijmo.grid.CellType.Cell) {
-            // 행(row), 행의 데이터(item) 정보 가져오기
-            let row = hitTest.row;
-            let item = theGrid2.rows[row].dataItem;
-
-            document.getElementById('qty').value = item.qty;
-            document.getElementById('panel_t').value = item.panel_t;
-            document.getElementById('panel_w').value = item.panel_w;
-            document.getElementById('panel_l').value = item.panel_l;
-            document.getElementById('reqseq').value = item.reqseq;
-            document.getElementById('isnew').value = item.isnew;
-            document.getElementById('ordtext').value = item.ordtext;
-
-            const selectHgrb = document.getElementById('hgrb');
-            const selectExfmtypedv = document.getElementById('exfmtypedv');
-            const selectInfmtypedv = document.getElementById('infmtypedv');
-            const selectStframedv = document.getElementById('stframedv');
-            const selectStexplydv = document.getElementById('stexplydv');
-
-            const selectedItem = item;
-
-            setSelectedIndex(selectHgrb, selectedItem.hgrb);
-            setSelectedIndex(selectExfmtypedv, selectedItem.exfmtypedv);
-            setSelectedIndex(selectInfmtypedv, selectedItem.infmtypedv);
-            setSelectedIndex(selectStframedv, selectedItem.stframedv);
-            setSelectedIndex(selectStexplydv, selectedItem.stexplydv);
-          }
-        })
-        // FlexGrid의 최대 높이를 제한하여 스크롤바를 활성화
-        theGrid2.hostElement.style.maxHeight = '300px'; // 약 5개의 행 높이에 맞게 설정
-        theGrid2.hostElement.style.overflowY = 'auto';
-        // 선택이 변경될 때, 현재 항목 업데이트
-        new FlexGridContextMenu(theGrid2);
-        window.downloadFileName = '주문등록';
-      } else {
-        // 이미 FlexGrid이 존재하는 경우, 데이터만 업데이트
-        theGrid2.itemsSource = viewdata2;
-      }
-    }
-    // option값 value bind
-    function setSelectedIndex(selectElement, selectedValue) {
-      let found = false;
-
-      for (let i = 0; i < selectElement.options.length; i++) {
-        if (selectElement.options[i].text.trim().toLowerCase() === String(selectedValue).trim().toLowerCase()) {
-          selectElement.selectedIndex = i;
-          found = true;
-          break;
-        }
-      }
-
-      // 일치하는 값이 없을 경우, 기본값 0 설정
-      if (!found) {
-        selectElement.selectedIndex = 0;
-      }
-    }
-
-    // 주문등록
-    function saveOrder(){
-      // 필수 입력 필드 검사
-      let requiredFields = [
-        {id: '#reqdate', label: '주문일자를 작성해주세요'},
-        {id: '#deldate', label: '납품희망일을 선택해주세요'},
-        {id: '#telno', label: '연락처를 작성해주세요'},
-        {id: '#perid', label: '담당자명을 작성해주세요'},
-        {id: '#address1', label: '주소를 작성해주세요'},
-        {id: '#remark', label: '제목을 작성해주세요'}
-      ];
-      // 세부사항이 작성중인지 여부를 판단하여 저장시 작성중인 세부사항은 저장되지 않는다 알림
-      let writeFields = [
-        {id: '#qty', label: '작성중인 세부사항은 저장되지 않습니다.\n세부사항 추가 버튼을 클릭하여 등록해주세요'},
-        {id: '#panel_t', label: '작성중인 세부사항은 저장되지 않습니다.\n세부사항 추가 버튼을 클릭하여 등록해주세요'},
-        {id: '#panel_w', label: '작성중인 세부사항은 저장되지 않습니다.\n세부사항 추가 버튼을 클릭하여 등록해주세요'},
-        {id: '#panel_l', label: '작성중인 세부사항은 저장되지 않습니다.\n세부사항 추가 버튼을 클릭하여 등록해주세요'},
-      ]
-      // 세부항목 행 추가 여부 검사
-      const allRowsEmpty = viewdata2.sourceCollection.every(row => !row.hgrb || row.hgrb === '');
-      if (allRowsEmpty) {
-        Alert.alert('', '세부항목에 추가된 항목이 없습니다.');
-        return;
-      }
-
-      for (let i = 0; i < requiredFields.length; i++) {
-        let field = requiredFields[i];
-        let $element = $(field.id);
-        let value = $element.val();
-
-        // 요소가 존재하지 않거나, 값이 빈 문자열(선택되지 않은 경우)인 경우 경고
-        if ($element.length === 0 || value === null || value.trim() === '') {
-          Alert.alert('', field.label);
-          return;
-        }
-      }
-
-      for (let i = 0; i < writeFields.length; i++) {
-        let field = writeFields[i];
-        let $element = $(field.id);
-        let value = $element.val();
-
-        // 요소가 존재하는 경우 경고
-        if (value !== null && value.trim() !== '') {
-          Alert.alert('', field.label);
-          return;
-        }
-      }
-      // title 값을 가져오기
-      const title = document.getElementById('btnSave').title;
-
-      // 알림 메시지를 결정하는 변수
-      let alertMessage;
-      // title 값에 따라 알림 메시지 설정
-      if (title === "저장") {
-        alertMessage = '저장하시겠습니까?';
-      } else {
-        alertMessage = '수정하시겠습니까?';
-      }
-      Alert.confirm('', alertMessage, function () {
-        // 주문번호 생성
-        let formData = new FormData();
-        // 다른 데이터를 FormData에 추가합니다.
-        formData.append('saupnumHidden', $('#saupnumHidden').val());
-        formData.append('reqdate', $('#reqdate').val());
-        formData.append('deldate', $('#deldate').val());
-        formData.append('telno', $('#telno').val());
-        formData.append('perid', $('#perid').val());
-        formData.append('postno', $('#postno').val());
-        formData.append('address1', $('#address1').val());
-        // formData.append('panel_ht', $('#panel_ht').val());
-        // formData.append('panel_hw', $('#panel_hw').val());
-        // formData.append('panel_hl', $('#panel_hl').val());
-        // formData.append('panel_hh', $('#panel_hh').val());
-        formData.append('remark', $('#remark').val());
-        formData.append('reqnum', $('#reqnum').val());
-
-        let bodyForms = [];
-        // 그리드 행의 데이터를 detailForm 객체에 저장하는 함수
-        function extractGridData() {
-          // 그리드가 초기화된 상태인지 확인
-          if (!theGrid2) {
-            console.error("세부항목 데이터가 존재하진 않습니다.");
-            return;
-          }
-          // 모든 그리드 행 데이터를 순회하여 detailForms에 추가
-          for (let i = 0; i < theGrid2.rows.length; i++) {
-            // 각 행의 데이터를 객체로 생성
-            let rowData = theGrid2.rows[i].dataItem;
-            // rowData가 null인지 확인
-            if (rowData && rowData.hgrb !== undefined) {
-              let bodyForm = {
-                hgrb: getHgrb2(rowData.hgrb),
-                qty: rowData.qty,
-                panel_t: rowData.panel_t,
-                panel_w: rowData.panel_w,
-                panel_l: rowData.panel_l,
-                exfmtypedv: getListCgrb3(rowData.exfmtypedv),
-                infmtypedv:getListCgrb3(rowData.infmtypedv),
-                stframedv: getListCgrb3(rowData.stframedv),
-                stexplydv: getListCgrb3(rowData.stexplydv),
-                ordtext: rowData.ordtext,
-                reqseq: rowData.reqseq
-              };
-              // bodyForms 배열에 detailForm 객체 추가
-              bodyForms.push(bodyForm);
-            }
-          }
-        }
-        extractGridData();
-        formData.append('bodyData', JSON.stringify(bodyForms));
-        // 새로 추가된 파일만 폼 데이터에 추가
-        uploadedFiles2.forEach((file, index) => {
-          formData.append('filelist', file);
-        });
-
-        // 삭제된 파일 목록 추가
-        deletedFiles2.forEach((file, index) => {
-          formData.append('deletedFiles2', new Blob([JSON.stringify(file)], {type: 'application/json'}));
-        });
-        function sendAjaxRequest(url) {
-          $.ajax({
-            url: url,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            headers: {
-              'X-CSRF-Token': $('[name=_csrf]').val() // CSRF 토큰을 헤더에 추가
-            },
-            success: handleAjaxResponse,
-            error: function () {
-              Alert.alert('', '에러가발생하였습니다.');
-            }
-          });
-        }
-
-        function handleAjaxResponse(response) {
-          if (response.success) {
-            Alert.alert('', response.message, function () {
-              fetchListData();
-              resetFormFields();
+            Alert.confirm('', '삭제하시겠습니까?', function () {
+              _this.deleteSujuData(id, state);
             });
           } else {
-            Alert.alert('', '저장에 실패했습니다.');
-          }
-        }
-        sendAjaxRequest('/api/request/request/save');
-      })
-    }
-    // DOM이 완전히 준비된 후에 특정 코드 실행
-    $(document).ready(function (e) {
-      const selectElementId = 'hgrb';
-      getListHgrb(selectElementId);
-      // const selectElementId2 = ['exfmtypedv','infmtypedv','stframedv','stexplydv'];
-      // for (const items of selectElementId2){
-      //   getListCgrb(items);
-      // }
-    })
-    // 제품구성 리스트 불러오는 function
-    function getListHgrb(selectElementId){
-      fetch(`/api/request/request/getListHgrb`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-          }
-          return response.json();
-        })
-        .then(data => {
-          const selectElement = document.getElementById(selectElementId);
-          // "전체" 옵션이 있는지 확인
-          const allOption = selectElement.querySelector('option[value=""]:not([disabled]):not([hidden])');
-          // "선택" 옵션이 있는지 확인
-          const defaultOption = selectElement.querySelector('option[value=""][disabled][hidden]');
-          // 기존 옵션 제거 (특정 옵션 제외)
-          selectElement.innerHTML = ''; // 모든 옵션 제거
-          // "전체" 옵션이 있으면 다시 추가 (선택 가능하게 설정)
-          if (allOption) {
-            allOption.selected = true; // 전체를 기본 선택으로 유지
-            selectElement.appendChild(allOption);
-          }
-          // "선택" 옵션이 있으면 다시 추가 (선택 불가능하게 설정)
-          if (defaultOption) {
-            selectElement.appendChild(defaultOption);
-          }
-          data.data.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item.hgrb;
-            option.textContent = item.hgrbnm; // item.value를 데이터베이스의 "Value" 필드로 변경
-            selectElement.appendChild(option);
-          });
-        })
-        .catch(error => {
-          console.error('Error fetching options:', error);
-        });
-    }
-    // `getListCgrb` 함수에서 `cgrb` 코드에 따라 이름을 반환
-    function getListCgrb2(cgrb) {
-      return cgrbMapping[cgrb] || " "; // 매칭되지 않는 경우 기본값 반환
-    }
-    // 등록시 재 매핑
-    function getListCgrb3(cgrb) {
-      return cgrbMapping2[cgrb] || " "; // 매칭되지 않는 경우 기본값 반환
-    }
-    // 보강재,마감재 리스트 불러오는 function
-    function getListCgrb(selectElementId){
-      fetch(`/api/request/request/getListCgrb`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-          }
-          return response.json();
-        })
-        .then(data => {
-          const selectElement = document.getElementById(selectElementId);
-          // "전체" 옵션이 있는지 확인
-          const allOption = selectElement.querySelector('option[value=""]:not([disabled]):not([hidden])');
-          // "선택" 옵션이 있는지 확인
-          const defaultOption = selectElement.querySelector('option[value=""][disabled]:not([hidden])');
-          // 기존 옵션 제거 (특정 옵션 제외)
-          selectElement.innerHTML = ''; // 모든 옵션 제거
-          // "전체" 옵션이 있으면 다시 추가 (선택 가능하게 설정)
-          if (allOption) {
-            allOption.selected = true; // 전체를 기본 선택으로 유지
-            selectElement.appendChild(allOption);
-          }
-          // "선택" 옵션이 있으면 다시 추가
-          if (defaultOption) {
-            selectElement.appendChild(defaultOption);
-          }
-          data.data.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item.cgrb;
-            option.textContent = item.cgrbnm; // item.value를 데이터베이스의 "Value" 필드로 변경
-            selectElement.appendChild(option);
-          });
-        })
-        .catch(error => {
-          console.error('Error fetching options:', error);
-        });
-    }
-    // 셀렉트값에 따라 id 히든으로 넘기기
-    function updateSelect(selectId, hiddenInputId) {
-      var selectElement = document.getElementById(selectId);
-      var selectedOptionText = selectElement.options[selectElement.selectedIndex].text;
-      document.getElementById(hiddenInputId).value = selectedOptionText;
-    }
-    // 세부사항 추가
-    function addBody() {
-      const isnewValue = Number(document.getElementById('isnew').value);
-
-      const newRowData = {
-        hgrb: getHgrb(document.getElementById("hgrb").value),
-        qty: Number(document.getElementById("qty").value),
-        panel_t: document.getElementById("panel_t").value,
-        panel_w: document.getElementById("panel_w").value,
-        panel_l: document.getElementById("panel_l").value,
-        exfmtypedv: getListCgrb2(document.getElementById("exfmtypedv").value),
-        infmtypedv: getListCgrb2(document.getElementById("infmtypedv").value),
-        stframedv: getListCgrb2(document.getElementById("stframedv").value),
-        stexplydv: getListCgrb2(document.getElementById("stexplydv").value),
-        reqseq: document.getElementById("reqseq").value,
-        ordtext: document.getElementById('ordtext').value,
-        originOrdtext: document.getElementById('ordtext').value,
-        isnew: isnewValue // isnewValue를 직접 사용
-      };
-
-      const sourceCollection = viewdata2.sourceCollection;
-      let isUpdated = false;  // 업데이트 여부 플래그
-
-      for (let i = 0; i < sourceCollection.length; i++) {
-
-        // reqseq가 없을 경우 isnew로 비교
-        if (newRowData.reqseq === sourceCollection[i].reqseq && newRowData.reqseq !== "") {
-          sourceCollection[i] = { ...sourceCollection[i], ...newRowData };  // Update existing row
-          isUpdated = true;  // 업데이트 플래그 설정
-          break;  // 업데이트 후 루프 종료
-        } else if (Number(newRowData.isnew) === Number(sourceCollection[i].isnew) && newRowData.isnew !== "") {
-          sourceCollection[i] = { ...sourceCollection[i], ...newRowData };  // Update existing row based on isnew
-          isUpdated = true;  // 업데이트 플래그 설정
-          break;  // 업데이트 후 루프 종료
-        }
-      }
-      // 업데이트가 이루어지지 않은 경우 새로운 행 추가
-      if (!isUpdated) {
-        const existingIsNewValues = sourceCollection.map(row => Number(row.isnew)).filter(value => !isNaN(value));
-        let newIsNewValue = 1; // 기본값
-
-        // 기존 isnew 값 중 가장 큰 값을 찾아서 1을 더함
-        if (existingIsNewValues.length > 0) {
-          newIsNewValue = Math.max(...existingIsNewValues) + 1;
-        }
-        newRowData.isnew = newIsNewValue; // 새로운 isnew 값을 설정
-        viewdata2.addNew(newRowData);  // Add new row
-      }
-      viewdata2.sourceCollection = [...sourceCollection]; // 참조 갱신
-      viewdata2.commitEdit(); // 변경 사항 커밋
-      viewdata2.refresh(); // 데이터 소스 갱신
-      theGrid2.itemsSource = [...viewdata2.sourceCollection]; // 그리드 데이터 재설정
-      theGrid2.refresh(); // UI 갱신
-      resetBodyField();  // Reset input fields
-    }
-    // 행 복사
-    function copyLastRow() {
-      if (!theGrid2 || !theGrid2.itemsSource) {
-        alert("그리드가 초기화되지 않았습니다.");
-        return;
-      }
-
-      // 데이터 소스 확인
-      const sourceCollection = theGrid2.itemsSource || [];
-      if (sourceCollection.length === 0) {
-        alert("복사할 데이터가 없습니다.");
-        return;
-      }
-
-      // 마지막 행 데이터 가져오기
-      const lastRowData = sourceCollection[sourceCollection.length - 1];
-
-      // 새로운 데이터 생성
-      const newRowData = { ...lastRowData };
-      newRowData.reqseq = ""; // 고유값 초기화
-      newRowData.isnew = (Math.max(...sourceCollection.map(row => Number(row.isnew) || 0)) + 1); // 새로운 isnew 값
-
-      // 새로운 데이터 추가
-      sourceCollection.push(newRowData);
-
-      // 데이터 갱신 및 UI 업데이트
-      viewdata2.sourceCollection = [...sourceCollection]; // 참조 갱신
-      viewdata2.commitEdit(); // 변경 사항 커밋
-      viewdata2.refresh(); // 데이터 소스 갱신
-      theGrid2.itemsSource = [...viewdata2.sourceCollection]; // 그리드 데이터 재설정
-      theGrid2.refresh(); // UI 갱신
-
-      Alert.alert('',"행이 복사되었습니다.");
-    }
-
-
-    // 행(세부사항) 삭제(마지막 세부사항 삭제시 헤드정보도 같이 삭제)
-    function deleteBody(){
-      if(SelectItem === undefined || SelectItem.length === 0){
-        Alert.alert('', '삭제할 항목을 선택해 주세요.');
-        return;
-      }
-      Alert.confirm('', '선택된 행 내용을 삭제하시겠습니까?', function () {
-        const deletePromises = []; // 비동기 요청을 저장할 배열
-        SelectItem.forEach(selectedRow => {
-          const selectedData = selectedRow.dataItem;
-          const index = viewdata2.sourceCollection.indexOf(selectedData);
-          if (index > -1) {
-            const itemToRemove = viewdata2.sourceCollection[index]; // 삭제할 항목 가져오기
-            viewdata2.remove(itemToRemove); // CollectionView에서 항목 삭제
-            if(selectedData.reqseq !== ""){
-              const saupnumHiddenElement = document.getElementById('saupnumHidden');
-              const saupnumHidden = saupnumHiddenElement ? saupnumHiddenElement.value.trim() : "";
-
-              let deleteNum = {
-                saupnumHidden: saupnumHidden,
-                reqseq: selectedData.reqseq,
-                reqnum: document.getElementById('reqnum').value,
-                reqdate: selectedData.reqdate
-              };
-              let fnSuccess = function (res) {
-                isProcessing = false;
-                if (res.success) {
-                  fetchListData();
-                }
-              };
-              const promise = AjaxUtil.postAsyncData('/api/request/request/bodyDelete', deleteNum, fnSuccess);
-              deletePromises.push(promise);
-            }
+            Alert.alert('', '삭제할 항목을 선택해주세요.');
           }
         });
-        viewdata2.commitEdit(); // 변경 사항 저장
-        Promise.all(deletePromises).then(() => {
-          viewdata2.commitEdit(); // 변경 사항 커밋
-          viewdata2.refresh(); // 데이터 소스 갱신
-          theGrid2.itemsSource = [...viewdata2.sourceCollection]; // 그리드 데이터 재설정
-          theGrid2.refresh(); // UI 갱신
-          // 모든 행이 빈지 검사하여 헤더 삭제 메서드 호출
-          const allRowsEmpty = viewdata2.sourceCollection.every(row => !row.hgrb || row.hgrb === '');
-          if (allRowsEmpty) {
-            deletehead();
-            fetchListData2();
-          }
-        }).catch(error => {
-          console.error('Error during deletion:', error);
-          Alert.alert('', '삭제 중 오류가 발생했습니다.');
-        });
-      })
-    }
 
+        // 행 추가
+        $('#addRemark').click(function () {
+          const $tbody = $('#OrderRequestForm tbody');
+          const $template = $tbody.find('.item-template-row');
 
-    // 헤드정보 삭제(세부사항 존재시 안내 alert기능)
-    $(document).ready(function () {
-      $('#deleteButton').off('click').on('click', deletehead);
-    });
+          for (let i = 0; i < 3; i++) {
+            const $newRow = $template.clone().removeClass('item-template-row').show();
 
-    let isProcessing = false;
+            $newRow.find('select').each((_, select) => {
+              const $select = $(select);
+              const baseName = $select.attr('name');
+              if (baseName) {
+                const newName = `${baseName}${_this.itemIndex}`;
+                $select.attr('name', newName);
+              }
+            });
 
-    function deletehead() {
-      if (isProcessing) return;
+            $tbody.append($newRow);
 
-      const reqnum = $('#reqnum').val();
-      if (!reqnum) {
-        Alert.alert('', '삭제할 항목을\n진행현황에서 선택해주세요.');
-        return;
-      }
+            ProductInputHandler.bind({
+              rowSelector: $newRow,
+              $content: $content,
+            });
 
-      Alert.confirm('', '주문 등록정보를\n삭제하시겠습니까?', function () {
-        isProcessing = true;
-
-        let data = {
-          'reqnum': reqnum,
-          '_csrf': csrfToken
-        };
-
-        let fnSuccess = function (res) {
-          isProcessing = false;
-          if (res.success) {
-            Alert.alert('', '삭제되었습니다.');
-            fetchListData();
-            resetFormFields();
-          }
-        };
-
-        AjaxUtil.postAsyncData('/api/request/request/delete', data, fnSuccess);
-      });
-    }
-
-    // 필드값 초기화
-    function resetFormFields() {
-      const fieldsToReset = [
-        'panel_ht',
-        'panel_hw', 'panel_hl', 'panel_hh', 'remark', 'hgrb',
-        'qty', 'panel_t', 'panel_w', 'panel_l',
-        'exfmtypedv', 'infmtypedv', 'stframedv', 'stexplydv', 'reqnum', 'reqseq'
-      ];
-
-      fieldsToReset.forEach(fieldId => {
-        document.getElementById(fieldId).value = '';
-
-      });
-      document.getElementById('ordtext').value = ""
-      document.getElementById('reqdate').value = today;
-      document.getElementById('deldate').value = today;
-      $('.filelist2').empty(); // 파일 리스트 초기화
-      uploadedFiles2 = []; // 업로드된 파일 리스트 초기화
-      deletedFiles2 = [];
-      // 초기화된 파일 개수 업데이트
-      updateFileCount2();
-      resetFileInput($('.fileInput2'));
-      $('.text-count').text('0/100'); // 글자 수 0으로 초기화
-      // 특정 필드에 대한 btn-clear 숨김 처리
-      $('#doctitle').each(function () {
-        $(this).siblings('.btn-clear').hide();
-      });
-
-      let data2 = [];
-      // 기존 CollectionView를 초기화하기 위해 sourceCollection을 빈 배열로 설정 후 새 데이터 할당
-      if (viewdata2) {
-        viewdata2.sourceCollection = data2;
-        viewdata2 = new wijmo.collections.CollectionView(data2);
-        theGrid2.itemsSource = viewdata2;
-        viewdata2.refresh();
-      } else {
-        viewdata2 = new wijmo.collections.CollectionView(data2);
-      }
-
-      // 그리드도 갱신
-      theGrid2.itemsSource = viewdata2;
-      theGrid2.refresh();
-
-      document.getElementById('btnSave').title = "저장";
-    }
-    // 세부사항 제품구성 onchange 메서드
-    function changeHgrb() {
-      const reqseqElement = document.getElementById("reqseq");
-      if (reqseqElement && reqseqElement.value !== "") { // reqseq가 존재하고 값이 비어있지 않다면
-        Alert.confirm('', '새로 세부사항을 추가하시겠습니까?\n\'취소\'선택시 선택된 구성을 수정합니다.', function () {
-          resetBodyField();
-        });
-      }
-    }
-    // body 필드값 초기화
-    function resetBodyField() {
-      const fieldsToReset = [
-        'qty', 'panel_t', 'panel_w', 'panel_l', 'reqseq',
-        'exfmtypedv', 'infmtypedv', 'stframedv', 'stexplydv', 'isnew'
-      ];
-      fieldsToReset.forEach(fieldId => {
-        document.getElementById(fieldId).value = '';
-      });
-      document.getElementById('ordtext').value = '';
-    }
-    // 파일 개수 업데이트 함수
-    function updateFileCount() {
-      const fileCount = uploadedFiles2.length;
-      $('.upload-filelist2 .title h5').text(`Files (${fileCount})`);
-      $('.btn-file span').text(`(${fileCount})`);
-    }
-
-    // 다운로드
-    function downloadFile_order() {
-      let selectedItems = theGrid.selectedItems; // 선택된 항목 가져오기
-      let downloadList = [];
-
-      // 선택된 항목에서 다운로드할 파일 목록 생성
-      selectedItems.forEach(function (item) {
-        downloadList.push({
-          reqnum: item.reqnum
-        });
-      });
-
-      // 다운로드 URL 지정
-      let downloadUrl = '/api/request/request/downloader';
-
-      // Jung.js에서 정의한 downloadFiles 함수 호출
-      downloadFiles(downloadList, downloadUrl);
-    }
-    // 내정보 불러오는 함수
-    function getMyInfo(saupnum) {
-      return new Promise((resolve, reject) => {
-        $.ajax({
-          url: '/api/request/request/getUserInfo',
-          data: {'saupnum': saupnum},
-          type: 'GET',
-          success: function (data) {
-            document.getElementById("telno").value = data.data.hptelnum;
-            document.getElementById("perid").value = data.data.prenm;
-            document.getElementById("postno").value = data.data.zipcd;
-            document.getElementById("address1").value = data.data.cltadres.replace(/\s*\|/g, '').trim();
-            document.getElementById("cltnm").value = data.data.cltnm;
-            document.getElementById("searchComnm").value = data.data.cltnm;
-            console.log("✅ getMyInfo 완료, searchComnm 값:", data.data.cltnm);
-
-            resolve(); // ✅ 완료되면 resolve() 호출
-          },
-          error: function (error) {
-            console.error("❌ getMyInfo 실패:", error);
-            reject(error);
+            _this.itemIndex++;
           }
         });
-      });
-    }
 
-    function showPopup2(documnetId) {
-      let selectedItems = theGrid.selectedItems;
-      // 해당 ID의 팝업 요소를 찾음
-      const popup = document.getElementById(documnetId);
+        //행삭제
+        $(document).on('click', '.btn[title="행 삭제"]', function () {
+          const $tbody = $('#OrderRequestForm tbody');
+          const $rows = $tbody.find('tr').filter(':visible'); // 보여지는 행 기준
+          const $targetRow = $(this).closest('tr');
 
-      if (popup) {
-        // 팝업을 포함한 모달을 표시
-        const modal = popup.closest('.modal');
-        if (modal) {
-          modal.style.display = 'block';
-        }
-
-        // 요청사항에 ordtext 값을 그대로 사용하여 넣기
-        const ordtext = selectedItems[0].originOrdtext;
-
-        // 요청사항 에디터에 HTML로 content 설정
-        document.getElementById('ordtext').value = ordtext;  // 'ordtext'는
-
-        // 팝업 버튼 숨기기
-        const button = popup.querySelector('.popup-button');
-        if (button) {
-          button.style.display = 'none'; // 버튼 숨기기
-        }
-        const closebutton = popup.querySelector('.btn-popup-close');
-        if (closebutton) {
-          closebutton.onclick = function() {
-            closePopup2('popup2'); // closePopup2로 호출 메서드 변경
-          };
-        }
-
-        // 팝업을 표시
-        popup.style.display = 'block';
-
-        // 애니메이션을 위한 클래스 추가
-        requestAnimationFrame(() => {
-          popup.classList.add('show');
-          if (modal) {
-            modal.classList.add('show');
+          if ($rows.length > 3) {
+            $targetRow.remove(); // 삭제
+          } else {
+            // 초기화: input, checkbox, select 값만 비움
+            $targetRow.find('input').each(function () {
+              const type = $(this).attr('type');
+              if (type === 'checkbox') {
+                $(this).prop('checked', false);
+              } else {
+                $(this).val('');
+              }
+            });
+            $targetRow.find('select').val('');
           }
         });
-      }
-    }
-    function showPopup3(documnetId) {
-      let selectedItems = theGrid2.selectedItems;
-      // 해당 ID의 팝업 요소를 찾음
-      const popup = document.getElementById(documnetId);
 
-      if (popup) {
-        // 팝업을 포함한 모달을 표시
-        const modal = popup.closest('.modal');
-        if (modal) {
-          modal.style.display = 'block';
+        // 🔥 페이지 로딩 시 기본 3행 추가
+        for (let i = 0; i < 3; i++) {
+          this.addDetailRow();
         }
 
-        // 요청사항에 ordtext 값을 그대로 사용하여 넣기
-        const ordtext = selectedItems[0].originOrdtext;
+      }//init
+      addDetailRow() {
+        const $tbody = $('#OrderRequestForm tbody');
+        const $template = $tbody.find('.item-template-row');
 
-        // 요청사항 HTML로 content 설정
-        document.getElementById('ordtext').value = ordtext;
+        const $newRow = $template.clone().removeClass('item-template-row').show();
 
-        // 팝업 버튼 숨기기
-        const button = popup.querySelector('.popup-button');
-        if (button) {
-          button.style.display = 'none'; // 버튼 숨기기
-        }
-        const closebutton = popup.querySelector('.btn-popup-close');
-        if (closebutton) {
-          closebutton.onclick = function() {
-            closePopup2('popup2'); // closePopup2로 호출 메서드 변경
-          };
-        }
-        // 팝업을 표시
-        popup.style.display = 'block';
-
-        // 애니메이션을 위한 클래스 추가
-        requestAnimationFrame(() => {
-          popup.classList.add('show');
-          if (modal) {
-            modal.classList.add('show');
+        $newRow.find('input').each((_, input) => {
+          const $input = $(input);
+          const baseName = $input.attr('name');
+          if (baseName) {
+            $input.attr('name', `${baseName}_${this.itemIndex}`);
           }
         });
+
+        $tbody.append($newRow);
+
+        ProductInputHandler.bind({
+          rowSelector: $newRow,
+          $content: $('#tab1'),
+        });
+
+        this.itemIndex++;
       }
+
+      save(defaultData){
+
+      }//save
+
+      deleteSujuData(id, state){
+
+      }//deleteSujuData
+
     }
 
     // 접수날 onchange 휴일 미포함 +3일 납품일자 표시
@@ -1837,8 +908,6 @@
         }
       });
     }
-
-
     // YYYYMMDD → Date 객체 변환
     function parseDate(dateStr) {
       let year = parseInt(dateStr.substring(0, 4), 10);
@@ -1880,8 +949,6 @@
 
       return isNaN(date.getDay()) ? "" : days[date.getDay()];
     }
-
-
     // 날짜 변경 시 요일 업데이트
     function updateDayDisplay(inputId, outputId) {
       const input = document.getElementById(inputId);
@@ -1899,440 +966,168 @@
       setDay();  // 초기 실행
     }
 
-    // 페이지 로드 후 실행 (초기값 반영 및 이벤트 연결)
-    document.addEventListener("DOMContentLoaded", function () {
-      let reqdateField = document.getElementById("reqdate");
-      let deldateField = document.getElementById("deldate");
+    function updateSummary() {
+      let setamtSum = 0;
+      let saleamtSum = 0;
+      let qtySum = 0;
+      let uamtSum = 0;
 
-      // 오늘 날짜를 가져와 설정
-      const date = new Date();
-      date.setHours(date.getHours() + 9); // UTC+9 (한국 시간)
-      const today = date.toISOString().split('T')[0]; // YYYY-MM-DD 형식
+      $('#OrderRequestForm tbody tr').each(function () {
+        const $row = $(this);
 
-      reqdateField.value = today; // reqdate 자동 설정
+        //if ($row.hasClass('item-template-row')) return;
 
-      // reqdate 변경 시 getHoliday 자동 실행
-      reqdateField.addEventListener("change", getHoliday);
+        // 각 값 불러오기
+        const setamtVal = $row.find('input[name="setamt"]').val();
+        const saleamtVal = $row.find('input[name="saleamt"]').val();
+        const qtyVal = $row.find('input[name="QTY"]').val();
+        const uamtVal = $row.find('input[name="uamt"]').val();
 
-      // 요일 업데이트
-      updateDayDisplay("reqdate", "reqdate_day");
+        // ✅ 모든 주요 필드가 비어 있다면 합계 계산에서 제외
+        const isEmptyRow = [setamtVal, saleamtVal, qtyVal, uamtVal].every(v => !v || v.trim() === '');
+        if (isEmptyRow) return;
 
-      // 📌 페이지 로드 시 getHoliday 실행하여 deldate 자동 설정 및 요일 업데이트
-      getHoliday();
-    });
-    // 필드값 확인후 요청사항 작성할 수 있도록 유도 메서드
-    function validateFieldsAndShowPopup(element) {
-      let writeFields = [
-        {id: '#hgrb', label: '요청사항 작성을 위해\n제품구성과 수량을 입력해주세요'},
-        {id: '#qty', label: '요청사항 작성을 위해\n제품구성과 수량을 입력해주세요'}
-      ];
+        // 숫자 추출 및 합계
+        const setamt = parseFloat(setamtVal) || 0;
+        const saleamt = parseFloat(saleamtVal) || 0;
+        const qty = parseFloat(qtyVal) || 0;
+        const uamt = parseFloat(uamtVal) || 0;
 
-      for (let i = 0; i < writeFields.length; i++) {
-        let field = writeFields[i];
-        let $element = $(field.id);
-        let value = $element.val();
+        setamtSum += setamt;
+        saleamtSum += saleamt;
+        qtySum += qty;
+        uamtSum += uamt;
+      });
 
-        // ✅ 필드에 값이 존재하면 알림 띄우고 중단
-        if ($element.length === 0 || value === null || value.trim() === '') {
-          Alert.alert('', field.label);  // 경고창 띄우기
-          return;  // ✅ 문제 발생 → `showPopup()` 호출하지 않고 종료
-        }
-      }
-
-      // ✅ 모든 필드가 비어있으면 `showPopup()` 실행
-      showPopup(element);
+      $('#sum_setamt').val(setamtSum.toLocaleString());
+      $('#sum_saleamt').val(saleamtSum.toLocaleString());
+      $('#sum_qty').val(qtySum.toLocaleString());
+      $('#sum_uamt').val(uamtSum.toLocaleString());
     }
 
-
-
-
-    function getHgrb(hgrb) {
-      switch (hgrb) {
-        case 'A0': return "지붕";
-        case 'AA': return "지붕1";
-        case 'AB': return "지붕2";
-        case 'AC': return "지붕3";
-        case 'AD': return "지붕4";
-        case 'AE': return "지붕5";
-        case 'AF': return "지붕6";
-        case 'B0': return "바닥";
-        case 'BA': return "바닥1";
-        case 'BB': return "바닥2";
-        case 'BC': return "바닥3";
-        case 'BD': return "바닥4";
-        case 'BE': return "바닥5";
-        case 'BF': return "바닥6";
-        case 'C0': return "옆장";
-        case 'C1': return "옆장1";
-        case 'C2': return "옆장2";
-        case 'C3': return "옆장3";
-        case 'C4': return "옆장4";
-        case 'C5': return "옆장5";
-        case 'C6': return "옆장6";
-        case 'CA': return "운전석";
-        case 'CB': return "운전석1";
-        case 'CC': return "운전석2";
-        case 'CD': return "운전석3";
-        case 'CE': return "운전석4";
-        case 'CF': return "운전석5";
-        case 'CG': return "운전석6";
-        case 'CN': return "조수석";
-        case 'CO': return "조수석1";
-        case 'CP': return "조수석2";
-        case 'CQ': return "조수석3";
-        case 'CR': return "조수석4";
-        case 'CS': return "조수석5";
-        case 'CT': return "조수석6";
-        case 'D0': return "앞장";
-        case 'DA': return "앞장1";
-        case 'DB': return "앞장2";
-        case 'DC': return "앞장3";
-        case 'DD': return "앞장4";
-        case 'DE': return "앞장5";
-        case 'DF': return "앞장6";
-        case 'E0': return "뒷장";
-        case 'EA': return "뒷장1";
-        case 'EB': return "뒷장2";
-        case 'EC': return "뒷장3";
-        case 'ED': return "뒷장4";
-        case 'EE': return "뒷장5";
-        case 'EF': return "뒷장6";
-        case 'F0': return "칸막이";
-        case 'FA': return "칸막이1";
-        case 'FB': return "칸막이2";
-        case 'FC': return "칸막이3";
-        case 'FD': return "칸막이4";
-        case 'FE': return "칸막이5";
-        case 'FF': return "칸막이6";
-        case 'G0': return "도어";
-        case 'GA': return "도어1";
-        case 'GB': return "도어2";
-        case 'GC': return "도어3";
-        case 'GD': return "도어4";
-        case 'GE': return "도어5";
-        case 'GF': return "도어6";
-        case 'H0': return "미닫이";
-        case 'HA': return "미닫이1";
-        case 'HB': return "미닫이2";
-        case 'HC': return "미닫이3";
-        case 'HD': return "미닫이4";
-        case 'HE': return "미닫이5";
-        case 'HF': return "미닫이6";
-        case 'I0': return "벙커";
-        case 'IA': return "벙커1";
-        case 'IB': return "벙커2";
-        case 'IC': return "벙커3";
-        case 'ID': return "벙커4";
-        case 'IE': return "벙커5";
-        case 'IF': return "벙커6";
-        case 'Z0': return "기타";
-        case 'Z1': return "기타1";
-        case 'Z2': return "기타2";
-        case 'Z3': return "기타3";
-        case 'Z4': return "기타4";
-        case 'Z5': return "기타5";
-        case 'Z6': return "기타6";
-        default: return "알 수 없음"; // 매칭되지 않는 경우 기본값
-      }
+    function formatNumberInput(inputValue, targetSelector) {
+      let cleaned = inputValue.replace(/[^0-9]/g, '').replace(/,/g, '');// 숫자만 남기기
+      let formatted = cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ',');// 쉼표 넣기
+      $(targetSelector).val(formatted);// 값 넣기
     }
 
-    //`cgrb` 코드별로 이름만 매핑한 객체
-    const cgrbMapping = {
-      "MAA": "AL",
-      "MAB": "GI",
-      "MAC": "GRP",
-      "MAD": "GFGW",
-      "MAE": "GFGW(B)",
-      "MAF": "H-GRO",
-      "MAG": "Anti-Bac",
-      "MAH": "Anti-Slip",
-      "MAI": "SUS",
-      "MAZ": "기타",
-      "MBA": "골드폼",
-      "MCA": "합판",
-      "MCB": "코어매트",
-      "MDA": "주제",
-      "MDB": "경화제",
-      "MAK": "Super Plus",
-      "MCF": "WPC",
-      "MBB": "PU보드",
-      "MAJ": "GI(B)",
-      "MAS": "Super Lite",
-      "MCG": "허니컴",
-      "MCC": "아마셀",
-      "MCD": "LTP",
-      "MCE": "기타",
-      "MBI": "아이소핑크",
-      "MAM": "CFRT",
-      "MAL": "WR-Impact",
-      "ZZ01": "샷시",
-      "ZZ02": "캐스팅",
-      "ZZ03": "앵글",
-      "ZZ04": "원자재",
-      "ZZ05": "CKD",
-      "ZZ06": "기타",
-      "ZZ07": "코일"
-    };
+    let page = null;
 
-    function getHgrb2(hgrb) {
-      switch (hgrb) {
-        case '지붕': return "A0";
-        case '지붕1': return "AA";
-        case '지붕2': return "AB";
-        case '지붕3': return "AC";
-        case '지붕4': return "AD";
-        case '지붕5': return "AE";
-        case '지붕6': return "AF";
-        case '바닥': return "B0";
-        case '바닥1': return "BA";
-        case '바닥2': return "BB";
-        case '바닥3': return "BC";
-        case '바닥4': return "BD";
-        case '바닥5': return "BE";
-        case '바닥6': return "BF";
-        case '옆장': return "C0";
-        case '옆장1': return "C1";
-        case '옆장2': return "C2";
-        case '옆장3': return "C3";
-        case '옆장4': return "C4";
-        case '옆장5': return "C5";
-        case '옆장6': return "C6";
-        case '운전석': return "CA";
-        case '운전석1': return "CB";
-        case '운전석2': return "CC";
-        case '운전석3': return "CD";
-        case '운전석4': return "CE";
-        case '운전석5': return "CF";
-        case '운전석6': return "CG";
-        case '조수석': return "CN";
-        case '조수석1': return "CO";
-        case '조수석2': return "CP";
-        case '조수석3': return "CQ";
-        case '조수석4': return "CR";
-        case '조수석5': return "CS";
-        case '조수석6': return "CT";
-        case '앞장': return "D0";
-        case '앞장1': return "DA";
-        case '앞장2': return "DB";
-        case '앞장3': return "DC";
-        case '앞장4': return "DD";
-        case '앞장5': return "DE";
-        case '앞장6': return "DF";
-        case '뒷장': return "E0";
-        case '뒷장1': return "EA";
-        case '뒷장2': return "EB";
-        case '뒷장3': return "EC";
-        case '뒷장4': return "ED";
-        case '뒷장5': return "EE";
-        case '뒷장6': return "EF";
-        case '칸막이': return "F0";
-        case '칸막이1': return "FA";
-        case '칸막이2': return "FB";
-        case '칸막이3': return "FC";
-        case '칸막이4': return "FD";
-        case '칸막이5': return "FE";
-        case '칸막이6': return "FF";
-        case '도어': return "G0";
-        case '도어1': return "GA";
-        case '도어2': return "GB";
-        case '도어3': return "GC";
-        case '도어4': return "GD";
-        case '도어5': return "GE";
-        case '도어6': return "GF";
-        case '미닫이': return "H0";
-        case '미닫이1': return "HA";
-        case '미닫이2': return "HB";
-        case '미닫이3': return "HC";
-        case '미닫이4': return "HD";
-        case '미닫이5': return "HE";
-        case '미닫이6': return "HF";
-        case '벙커': return "I0";
-        case '벙커1': return "IA";
-        case '벙커2': return "IB";
-        case '벙커3': return "IC";
-        case '벙커4': return "ID";
-        case '벙커5': return "IE";
-        case '벙커6': return "IF";
-        case '기타': return "Z0";
-        case '기타1': return "Z1";
-        case '기타2': return "Z2";
-        case '기타3': return "Z3";
-        case '기타4': return "Z4";
-        case '기타5': return "Z5";
-        case '기타6': return "Z6";
-        default: return "알 수 없음"; // 매칭되지 않는 경우 기본값
+    $(document).ready(function (e) {
+      const spjangcd = sessionStorage.getItem('spjangcd');
+      if (spjangcd) {
+        $('#spjangcdHidden').val(spjangcd);  // hidden input이 있어야 함
       }
-    }
+      AjaxUtil.fillSelectOptions($('#searchOrdflag'), 'system_code', 'all', false, 'ordflag');//주문/진행현황 선택구분용
 
-    //`cgrb` 코드별로 이름만 매핑한 객체
-    const cgrbMapping2 = {
-      "AL": "MAA",
-      "GI": "MAB",
-      "GRP": "MAC",
-      "GFGW": "MAD",
-      "GFGW(B)": "MAE",
-      "H-GRO": "MAF",
-      "Anti-Bac": "MAG",
-      "Anti-Slip": "MAH",
-      "SUS": "MAI",
-      "기타": "MAZ",
-      "골드폼": "MBA",
-      "합판": "MCA",
-      "코어매트": "MCB",
-      "주제": "MDA",
-      "경화제": "MDB",
-      "Super Plus": "MAK",
-      "WPC": "MCF",
-      "PU보드": "MBB",
-      "GI(B)": "MAJ",
-      "Super Lite": "MAS",
-      "허니컴": "MCG",
-      "아마셀": "MCC",
-      "LTP": "MCD",
-      "기타": "MCE",
-      "아이소핑크": "MBI",
-      "CFRT": "MAM",
-      "WR-Impact": "MAL",
-      "샷시": "ZZ01",
-      "캐스팅": "ZZ02",
-      "앵글": "ZZ03",
-      "원자재": "ZZ04",
-      "CKD": "ZZ05",
-      "기타": "ZZ06",
-      "코일": "ZZ07"
-    };
+      page = new OrderRequestPage();
 
-    function closePopup2(documentId) {
-      // 해당 ID의 팝업 요소를 찾음
-      const popup = document.getElementById(documentId);
+      $('#tab1').on('keydown', 'input, select, textarea', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();         // 기본 제출 방지
+          e.stopPropagation();        // 다른 핸들러로 이벤트 전파 방지 (추가)
 
-      if (popup) {
-        // 팝업을 포함한 모달을 숨김
-        const modal = popup.closest('.modal');
-        if (modal) {
-          modal.style.display = 'none';
-          modal.classList.remove('show'); // 애니메이션 제거
-        }
+          const $inputs = $('#tab1')
+            .find('input:visible, select:visible, textarea:visible')
+            .not('[readonly],[disabled]');
 
-        // 팝업 자체 숨김
-        popup.style.display = 'none';
-        popup.classList.remove('show'); // 애니메이션 제거
+          const idx = $inputs.index(this);
 
-        // 팝업 버튼 복구
-        const button = popup.querySelector('.popup-button');
-        // closepopup으로 메서드 변경
-        const closebutton = popup.querySelector('.btn-popup-close');
-        if (closebutton) {
-          closebutton.onclick = function() {
-            closePopup('popup2'); // closePopup로 호출 메서드 변경
-          };
-        }
-        document.getElementById('ordtext').value = '';
-        if (button) {
-          button.style.display = ''; // 기본 스타일로 복구
-        }
-      }
-    }
-
-    function endtext(documentId) {
-      // 해당 ID의 팝업 요소를 찾음
-      const popup = document.getElementById(documentId);
-
-      if (popup) {
-        // 팝업을 포함한 모달을 숨김
-        const modal = popup.closest('.modal');
-        if (modal) {
-          modal.style.display = 'none';
-          modal.classList.remove('show'); // 애니메이션 제거
-        }
-
-        // 팝업 자체 숨김
-        popup.style.display = 'none';
-        popup.classList.remove('show'); // 애니메이션 제거
-
-        // 팝업 버튼 복구
-        const button = popup.querySelector('.popup-button');
-        if (button) {
-          button.style.display = ''; // 기본 스타일로 복구
-          // 또는 button.classList.remove('hidden'); // 클래스 방식으로 복구
-        }
-      }
-      const isnewValue = Number(document.getElementById('isnew').value);
-      const newRowData = {
-        hgrb: getHgrb(document.getElementById("hgrb").value),
-        qty: Number(document.getElementById("qty").value),
-        panel_t: document.getElementById("panel_t").value,
-        panel_w: document.getElementById("panel_w").value,
-        panel_l: document.getElementById("panel_l").value,
-        exfmtypedv: getListCgrb2(document.getElementById("exfmtypedv").value),
-        infmtypedv: getListCgrb2(document.getElementById("infmtypedv").value),
-        stframedv: getListCgrb2(document.getElementById("stframedv").value),
-        stexplydv: getListCgrb2(document.getElementById("stexplydv").value),
-        reqseq: document.getElementById("reqseq").value,
-        ordtext: document.getElementById('ordtext').value,
-        originOrdtext: document.getElementById('ordtext').value,
-        isnew: isnewValue // isnewValue를 직접 사용
-      };
-
-      const sourceCollection = viewdata2.sourceCollection;
-      let isUpdated = false;
-
-      for (let i = 0; i < sourceCollection.length; i++) {
-        if (newRowData.reqseq === sourceCollection[i].reqseq && newRowData.reqseq !== "") {
-          sourceCollection[i] = newRowData;  // Update existing row
-          isUpdated = true;
-          break;
-        } else if (Number(newRowData.isnew) === Number(sourceCollection[i].isnew) && newRowData.isnew !== "") {
-          sourceCollection[i] = { ...sourceCollection[i], ...newRowData };  // Update existing row based on isnew
-          isUpdated = true;  // 업데이트 플래그 설정
-          break;  // 업데이트 후 루프 종료
-        }
-      }
-
-      viewdata2.sourceCollection = [...sourceCollection]; // 참조 갱신
-      viewdata2.commitEdit(); // 변경 사항 커밋
-      viewdata2.refresh(); // 데이터 소스 갱신
-      theGrid2.itemsSource = [...viewdata2.sourceCollection]; // 그리드 데이터 재설정
-      theGrid2.refresh(); // UI 갱신
-    }
-    // 가이드 web 팝업창 열기
-    function openPopup(url) {
-      // 새 창 열기
-      window.open(url, '_blank',
-              'width=1040,height=1000,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes');
-    }
-    // enter입력시 다음 input으로 cursor이동
-    function moveFocusOnEnter(currentId, nextId) {
-      const currentElement = document.getElementById(currentId);
-      currentElement.addEventListener("keydown", function(event) {
-        if (event.key === "Enter") {
-          event.preventDefault(); // 기본 Enter 동작 방지
-          const nextElement = document.getElementById(nextId);
-          if (nextElement) {
-            nextElement.focus(); // 포커스 이동
+          if (idx > -1 && idx + 1 < $inputs.length) {
+            $inputs.eq(idx + 1).focus();
           }
         }
       });
-    }
-    moveFocusOnEnter("reqdate", "deldate");
-    moveFocusOnEnter("deldate", "telno");
-    moveFocusOnEnter("telno", "perid");
-    moveFocusOnEnter("perid", "remark");
-    // moveFocusOnEnter("panel_ht", "panel_hw");
-    // moveFocusOnEnter("panel_hw", "panel_hl");
-    // moveFocusOnEnter("panel_hl", "panel_hh");
-    // moveFocusOnEnter("panel_hh", "remark");
-    moveFocusOnEnter("remark", "hgrb");
-    moveFocusOnEnter("hgrb", "qty");
-    moveFocusOnEnter("qty", "panel_t");
-    moveFocusOnEnter("panel_t", "panel_w");
-    moveFocusOnEnter("panel_w", "panel_l");
-    moveFocusOnEnter("panel_l", "exfmtypedv");
-    moveFocusOnEnter("exfmtypedv", "infmtypedv");
-    moveFocusOnEnter("infmtypedv", "stframedv");
-    moveFocusOnEnter("stframedv", "stexplydv");
-  </script>
 
+      $('#btnCompanySearch').click(function () {
+        let poppage = new PopCompComponent();
+        let $poppage = $(poppage);
+        let searchcallback = function (items) {
+          console.log('items : ',items);
+          document.getElementById('cboCompany').value = items.compcode;
+          document.getElementById('CompanyName').value = items.compname;
+          document.getElementById('cboCompanyHidden').value = items.id;
+        };
+
+        poppage.show(searchcallback);
+      });
+      $('#cboCompany').on('input', function () {
+        const val = $(this).val();
+        if (val === '') {
+          $('#cboCompanyHidden').val('');
+        }
+      });
+      // .btn-clear 클릭 후 input 이벤트 강제 발생
+      $(document).on('click', '.btn-clear', function () {
+        const $input = $(this).siblings('input[type="text"]');
+        $input.val('');
+        $input.trigger('input'); // 🔥 input 이벤트 강제 발생
+      });
+      // 초기화 버튼 클릭 이벤트
+      $('#btnClear').click(function () {
+
+        document.getElementById('cboCompany').value = '';
+        document.getElementById('CompanyName').value = '';
+        document.getElementById('cboCompanyHidden').value = '';
+      });
+
+      $('#btnModelSearch').on('input', function (){
+        const val = $(this).val();
+        if(val === ''){
+
+        }
+      });
+      $('#OrderRequestForm').on('input', 'input[name="QTY"], input[name="saleamt"]', function () {
+        this.value = this.value.replace(/[^0-9.]/g, ''); // 실시간 숫자만 입력되게
+      });
+
+      $('#OrderRequestForm').on('input', 'input[name="setamt"], input[name="saleamt"], input[name="QTY"], input[name="uamt"]', function () {
+        updateSummary();
+      });
+
+      // 행 추가/삭제 후에도 갱신
+      $('#OrderRequestForm').on('click', '#addRemark, .btn.del', function () {
+        setTimeout(updateSummary, 50);
+      });
+      $('#OrderRequestForm').on('input', 'input[name="saleamt"], input[name="QTY"]', function () {
+        const $row = $(this).closest('tr');
+
+        // 숫자만 추출
+        const rawSaleAmt = $row.find('input[name="saleamt"]').val().replace(/[^0-9.]/g, '');
+        const rawQty = $row.find('input[name="QTY"]').val().replace(/[^0-9.]/g, '');
+
+        const saleamt = parseFloat(rawSaleAmt) || 0;
+        const qty = parseFloat(rawQty) || 0;
+
+        $row.find('input[name="uamt"]').val((saleamt * qty).toFixed(0));
+
+        updateSummary();
+      });
+
+
+      const reqdateField = document.getElementById("reqdate");
+      const deldateField = document.getElementById("deldate");
+
+      // 오늘 날짜 자동 설정
+      const date = new Date();
+      date.setHours(date.getHours() + 9); // 한국 시간 보정
+      const today = date.toISOString().split('T')[0];
+      reqdateField.value = today;
+
+      // 날짜 변경 시 처리
+      reqdateField.addEventListener("change", getHoliday);
+
+      // 요일 표시
+      updateDayDisplay("reqdate", "reqdate_day");
+      updateDayDisplay("deldate", "deldate_day");
+
+      // 납기일 계산 및 요일 표시
+      getHoliday();
+
+    });
+
+  </script>
 </th:block>
+<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 </html>
 

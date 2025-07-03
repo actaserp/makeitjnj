@@ -336,8 +336,8 @@ public class PopupController {
 
 		String sql = """
             select id as id
-            , "Name" as compName
-            , "Code" as compCode
+            , "Name" as compname
+            , "Code" as compcode
             , "BusinessNumber" as business_number
             , "TelNumber" as tel_number
             , "CEOName" as invoiceeceoname
@@ -348,27 +348,25 @@ public class PopupController {
             , "AccountManagerPhone" as invoiceetel1
             , "Email" as invoiceeemail1
             from company
-            WHERE ("CompanyType" = 'sale'
-            OR "CompanyType" = 'sale-purchase')
-            and "relyn" = '0'
+            where "relyn" = '0'
 			""";
 
 		if (compCode != null && !compCode.isEmpty()) {
-			sql += " AND \"Code\" ILIKE :compCode ";
+			sql += " AND LOWER([Code]) LIKE LOWER(:compCode) ";
 			paramMap.addValue("compCode", "%" + compCode + "%");
 		}
 
 		if (compName != null && !compName.isEmpty()) {
-			sql += " AND \"Name\" ILIKE :compName ";
+			sql += " AND LOWER([Name]) LIKE LOWER(:compName) ";
 			paramMap.addValue("compName", "%" + compName + "%");
 		}
 
 		if (business_number != null && !business_number.isEmpty()) {
-			sql += " AND \"BusinessNumber\" ILIKE :business_number ";
+			sql += " AND [BusinessNumber] LIKE :business_number ";
 			paramMap.addValue("business_number", "%" + business_number + "%");
 		}
 
-		sql += " ORDER BY \"Name\" ASC ";
+		sql += " ORDER BY [Name] ASC ";
 
 		result.data = this.sqlRunner.getRows(sql, paramMap);
 

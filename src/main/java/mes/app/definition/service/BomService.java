@@ -303,90 +303,95 @@ public class BomService {
 	public List<Map<String, Object>> getBomComponentTreeList(int bomId){
 
 		String sql = """
-     WITH bom AS (
-				 SELECT
-						 b1.id AS bom_pk,
-						 b1.Name,
-						 b1.Material_id AS prod_pk,
-						 NULLIF(b1.OutputAmount, 0) AS produced_qty,
-						 ROW_NUMBER() OVER (PARTITION BY b1.Material_id ORDER BY b1.StartDate DESC) AS g_idx
-				 FROM bom b1
-				 INNER JOIN bom b ON b1.BOMType = b.BOMType
-				 WHERE b.id = :id
-		 ),
-		 bom_tree AS (
-				 -- base level
-				 SELECT
-						 1 AS lvl,
-						 bc.Material_id,
-						 CAST(bc._order AS INT) AS item_order,
-						 bc.Material_id AS parent_mat_id,
-						 bc.Amount AS quantity,
-						 bom.produced_qty,
-						 CAST(bc.Amount / NULLIF(bom.produced_qty, 0) AS FLOAT) AS bom_ratio,
-						 bc.Description,
-						 'base' AS data_div,
-						 bc.id AS bc_id,
-						 RIGHT(REPLICATE('0', :id) + CAST(bc._order AS VARCHAR), :id) AS tot_order,
-						 CAST(bc.Material_id AS VARCHAR) AS my_key,
-						 '' AS parent_key
-				 FROM bom_comp bc
-				 INNER JOIN bom ON bom.bom_pk = bc.BOM_id
-					 WHERE bc.BOM_id = :id
-
-				 UNION ALL
-
-				 -- recursive level
-				 SELECT
-						 bt.lvl + 1,
-						 bc.Material_id,
-						 CAST(bc._order AS INT),
-						 bt.Material_id AS parent_mat_id,
-						 bc.Amount,
-						 bom.produced_qty,
-						 CAST(bc.Amount / NULLIF(bom.produced_qty, 0) * bt.bom_ratio AS FLOAT),
-						 bc.Description,
-						 'child',
-						 bc.id,
-						 bt.tot_order + '-' + RIGHT(REPLICATE('0', :id) + CAST(bc._order AS VARCHAR), :id),
-						 bt.my_key + '-' + CAST(bc.Material_id AS VARCHAR),
-						 bt.my_key
-				 FROM bom_tree bt
-				 INNER JOIN bom ON bom.prod_pk = bt.Material_id AND bom.g_idx = 1
-				 INNER JOIN bom_comp bc ON bc.BOM_id = bom.bom_pk
-		 )
-
-		 SELECT
-				 bt.lvl,
-				 bt.my_key,
-				 CASE WHEN bt.data_div = 'child' THEN bt.parent_key END AS parent_key,
-				 bt.Material_id AS mat_id,
-				 CASE WHEN bt.data_div = 'child' THEN bt.parent_mat_id END AS parent_mat_id,
-				 dbo.fn_code_name('mat_type', mg.MaterialType) AS mat_type,
-				 m.Name AS mat_name,
-				 m.Code AS mat_code,
-				 bt.quantity,
-				 bt.produced_qty,
-				 CAST(bt.bom_ratio AS NUMERIC(15, 7)) AS bom_ratio,
-				 CAST(bt.quantity AS DECIMAL(15, 2))
-						 + '/' +
-				 CAST(bt.produced_qty AS DECIMAL(15, 2)) AS bom_qty,
-				 u.Name AS unit,
-				 bt.Description,
-				 bt.bc_id,
-				 bt.tot_order
-		 FROM bom_tree bt
-		 INNER JOIN material m ON m.id = bt.Material_id
-		 LEFT JOIN unit u ON u.id = m.Unit_id
-		 LEFT JOIN mat_grp mg ON m.MaterialGroup_id = mg.id
-	 ORDER BY bt.tot_order ASC;
-						
+ WITH bom_tree AS (
+				    -- Anchor part
+				    SELECT\s
+				        1 AS lvl,
+				        bc.Material_id,
+				        CAST(bc._order AS INT) AS item_order,
+				        bc.Material_id AS parent_mat_id,
+				        bc.Amount AS quantity,
+				        b1.produced_qty,
+				        CAST(bc.Amount / NULLIF(b1.produced_qty, 0) AS FLOAT) AS bom_ratio,
+				        bc.Description,
+				        CAST('base' AS VARCHAR(10)) AS data_div ,
+				        bc.id AS bc_id,
+				        CAST(RIGHT(REPLICATE('0', 4) + CAST(bc._order AS VARCHAR), 4) AS VARCHAR(100)) AS tot_order,
+				        CAST(bc.Material_id AS VARCHAR(100)) AS my_key,
+				        CAST('' AS VARCHAR(100)) AS parent_key
+				    FROM bom_comp bc
+				    INNER JOIN (
+				        SELECT\s
+				            b1.id AS bom_pk,
+				            b1.Material_id AS prod_pk,
+				            NULLIF(b1.OutputAmount, 0) AS produced_qty,
+				            ROW_NUMBER() OVER (PARTITION BY b1.Material_id ORDER BY b1.StartDate DESC) AS g_idx
+				        FROM bom b1
+				        INNER JOIN bom b ON b1.BOMType = b.BOMType
+				        WHERE b.id = :id
+				    ) b1 ON b1.bom_pk = bc.BOM_id
+				    WHERE bc.BOM_id = :id
+				    UNION ALL
+				    -- Recursive part
+				    SELECT\s
+				        bt.lvl + 1,
+				        bc.Material_id,
+				        CAST(bc._order AS INT),
+				        bt.Material_id AS parent_mat_id,
+				        bc.Amount,
+				        b1.produced_qty,
+				        CAST(bc.Amount / NULLIF(b1.produced_qty, 0) * bt.bom_ratio AS FLOAT),
+				        bc.Description,
+				        CAST('child' AS VARCHAR(10)) AS data_div,
+				        bc.id,
+				        CAST(
+						    CAST(bt.tot_order AS VARCHAR(100)) + '-' +\s
+						    RIGHT(REPLICATE('0', 4) + CAST(bc._order AS VARCHAR), 4)
+						    AS VARCHAR(100)) AS tot_order,
+				        CAST(bt.my_key + '-' + CAST(bc.Material_id AS VARCHAR(100)) AS VARCHAR(100)) AS my_key,
+				        bt.my_key
+				    FROM bom_tree bt
+				    INNER JOIN (
+				        SELECT\s
+				            b1.id AS bom_pk,
+				            b1.Material_id AS prod_pk,
+				            NULLIF(b1.OutputAmount, 0) AS produced_qty,
+				            ROW_NUMBER() OVER (PARTITION BY b1.Material_id ORDER BY b1.StartDate DESC) AS g_idx
+				        FROM bom b1
+				        INNER JOIN bom b ON b1.BOMType = b.BOMType
+				        WHERE b.id = :id
+				    ) b1 ON b1.prod_pk = bt.Material_id AND b1.g_idx = 1
+				    INNER JOIN bom_comp bc ON bc.BOM_id = b1.bom_pk
+				)
+				-- Final result
+				SELECT\s
+				    bt.lvl,
+				    bt.my_key,
+				    CASE WHEN bt.data_div = 'child' THEN bt.parent_key END AS parent_key,
+				    bt.Material_id AS mat_id,
+				    CASE WHEN bt.data_div = 'child' THEN bt.parent_mat_id END AS parent_mat_id,
+				    dbo.fn_code_name('mat_type', mg.MaterialType) AS mat_type,
+				    m.Name AS mat_name,
+				    m.Code AS mat_code,
+				    bt.quantity,
+				    bt.produced_qty,
+				    CAST(bt.bom_ratio AS NUMERIC(15,7)) AS bom_ratio,
+				    CAST(bt.quantity AS VARCHAR(20)) + '/' + CAST(bt.produced_qty AS VARCHAR(20)) AS bom_qty,
+				    u.Name AS unit,
+				    bt.Description,
+				    bt.bc_id,
+				    bt.tot_order
+				FROM bom_tree bt
+				INNER JOIN material m ON m.id = bt.Material_id
+				LEFT JOIN unit u ON u.id = m.Unit_id
+				LEFT JOIN mat_grp mg ON m.MaterialGroup_id = mg.id
+				ORDER BY bt.tot_order ASC						
 		""";
 
 		MapSqlParameterSource paramMap = new MapSqlParameterSource();
 		paramMap.addValue("id", bomId);
-		log.info("getBomComponentTreeList: {} ", sql);
-		log.info("🔍 [getBomComponentTreeList] 파라미터: {}", paramMap.getValues());
+//		log.info("getBomComponentTreeList: {} ", sql);
+//		log.info("🔍 [getBomComponentTreeList] 파라미터: {}", paramMap.getValues());
 		return this.sqlRunner.getRows(sql, paramMap);
 	}
 

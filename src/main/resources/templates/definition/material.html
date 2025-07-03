@@ -230,13 +230,13 @@
                                         </th>
                                         <td>
                                             <input type="checkbox" id="useyn" name="useyn" value="1" style="display: block; margin: auto; height: 26px; width: 26px;">
-                                        </td> 
+                                        </td>
                                         <th>
                                             <label for="Class1">작업방식</label>
                                         </th>
                                         <td>
-                                            <select style="width: 100%;" id="Class1" name="Class1"></select> 
-                                        </td> 
+                                            <select style="width: 100%;" id="Class1" name="Class1"></select>
+                                        </td>
                                     </tr>
 
                                     <!-- <tr>
@@ -329,7 +329,7 @@
                                         <td>
                                             <input type="text" style="width: 100%;" id="Class2"
                                                    name="Class2">
-                                        </td> 
+                                        </td>
                                         <th style="font-size: 14px;">
                                             <label for="LotSize">로트번호</label>
                                         </th>
@@ -366,7 +366,7 @@
                         <div>
                             <form id="matProductionForm">
                                 <table class="write-table">
-                                    <caption style="text-align: left; margin-bottom: 8px;">생산/출하정보</caption> 
+                                    <caption style="text-align: left; margin-bottom: 8px;">생산/출하정보</caption>
                                     <tbody>
                                     <tr>
                                         <th>
@@ -965,7 +965,7 @@
                 });
                 let isInitialLoad = true; // 초기 상태 플래그
 
-                this.grid.selectionChanged.addHandler((s, e) => {
+                /*this.grid.selectionChanged.addHandler((s, e) => {
                     if (isInitialLoad) {
                         isInitialLoad = false; // 초기 로드 이후 플래그 해제
                         return;
@@ -975,16 +975,16 @@
                     if (selectedRowIndex >= 0) { // 유효한 행이 선택되었는지 확인
                         let selectedRowData = s.rows[selectedRowIndex].dataItem; // 선택된 행의 데이터
                         let mat_pk = selectedRowData.id; // 품목 ID 가져오기
-                        /*console.log(selectedRowData);*/
+                        /!*console.log(selectedRowData);*!/
 
                         // 상세 정보 표시
                         _this.showDetail(mat_pk);
 
-                        /* // 기존 데이터 초기화
+                        /!* // 기존 데이터 초기화
                          _this.price_grid.setData([]);
                          $('#companyPriceForm')[0].reset();
                          _this.test_grid.setData([]);
-                         _this.setPriceButtonState();*/
+                         _this.setPriceButtonState();*!/
 
                         // 현재 활성화된 탭에 따라 추가 기능 실행
                         if (_this.current_tab == 'tab_unitcost') {
@@ -1000,10 +1000,10 @@
                             if (mat_pk) page.showTestList(mat_pk);
                         }
 
-                        /*console.log(`선택된 행 인덱스: ${selectedRowIndex}`);
-                        console.log('선택된 행 데이터:', selectedRowData);*/
+                        /!*console.log(`선택된 행 인덱스: ${selectedRowIndex}`);
+                        console.log('선택된 행 데이터:', selectedRowData);*!/
                     }
-                });
+                });*/
 
                 this.grid.hostElement.addEventListener('dblclick', (e) => {
                     let hitTest = this.grid.hitTest(e);
@@ -1042,7 +1042,7 @@
                     }
                 });
 
- 
+
 
                 /*  this.grid_config = config;  // 컬럼설정 팝업에 넘기기 위한 용도로 저장해 놓음.
                   this.grid = new ax5.ui.grid(config);
@@ -1095,7 +1095,7 @@
 
                 new FlexGridContextMenu(this.price_grid);
                 this.grid.downloadFileName = '단가 정보';
- 
+
 
                 /*this.price_grid = new ax5.ui.grid(priceConfig);
                 this.price_grid.setData([]);*/
@@ -1138,7 +1138,7 @@
                 new FlexGridContextMenu(this.bom_grid);
                 this.grid.downloadFileName = 'BOM 정보';
 
- 
+
                 /*  this.bom_grid = new ax5.ui.grid(bomConfig);
                   this.bom_grid.setData([]);*/
 
@@ -1179,7 +1179,7 @@
 
                 new FlexGridContextMenu(this.bom_reverse_grid);
                 this.grid.downloadFileName = 'BOM역전개 정보';
- 
+
 
                 /*   this.bom_reverse_grid = new ax5.ui.grid(bomReverseConfig);
                    this.bom_reverse_grid.setData([]);*/
@@ -1208,7 +1208,7 @@
 
                 new FlexGridContextMenu(this.routing_grid);
                 this.grid.downloadFileName = '라우팅 정보';
- 
+
                 /*this.routing_grid = new ax5.ui.grid(RoutingConfig);
                 this.routing_grid.setData([]);*/
 
@@ -1248,11 +1248,6 @@
                 new FlexGridContextMenu(this.test_master_grid);
                 this.grid.downloadFileName = '검사정보 정보';
 
- 
-
-                this.test_grid = new ax5.ui.grid(testConfig);
-                this.test_grid.setData([]);*/
-
                 // filter dropdown load
                 AjaxUtil.fillSelectOptions($('#cboMaterialType'), 'system_code', 'all', false, 'mat_type');
                 AjaxUtil.fillSelectOptions($('#cboMaterialGroup'), 'material_group', 'all', false);
@@ -1267,7 +1262,7 @@
                         _this.searchDataBind();
                     }
                 });
- 
+
 
                 this.initForm();
 

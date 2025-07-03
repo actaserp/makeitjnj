@@ -1,5 +1,6 @@
 package mes.app.definition;
 
+import lombok.extern.slf4j.Slf4j;
 import mes.app.definition.service.material.*;
 import mes.domain.entity.Material;
 import mes.domain.entity.TestMastMat;
@@ -20,8 +21,8 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/definition/material")
 public class MaterialController {
@@ -265,7 +266,8 @@ public class MaterialController {
 	 */
 	@GetMapping("/bom")
 	public AjaxResult readBomList(@RequestParam("mat_id") String matPk) {
-		List<Map<String, Object>> items = this.bomService.getBomListByMat(matPk);      
+		log.info("BOM목록조회 :{}", matPk);
+		List<Map<String, Object>> items = this.bomService.getBomListByMat(matPk);
    		
         AjaxResult result = new AjaxResult();
         result.data = items;        				
@@ -281,6 +283,7 @@ public class MaterialController {
 	 */
 	@GetMapping("/bomReverse")
 	public AjaxResult readBomReverseList(@RequestParam("mat_id") int matPk) {
+
 		List<Map<String, Object>> items = this.bomService.getBomReverseListByMat(matPk);      
    		
         AjaxResult result = new AjaxResult();

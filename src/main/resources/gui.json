@@ -23,7 +23,7 @@
   "wm_user_group":          { "name": "사용자 그룹", "templates": { "default": "system/usergroup.html" }  },
   "wm_user":                { "name": "사용자 관리", "templates": { "default": "system/user_main.html" }},
   "wm_menu_log":            { "name": "로그 현황", "templates": { "default": "system/menu_log.html" } },
-  "wm_code":                { "name": "공통코드 등록", "templates": { "default": "system/code_main.html" } },
+  "wm_code":                { "name": "공통코드 등록", "templates": { "default": "definition/code.html" } },
   "wm_auth_list" :          { "name": "사용자 권한 신청 조회", "templates": { "default": "system/auth_list.html" } },
 
 

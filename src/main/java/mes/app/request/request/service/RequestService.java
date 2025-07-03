@@ -475,9 +475,7 @@ public class RequestService {
         MapSqlParameterSource dicParam = new MapSqlParameterSource();
 
         String sql = """
-                select
-                *
-                from TB_PZ010
+               select * from TB_PZ010
                 """;
 
         List<Map<String, Object>> items = this.sqlRunner.getRows(sql, dicParam);
