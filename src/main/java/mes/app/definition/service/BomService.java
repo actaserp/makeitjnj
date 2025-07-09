@@ -305,7 +305,7 @@ public class BomService {
 		String sql = """
  WITH bom_tree AS (
 				    -- Anchor part
-				    SELECT\s
+				    SELECT
 				        1 AS lvl,
 				        bc.Material_id,
 				        CAST(bc._order AS INT) AS item_order,
@@ -321,7 +321,7 @@ public class BomService {
 				        CAST('' AS VARCHAR(100)) AS parent_key
 				    FROM bom_comp bc
 				    INNER JOIN (
-				        SELECT\s
+				        SELECT
 				            b1.id AS bom_pk,
 				            b1.Material_id AS prod_pk,
 				            NULLIF(b1.OutputAmount, 0) AS produced_qty,
@@ -333,7 +333,7 @@ public class BomService {
 				    WHERE bc.BOM_id = :id
 				    UNION ALL
 				    -- Recursive part
-				    SELECT\s
+				    SELECT
 				        bt.lvl + 1,
 				        bc.Material_id,
 				        CAST(bc._order AS INT),
@@ -345,14 +345,14 @@ public class BomService {
 				        CAST('child' AS VARCHAR(10)) AS data_div,
 				        bc.id,
 				        CAST(
-						    CAST(bt.tot_order AS VARCHAR(100)) + '-' +\s
+						    CAST(bt.tot_order AS VARCHAR(100)) + '-' +
 						    RIGHT(REPLICATE('0', 4) + CAST(bc._order AS VARCHAR), 4)
 						    AS VARCHAR(100)) AS tot_order,
 				        CAST(bt.my_key + '-' + CAST(bc.Material_id AS VARCHAR(100)) AS VARCHAR(100)) AS my_key,
 				        bt.my_key
 				    FROM bom_tree bt
 				    INNER JOIN (
-				        SELECT\s
+				        SELECT
 				            b1.id AS bom_pk,
 				            b1.Material_id AS prod_pk,
 				            NULLIF(b1.OutputAmount, 0) AS produced_qty,
@@ -364,7 +364,7 @@ public class BomService {
 				    INNER JOIN bom_comp bc ON bc.BOM_id = b1.bom_pk
 				)
 				-- Final result
-				SELECT\s
+				SELECT
 				    bt.lvl,
 				    bt.my_key,
 				    CASE WHEN bt.data_div = 'child' THEN bt.parent_key END AS parent_key,
@@ -390,8 +390,8 @@ public class BomService {
 
 		MapSqlParameterSource paramMap = new MapSqlParameterSource();
 		paramMap.addValue("id", bomId);
-//		log.info("getBomComponentTreeList: {} ", sql);
-//		log.info("🔍 [getBomComponentTreeList] 파라미터: {}", paramMap.getValues());
+		//log.info("getBomComponentTreeList: {} ", sql);
+		//log.info(" [getBomComponentTreeList] 파라미터: {}", paramMap.getValues());
 		return this.sqlRunner.getRows(sql, paramMap);
 	}
 

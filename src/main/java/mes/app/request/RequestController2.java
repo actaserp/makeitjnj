@@ -1,8 +1,9 @@
-package mes.app.request.request;
+package mes.app.request;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import mes.app.request.request.service.RequestService;
+import mes.app.request.service.RequestService;
+import mes.app.request.service.RequestService2;
 import mes.config.Settings;
 import mes.domain.entity.User;
 import mes.domain.entity.actasEntity.*;
@@ -41,10 +42,10 @@ import java.util.zip.ZipOutputStream;
 
 @RestController
 @RequestMapping("/api/request/request")
-public class RequestController {
-    @Autowired
-    private RequestService requestService;
+public class RequestController2 {
 
+    @Autowired
+    private RequestService2 requestService;
 
     @Autowired
     private TB_DA007WRepository tbda007WRepository;
@@ -723,7 +724,6 @@ public class RequestController {
         result.data = requestService.getHoliday();
         return result;
     }
-
 
 }
 

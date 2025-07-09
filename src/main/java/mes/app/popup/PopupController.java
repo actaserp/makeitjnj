@@ -66,7 +66,7 @@ public class PopupController {
 
 		if(StringUtils.hasText(keyword)){
             sql+="""
-            and (m."Name" ilike concat('%%',:keyword,'%%') or m."Code" ilike concat('%%',:keyword,'%%'))
+            AND (m.[Name] LIKE '%' + :keyword + '%' OR m.[Code] LIKE '%' + :keyword + '%')
             """;
 		}
 
@@ -75,8 +75,8 @@ public class PopupController {
 		paramMap.addValue("material_group", material_group, java.sql.Types.INTEGER);
 		paramMap.addValue("keyword", keyword);
 		result.data = this.sqlRunner.getRows(sql, paramMap);
-		log.info("read SQL: {}", sql);
-    log.info("SQL Parameters: {}", paramMap.getValues());
+//		log.info("read SQL: {}", sql);
+//    log.info("SQL Parameters: {}", paramMap.getValues());
 		return result;
 	}	
 	

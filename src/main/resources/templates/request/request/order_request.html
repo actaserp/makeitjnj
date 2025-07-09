@@ -3,7 +3,7 @@
     /* 우선순위 높게 덮어쓰기 */
     #OrderRequestForm .write-table input[type="text"],
     #OrderRequestForm .write-table select {
-        width: 100% !important;  /* colgroup 기준으로 꽉 차게 */
+        width: 100% !important; /* colgroup 기준으로 꽉 차게 */
         box-sizing: border-box;
     }
 
@@ -67,6 +67,7 @@
         height: 16px;
         align-items: center;
     }
+
     /* 삭제 버튼이 있는 셀 자체를 가운데 정렬 */
     #OrderRequestForm td.al_c.item_border {
         text-align: center;
@@ -97,6 +98,7 @@
     #OrderRequestForm td:nth-child(2) input {
         width: 100%; /* 부품명 넓게 */
     }
+
     #OrderRequestForm .input-with-button input[type="text"] {
         width: 100%;
         box-sizing: border-box;
@@ -160,7 +162,7 @@
                   </a>
                 </li>
                 <li>
-                  <a class="btn btn-edit" id="btnAddNew" title="저장" >
+                  <a class="btn btn-edit" id="btnAddNew" title="저장">
                     <img src="/images/icon/ico-save.svg" alt="저장 아이콘">
                     저장
                   </a>
@@ -184,13 +186,15 @@
                   <input id="cboCompany" name="cboCompany" type="hidden">
                   <input id="cboCompanyHidden" name="cboCompanyHidden" type="hidden">
                   <input class="form-control2" type="text" id="CompanyName" name="CompanyName"
-                         placeholder="검색버튼을 클릭하여 구매처를 검색하세요"
-                         style="display: inline-block;  width: 200px; vertical-align: middle;" />
+                         placeholder="버튼을 클릭하여 검색하세요"
+                         style="display: inline-block; width: 200px; vertical-align: middle;" />
                   <a class="btn btn-delete" title="구매처검색" id="btnCompanySearch"
                      style="display: inline-block; width: 32px; height: 32px; vertical-align: middle;">
-                    <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
+                    <img src="/images/icon/btn-srch.svg" alt="검색 아이콘"
+                         style="width: 20px; height: 20px; display: block; margin-left: -9px;" />
                   </a>
                 </td>
+
                 <th style="text-align: center">
                   <label for="reqdate">
                     주문일자
@@ -250,16 +254,16 @@
                   </label>
                 </th>
                 <td>
-                  <input type="number" id="setsamt" name="setsamt" style="width: 200px">
+                  <input type="text" id="setsamt" name="setsamt" style="width: 200px">
                 </td>
 
                 <th style="text-align: center">
-                  <label for="TotQTY">
+                  <label for="setqty">
                     수량
                   </label>
                 </th>
                 <td>
-                  <input type="number" id="TotQTY" name="TotQTY" style="width: 200px">
+                  <input type="text" id="setqty" name="setqty" style="width: 200px">
                 </td>
 
                 <th style="text-align: center">
@@ -268,17 +272,17 @@
                   </label>
                 </th>
                 <td>
-                  <input type="number" id="amount" name="amount" style="width: 200px">
+                  <input type="text" id="amount" name="amount" style="width: 200px">
                 </td>
 
-                 <th style="text-align: center">
-                   <label for="outamt">
-                     외주계
-                   </label>
-                 </th>
-                 <td>
-                   <input type="number" id="outamt" name="outamt" style="width: 200px">
-                 </td>
+                <th style="text-align: center">
+                  <label for="outamt">
+                    외주계
+                  </label>
+                </th>
+                <td>
+                  <input type="text" id="outamt" name="outamt" style="width: 200px">
+                </td>
               </tr>
 
               <tr>
@@ -288,34 +292,34 @@
                   </label>
                 </th>
                 <td>
-                  <input type="number" id="eyunamt" name="eyunamt" style="width: 200px">
+                  <input type="text" id="eyunamt" name="eyunamt" style="width: 200px">
                 </td>
 
                 <th style="text-align: center">
-                 <label for="pereyunamt">
-                   개당이윤
-                 </label>
+                  <label for="pereyunamt">
+                    개당이윤
+                  </label>
                 </th>
                 <td>
-                 <input type="number" id="pereyunamt" name="pereyunamt" style="width: 200px">
+                  <input type="text" id="pereyunamt" name="pereyunamt" style="width: 200px">
                 </td>
 
                 <th style="text-align: center">
-                 <label for="eyunyul">
-                   이윤율
-                 </label>
+                  <label for="eyunyul">
+                    이윤율
+                  </label>
                 </th>
                 <td>
-                 <input type="number" id="eyunyul" name="eyunyul" style="width: 200px">
+                  <input type="text" id="eyunyul" name="eyunyul" style="width: 200px">
                 </td>
 
                 <th style="text-align: center">
-                 <label for="toteyunamt">
-                   전체이윤
-                 </label>
+                  <label for="toteyunamt">
+                    전체이윤
+                  </label>
                 </th>
                 <td>
-                 <input type="number" id="toteyunamt" name="toteyunamt" style="width: 200px">
+                  <input type="text" id="toteyunamt" name="toteyunamt" style="width: 200px">
                 </td>
               </tr>
 
@@ -327,6 +331,9 @@
                 </th>
                 <td colspan="7">
                   <input type="text" id="modeltxt" name="modeltxt" style="width: 70%">
+                  <input type="hidden" id="MaterialGroupName" name="MaterialGroupName">
+                  <input type="hidden" id="Material_id" name="Material_id">
+                  <input type="hidden" id="product_code" name="product_code">
                 </td>
               </tr>
 
@@ -337,24 +344,23 @@
           <div class="section-top">
             <div class="title-wrap">
               <h3>세부사항</h3>
-              <a style="color: red;margin-top: 4px;margin-left: 5px;">(세부사항 더블클릭시 수정가능합니다.)</a>
             </div>
             <div class="button-wrap" style="margin-bottom: 10px; margin-top: 10px">
               <ul>
                 <li>
-                  <a class="btn btn-saverow" id="btn-saverow" name="saverow" title="세부사항 추가" >
+                  <a class="btn btn-saverow" id="btnProductSearch" name="addModel" title="모델 생성">
                     <img src="/images/icon/ico-plus.svg" alt="등록 아이콘">
                     모델 생성
                   </a>
                 </li>
                 <li>
-                  <a class="btn btn-saverow" id="btn-addrow" name="addrow" title="행 복사" >
+                  <a class="btn btn-saverow" id="btn-addrow" name="addrow" title="행 복사">
                     <img src="/images/icon/ico-edit.svg" alt="등록 아이콘">
                     부품 추가
                   </a>
                 </li>
                 <li>
-                  <a class="btn btn-deleterow" id="btn-deleterow" name="deleterow" title="행삭제" >
+                  <a class="btn btn-deleterow" id="btn-deleterow" name="deleterow" title="행삭제">
                     <img src="/images/icon/ico-delete.svg" alt="삭제 아이콘">
                     행 삭제
                   </a>
@@ -374,10 +380,10 @@
                   <col style="width: 10%"> <!-- 작업방식 -->
                   <col style="width: 10%"> <!-- 1set/원가 -->
                   <col style="width: 10%"> <!-- 판매단가 -->
-                  <col style="width: 7%">  <!-- 수량 -->
+                  <col style="width: 10%">  <!-- 수량 -->
                   <col style="width: 10%"> <!-- 제품가 -->
-                  <col style="width: 8%">  <!-- 단가이력 -->
-                  <col style="width: 3%">  <!-- 삭제 버튼 -->
+                  <col style="width: 10%">  <!-- 단가이력 -->
+                  <col style="width: 2%">  <!-- 삭제 버튼 -->
                 </colgroup>
                 <thead>
                 <tr id="itemHeaderRow">
@@ -390,9 +396,10 @@
                   <th>수량</th>
                   <th>제품가</th>
                   <th>단가이력</th>
-                  <th>
-                    <a class="btn in_btn plus" id="addRemark" title="추가" style="width: 35px; height: 35px;">
-                      <img src="/images/icon/ico-plus.svg" alt="등록 아이콘" style="width: 12px; height: 12px; margin-left: 7px" />
+                  <th >
+                    <a class="btn in_btn plus" id="addRemark" title="추가" style="width:30px; height:35px;">
+                      <img src="/images/icon/ico-plus.svg" alt="등록 아이콘"
+                           style="width: 12px; height: 12px; margin-left: 5px"/>
                     </a>
                   </th>
                 </tr>
@@ -401,24 +408,26 @@
                 <tr class="item-template-row" style="display: none;">
                   <td>
                     <div class="input-with-button" style="display: flex; gap: 4px;">
-                      <input type="text" name="txtModelNm" placeholder="입력 후 엔터" style="flex: 1; width: 170px;" />
-                      <a class="btn in_btn" title="모델 검색" id="btnModelSearch" style="width: 28px; height: 32px;">
+                      <input type="text" name="txtModelNm" placeholder="모델명" style="flex: 1; width: 170px;"
+                             autocomplete="off"/>
+                      <!--<a class="btn in_btn" title="모델 검색" id="btnModelSearch" style="width: 28px; height: 32px;">
                         <img src="/images/icon/btn-srch-black.svg" alt="검색 아이콘" />
                       </a>
                       <input type="hidden" name="MaterialGroupName"/>
                       <input type="hidden" name="Material_id" />
-                      <input type="hidden" name="product_code" />
+                      <input type="hidden" name="product_code" />-->
                     </div>
                   </td>
                   <td>
                     <div class="input-with-button" style="display: flex; gap: 4px;">
-                    <input type="text" name="pname" placeholder="부품명" style="flex: 1; width: 170px;"  />
-                    <a class="btn in_btn" title="부품 검색" id="btnpartSearch" style="width: 28px; height: 32px;">
-                      <img src="/images/icon/btn-srch-black.svg" alt="검색 아이콘" />
-                    </a>
+                      <input type="text" name="pname" placeholder="부품명" style="flex: 1; width: 170px;"/>
+                      <input type="hidden" name="Material_id" />
+                      <a class="btn in_btn" title="부품 검색" id="btnpartSearch" style="width: 28px; height: 32px;">
+                        <img src="/images/icon/btn-srch-black.svg" alt="검색 아이콘"/>
+                      </a>
                     </div>
                   </td>
-                  <td><input type="text" name="remark" placeholder="비고" style="width: 100%;" /></td>
+                  <td><input type="text" name="remark" placeholder="비고" style="width: 100%;"/></td>
                   <td>
                     <select class="jobflag-select" name="jobflag_" style="width: 100%;">
                       <option value="j01">외주</option>
@@ -427,137 +436,135 @@
                     </select>
                   </td>
                   <td>
-                    <input type="number" name="setamt" placeholder="1SET / 단가" style="width: 100%;" />
-                    <input type="hidden" name="SetAmtUnitPrice" />
+                    <input type="text" name="setamt" placeholder="1SET / 단가" style="width: 100%;"/>
+                    <input type="hidden" name="SetAmtUnitPrice"/>
                   </td>
-                  <td><input type="number" name="saleamt" placeholder="판매단가" style="width: 100%;" /></td>
-                  <td><input type="number" name="QTY" placeholder="수량" style="width: 100%;" /></td>
-                  <td><input type="number" name="uamt" placeholder="제품가" style="width: 100%;" /></td>
+                  <td><input type="text" name="saleamt" placeholder="판매단가" style="width: 100%;"/></td>
+                  <td><input type="text" name="QTY" placeholder="수량" style="width: 100%;"/></td>
+                  <td><input type="text" name="uamt" placeholder="제품가" style="width: 100%;"/></td>
                   <td>
-                    <input type="hidden" name="State" />
-                    <input type="text" name="balju_StateName" readonly placeholder="단가이력" style="width: 100%;" />
+                    <input type="hidden" name="State"/>
+                    <input type="text" name="balju_StateName" readonly placeholder="단가이력" style="width: 100%;"/>
                   </td>
                   <td class="al_c item_border" style="text-align: center; vertical-align: middle;">
                     <a class="btn in_btn del" title="행 삭제"
                        style="display: flex; justify-content: center; align-items: center; width: 35px; height: 35px; margin: 0 auto;">
                       <img src="/images/icon/ico-delete.svg" alt="삭제 아이콘"
-                           style="width: 15px; height: 15px; margin-left: 7px" />
+                           style="width: 12px; height: 12px; margin-left: 7px"/>
                     </a>
                   </td>
                 </tr>
+                </tbody>
                 <tfoot>
                 <tr class="sum-row" style="background-color: #f2f2f2; font-weight: bold;">
                   <td colspan="4" style="text-align: center;">합계</td>
-                  <td><input type="text" id="sum_setamt" readonly style="width: 100%; text-align: right;" /></td>
-                  <td><input type="text" id="sum_saleamt" readonly style="width: 100%; text-align: right;" /></td>
-                  <td><input type="text" id="sum_qty" readonly style="width: 100%; text-align: right;" /></td>
-                  <td><input type="text" id="sum_uamt" readonly style="width: 100%; text-align: right;" /></td>
+                  <td><input type="text" id="sum_setamt" readonly style="width: 100%; text-align: right;"/></td>
+                  <td><input type="text" id="sum_saleamt" readonly style="width: 100%; text-align: right;"/></td>
+                  <td><input type="text" id="sum_qty" readonly style="width: 100%; text-align: right;"/></td>
+                  <td><input type="text" id="sum_uamt" readonly style="width: 100%; text-align: right;"/></td>
                   <td colspan="2"></td>
                 </tr>
                 </tfoot>
-                </tbody>
               </table>
-
               <input type="hidden" id="bh_id" name="bh_id">
-              <input type="hidden" id="spjangcdHidden" name="spjangcd" />
+              <input type="hidden" id="spjangcdHidden" name="spjangcd"/>
             </form>
           </div>
 
         </section>
-          </div>
-        </section>
-        <!--       주문등록 탭 종료   / 주문 의뢰현황 시작       -->
-        <!-- Section -->
-        <section class="tab-item" id="tab2" style="height: 832px;">
-          <div class="section-top">
-            <div class="search-wrap">
-              <dl>
-                <dt>
-                  주문일자<span class="eq">*</span>
-                  <a style="color: red;margin-top: 4px;margin-left: 5px;">(더블클릭하면 수정이 가능합니다.)</a>
-                </dt>
-                <dd>
-                  <ul class="date-box">
-                    <li>
-                      <input type="date" id="startDate" name="startDate">
-                      <label for="startDate" class="hide">시작일</label>
-                    </li>
-                    <li>
-                      <input type="date" id="endDate" name="endDate">
-                      <label for="endDate" class="hide">종료일</label>
-                    </li>
-                  </ul>
-                </dd>
-              </dl>
-              <dl>
-                <dt>
-                  <label for="cboCompany2">
-                    고객사<span class="eq">*</span>
-                  </label>
-                </dt>
-                <dd>
-                  <div class="srch-box">
-                    <input id="cboCompany2" name="cboCompany2" type="hidden">
-                    <input class="form-control2" type="text" id="CompanyName2" name="CompanyName"2
-                           placeholder="검색버튼을 클릭하여 구매처를 검색하세요" readonly/>
-                    &nbsp;
-                    <a class="btn btn-delete" title="구매처검색" id="btnCompanySearch2">
-                      <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
-                      구매처 검색
-                    </a>
-                  </div>
-                </dd>
-              </dl>
-              <dl>
-                <dt>
-                  <label for="searchRemark">
-                    제목<span class="eq">*</span>
-                  </label>
-                </dt>
-                <dd>
-                  <div class="srch-box">
-                    <input type="text" id="searchRemark" name="searchRemark" class="input-srch"
-                           placeholder="제목" style="border-radius: 5px;">
-                  </div>
-                </dd>
-              </dl>
-              <dl>
-                <dt>
-                  <label for="searchOrdflag">
-                    진행구분<span class="eq">*</span>
-                  </label>
-                </dt>
-                <dd>
-                  <div class="srch-box">
-                    <select id="searchOrdflag" name="searchOrdflag">
-
-                    </select>
-                    <!--                                        <a href="#a" class="btn-srch" title="검색" onclick="searchData()"></a>-->
-                  </div>
-                </dd>
-              </dl>
-              <dl>
-                <dt>&nbsp;</dt>
-                <dd>
+      </div>
+      </section>
+      <!--       주문등록 탭 종료   / 주문 의뢰현황 시작       -->
+      <!-- Section -->
+      <section class="tab-item" id="tab2" style="height: 832px;">
+        <div class="section-top">
+          <div class="search-wrap">
+            <dl>
+              <dt>
+                주문일자<span class="eq">*</span>
+                <a style="color: red;margin-top: 4px;margin-left: 5px;">(더블클릭하면 수정이 가능합니다.)</a>
+              </dt>
+              <dd>
+                <ul class="date-box">
                   <li>
-                    <a class="btn btn-delete" title="검색" id="searchButton1" onclick="fetchListData()">
-                      <!--                                        class 쓰이는 곳 찾고 없으면 클래스명 수정하기-->
-                      <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
-                      검색
-                    </a>
+                    <input type="date" id="startDate" name="startDate">
+                    <label for="startDate" class="hide">시작일</label>
                   </li>
-                </dd>
-              </dl>
-            </div>
+                  <li>
+                    <input type="date" id="endDate" name="endDate">
+                    <label for="endDate" class="hide">종료일</label>
+                  </li>
+                </ul>
+              </dd>
+            </dl>
+            <dl>
+              <dt>
+                <label for="cboCompany2">
+                  고객사<span class="eq">*</span>
+                </label>
+              </dt>
+              <dd>
+                <div class="srch-box">
+                  <input id="cboCompany2" name="cboCompany2" type="hidden">
+                  <input class="form-control2" type="text" id="CompanyName2" name="CompanyName2"
+                         placeholder="검색버튼을 클릭하여 구매처를 검색하세요" readonly/>
+                  &nbsp;
+                  <a class="btn btn-delete" title="구매처검색" id="btnCompanySearch2">
+                    <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
+                    구매처 검색
+                  </a>
+                </div>
+              </dd>
+            </dl>
+            <dl>
+              <dt>
+                <label for="searchRemark">
+                  제목<span class="eq">*</span>
+                </label>
+              </dt>
+              <dd>
+                <div class="srch-box">
+                  <input type="text" id="searchRemark" name="searchRemark" class="input-srch"
+                         placeholder="제목" style="border-radius: 5px;">
+                </div>
+              </dd>
+            </dl>
+            <dl>
+              <dt>
+                <label for="searchOrdflag">
+                  진행구분<span class="eq">*</span>
+                </label>
+              </dt>
+              <dd>
+                <div class="srch-box">
+                  <select id="searchOrdflag" name="searchOrdflag">
+
+                  </select>
+                </div>
+              </dd>
+            </dl>
+            <dl>
+              <dt>&nbsp;</dt>
+              <dd>
+                <li>
+                  <a class="btn btn-delete" title="검색" id="btnTab2Search">
+                    <!--                                        class 쓰이는 곳 찾고 없으면 클래스명 수정하기-->
+                    <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
+                    검색
+                  </a>
+                </li>
+              </dd>
+            </dl>
           </div>
-          <div class="container-fluid">
-            <p id="selectedItem"></p>
-            <div id="theGrid" style="max-height: 714px"></div>
-          </div>
-        </section>
-        <!--      주문 의뢰 현황 종료          -->
-      </div> <!--//tab-contens end-->
-    </div> <!--//tab-wrap end-->
+        </div>
+        <div class="container-fluid">
+          <p id="selectedItem"></p>
+          <div id="theGrid" style="max-height: 714px"></div>
+        </div>
+      </section>
+      <!--      주문 의뢰 현황 종료          -->
+    </div> <!--//tab-contens end-->
+  </div> <!--//tab-wrap end-->
   </div> <!--//layout-contents end -->
   <footer style="margin-top:5px;">
     <p>Copyrightⓒ 0000 corp. All rights reserved.</p>
@@ -575,7 +582,7 @@
       <div class="popup-contents">
         <div class="table-wrap">
           <table class="write-table">
-            <caption>전기안전 점검 첨부파일</caption>
+            <caption>주문등록 첨부파일</caption>
             <colgroup>
               <col class="wp20">
               <col class="wp80">
@@ -629,27 +636,27 @@
             <col class="wp20">
             <col class="wp80">
           </colgroup>
-            <div class="table-wrap">
-              <table class="write-table">
-                <caption>요청사항</caption>
-                <tbody>
-                <tr style="align-items: center">
-                  <th>
-                    <label for="ordtext">
-                      내&nbsp;&nbsp;용
-                    </label>
-                  </th>
-                  <td colspan="3">
-                    <div class="textarea-box">
-                      <textarea id="ordtext" style="height: 300px"></textarea>
-                      <!--<p class="text-count" id="text-count">0/100</p>-->
-                    </div>
-                  </td>
-                </tr>
-                </tbody>
-              </table>
-              <a style="color: red;margin-top: 4px;margin-left: 5px;">&nbsp;&nbsp;(첨부파일 및 이미지는 파일첨부를 이용하여 주세요)</a>
-            </div>
+          <div class="table-wrap">
+            <table class="write-table">
+              <caption>요청사항</caption>
+              <tbody>
+              <tr style="align-items: center">
+                <th>
+                  <label for="ordtext">
+                    내&nbsp;&nbsp;용
+                  </label>
+                </th>
+                <td colspan="3">
+                  <div class="textarea-box">
+                    <textarea id="ordtext" style="height: 300px"></textarea>
+                    <!--<p class="text-count" id="text-count">0/100</p>-->
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+            <a style="color: red;margin-top: 4px;margin-left: 5px;">&nbsp;&nbsp;(첨부파일 및 이미지는 파일첨부를 이용하여 주세요)</a>
+          </div>
         </div>
         <div class="popup-button">
           <button type="button" onclick="endtext('popup2')" class="btn-navy">작성완료</button>
@@ -661,6 +668,7 @@
 
 <th:block layout:fragment="scripts">
   <th:block th:replace="/common/popup_company :: popup_company"></th:block>
+  <th:block th:replace="/common/multiform_material :: multiform_material"></th:block>
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <script>
     //본 예제에서는 도로명 주소 표기 방식에 대한 법령에 따라, 내려오는 데이터를 조합하여 올바른 주소를 구성하는 방법을 설명합니다.
@@ -714,7 +722,7 @@
   </script>
   <script type="text/javascript">
     const ProductInputHandler = {
-      bind: function ({ rowSelector, $content, tryShowBaljuPrice }) {
+      bind: function ({rowSelector, $content, tryShowBaljuPrice}) {
         const $row = $(rowSelector); // jQuery 객체로 변환 – 안전함
 
         const $unit = $row.find('input[name^="BaljuUnitPrice"]');
@@ -736,7 +744,58 @@
           }
         });
 
+        // ✅ [1] 부품명 Enter 키 처리
+        const $pnameInput = $row.find('input[name^="pname"]');
+        $pnameInput.off('keydown').on('keydown', function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            e.stopPropagation();
 
+            const spjangcd = sessionStorage.getItem('spjangcd');
+
+            $.get('/api/popup/search_material', {
+              material_group: '21',
+              material_type: 'product,sangpum',
+              keyword: '',
+              spjangcd: spjangcd
+            }, function (res) {
+              console.log('📦 응답:', res);
+              if (res.data?.length === 1) {
+                setResult(res.data[0]);
+              } else {
+                showPopup();
+              }
+            });
+          }
+        });
+
+        // ✅ [2] 검색 버튼 클릭 처리
+        $row.find('#btnpartSearch').off('click').on('click', function () {
+          showPopup();
+        });
+
+        // ✅ [3] 팝업 열기 함수
+        function showPopup() {
+          const pop = new PopMatComponent();
+          pop.material_type = 'product,sangpum';
+          pop.material_group = 21;
+          pop.show(setResult, $pnameInput.val());
+
+          setTimeout(() => {
+            if (pop.$keyword) {
+              pop.$keyword.val($pnameInput.val());
+              if (pop.$cboMaterialGrp) pop.$cboMaterialGrp.val('');
+              pop.searchDataBind();
+            }
+          }, 100);
+        }
+
+        // ✅ [4] 검색 결과 설정 함수
+        function setResult(item) {
+          $pnameInput.val(item.Name);
+          $row.find('input[name^="Material_id"]').val(item.id);
+          $row.find('input[name^="product_code"]').val(item.Code);
+        }
       }
     };//ProductInputHandler
 
@@ -748,13 +807,19 @@
         this.$btnAddNew = $('#btnAddNew');
         this.spjangcd = $('#spjangcdHidden');
         this.viewData = new wijmo.collections.CollectionView();
+        this.url = '/api/request/request';
         this.init();
       }
 
       init() {
         let _this = this;
         let $content = $('#tab1');
-        // 발주등록
+
+        $('#addModel').click(function (){
+
+        });
+
+        // 주문 등록
         this.$btnAddNew.click(function () {
           let defaultData = {
             spjangcd: _this.spjangcd.val()
@@ -824,9 +889,12 @@
                 $(this).prop('checked', false);
               } else {
                 $(this).val('');
+                $(this).val('');
               }
             });
-            $targetRow.find('select').val('');
+            $targetRow.find('select').each(function () {
+              $(this).val('j01').trigger('change');
+            });
           }
         });
 
@@ -834,6 +902,118 @@
         for (let i = 0; i < 3; i++) {
           this.addDetailRow();
         }
+
+        $('#btnCompanySearch').click(function () {
+          let poppage = new PopCompComponent();
+          let $poppage = $(poppage);
+          let searchcallback = function (items) {
+            console.log('items : ', items);
+            document.getElementById('cboCompany').value = items.compcode;
+            document.getElementById('CompanyName').value = items.compname;
+            document.getElementById('cboCompanyHidden').value = items.id;
+
+            AjaxUtil.getAsyncData('/api/definition/company/detail', { company_id: items.id }, function (result) {
+              if (result.success) {
+                const data = result.data;
+                $('#address1').val(data.address);              // 도로명 주소
+              }
+            });
+          };
+          poppage.show(searchcallback);
+        });
+
+
+        $('#btnProductSearch').click(function () {
+          let poppage = new PopMatComponent();
+          let $poppage = $(poppage);
+          poppage.material_group = 20;
+
+          let searchcallback = function (items) {
+            console.log('items : ', items);
+            document.getElementById('product_code').value = items.Code;
+            document.getElementById('Material_id').value = items.id;
+            document.getElementById('modeltxt').value = items.Name;
+
+            // bom 리스트가지고와서 동적행에
+            AjaxUtil.getAsyncData('/api/request/request2/bomList', { Material_id: items.id }, function (result) {
+              if (result.success && result.data.length > 0) {
+                const bomList = result.data;
+                const $tbody = $('#OrderRequestForm tbody');
+                const $template = $tbody.find('.item-template-row');
+
+                $tbody.find('tr').not('.item-template-row, .sum-row').remove();
+
+                for (let i = 0; i < bomList.length; i++) {
+                  const bom = bomList[i];
+                  const $row = $template.clone().removeClass('item-template-row').show();
+
+                  // 바인딩
+                  $row.find('input[name="txtModelNm"]').val(items.Name); // 상단 모델명
+                  $row.find('input[name="pname"]').val(bom.mat_name);   //부품명
+                  $row.find('input[name="remark"]').val(bom.Description || ''); //비고
+                  $row.find('select[name="jobflag_"]').val('j01');  //구분
+
+                  $row.find('input[name="setamt"]').val(bom.quantity);  //단가
+                  $row.find('input[name="SetAmtUnitPrice"]').val(bom.bom_ratio);  //세트단가
+                  $row.find('input[name="saleamt"]').val(''); //판매단가
+                  $row.find('input[name="QTY"]').val(bom.quantity);  //수량
+                  $row.find('input[name="uamt"]').val(); // 제품가
+                  $row.find('input[name="balju_StateName"]').val(''); //단가이력
+                  $row.find('input[name="Material_id"]').val(bom.mat_id);
+
+                  // 테이블 삽입
+                  $template.before($row);
+
+                  // ✅ 여기서 단가 자동 조회
+                  tryShowBaljuPrice($row);
+                }
+
+                updateOrderSummary();
+              }
+            });
+          };
+          poppage.show(searchcallback);
+        });
+
+        // tab2
+        this.grid = new wijmo.grid.FlexGrid('#theGrid', {
+          selectionMode: wijmo.grid.SelectionMode.Row,
+          headersVisibility: wijmo.grid.HeadersVisibility.Column,
+          autoGenerateColumns: false,
+          showMarquee: true,
+          isReadOnly: true,
+          formatItem: (sender, e) => {
+            if (e.panel.cellType === wijmo.grid.CellType.ColumnHeader) {
+              e.cell.style.textAlign = 'center';
+            }
+          },
+          columns: [
+            {binding: '', header: 'bh_id', width: 150, visible: false},
+            {binding: '', header: '진행구분', width: 150},
+            {binding: '', header: '업체명', width: 70, align: 'center'},
+            {binding: '', header: '주문일자', width: 120, align: 'center'},
+            {binding: '', header: '제목', width: 120},
+            {binding: '', header: '품목', width: 100},
+            {binding: '', header: '규격', width: 150},
+            {binding: '', header: '수량', width: 60, align: 'right', format: 'n0'},
+            {binding: '', header: '단가', width: 100, align: 'right'},
+            {binding: '', header: '금액', width: 100, align: 'right'},
+            {binding: '', header: '요청사항', width: 100, align: 'center'},
+            {binding: '', header: '납품 희망일', width: 120, align: 'center'}
+          ],
+          itemsSource: this.viewData, // 데이터를 설정할 배열
+        });
+
+        new FlexGridContextMenu(this.grid);
+        this.grid.downloadFileName = '발주 등록';
+
+        this.grid.hostElement.addEventListener('dblclick', function (e) {
+          let items = _this.grid.selectedItems;
+          if (items.length === 0) {
+            return false;
+          }
+          _this.$btnEdit.trigger('click');
+        });
 
       }//init
       addDetailRow() {
@@ -860,16 +1040,38 @@
         this.itemIndex++;
       }
 
-      save(defaultData){
+      save(defaultData) {
 
       }//save
 
-      deleteSujuData(id, state){
+      deleteSujuData(id, state) {
 
       }//deleteSujuData
 
-    }
+      searchTab2Data() {
+        let _this = this;
+        let date_kind = $('#cboDateKind').val();  //발주구분
+        let start = $('#srchStartDt').val();  //시작일
+        let end = $('#srchEndDt').val();      //종료일
+        let url = this.url + '/read';
 
+        let data = {
+          'date_kind': date_kind,
+          'start': start,
+          'end': end,
+          'action': 'read',
+          spjangcd: this.spjangcd.val()
+        };
+
+        let fnsuccess = function (result) {
+          if (result != null) {
+            _this.viewData.sourceCollection = result.data;
+          }
+        };
+        AjaxUtil.getAsyncData(url, data, fnsuccess);
+      }
+
+    }
     // 접수날 onchange 휴일 미포함 +3일 납품일자 표시
     function getHoliday() {
       $.ajax({
@@ -908,6 +1110,7 @@
         }
       });
     }
+
     // YYYYMMDD → Date 객체 변환
     function parseDate(dateStr) {
       let year = parseInt(dateStr.substring(0, 4), 10);
@@ -949,6 +1152,7 @@
 
       return isNaN(date.getDay()) ? "" : days[date.getDay()];
     }
+
     // 날짜 변경 시 요일 업데이트
     function updateDayDisplay(inputId, outputId) {
       const input = document.getElementById(inputId);
@@ -965,6 +1169,70 @@
       input.addEventListener("change", setDay);
       setDay();  // 초기 실행
     }
+    function updateOrderSummary() {
+      let sumSetAmt = 0;
+      let sumSaleAmt = 0;
+      let sumQty = 0;
+      let sumUamt = 0;
+
+      $('#OrderRequestForm tbody tr').each(function () {
+        const $row = $(this);
+
+        // 템플릿 행 또는 합계 행은 제외
+        if ($row.hasClass('item-template-row') || $row.hasClass('sum-row')) return;
+
+        // 값 추출 + 쉼표 제거
+        const setamtVal = $row.find('input[name="setamt"]').val()?.replace(/,/g, '') || '';
+        const saleamtVal = $row.find('input[name="saleamt"]').val()?.replace(/,/g, '') || '';
+        const qtyVal = $row.find('input[name="QTY"]').val()?.replace(/,/g, '') || '';
+        const uamtVal = $row.find('input[name="uamt"]').val()?.replace(/,/g, '') || '';
+
+        // 값이 모두 비어 있으면 무시
+        const isEmptyRow = [setamtVal, saleamtVal, qtyVal, uamtVal].every(v => v.trim() === '');
+        if (isEmptyRow) return;
+
+        // 숫자로 변환
+        const setamt = parseFloat(setamtVal) || 0;
+        const saleamt = parseFloat(saleamtVal) || 0;
+        const qty = parseFloat(qtyVal) || 0;
+        const uamt = parseFloat(uamtVal) || 0;
+
+        // 합계 누적
+        sumSetAmt += setamt;
+        sumSaleAmt += saleamt;
+        sumQty += qty;
+        sumUamt += uamt;
+      });
+
+      // 합계 출력
+      $('#sum_setamt').val(sumSetAmt.toLocaleString());
+      $('#sum_saleamt').val(sumSaleAmt.toLocaleString());
+      $('#sum_qty').val(sumQty.toLocaleString());
+      $('#sum_uamt').val(sumUamt.toLocaleString());
+    }
+
+    function updateOrderSum() {
+      let sumSetAmt = 0, sumSaleAmt = 0, sumQty = 0, sumUamt = 0;
+
+      $('#OrderRequestForm tbody tr').not('.item-template-row, .sum-row').each(function () {
+        const $row = $(this);
+
+        const setamt = parseFloat(($row.find('input[name="setamt"]').val() || '').replace(/,/g, '')) || 0;
+        const saleamt = parseFloat(($row.find('input[name="saleamt"]').val() || '').replace(/,/g, '')) || 0;
+        const qty = parseFloat(($row.find('input[name="QTY"]').val() || '').replace(/,/g, '')) || 0;
+        const uamt = parseFloat(($row.find('input[name="uamt"]').val() || '').replace(/,/g, '')) || 0;
+
+        sumSetAmt += setamt;
+        sumSaleAmt += saleamt;
+        sumQty += qty;
+        sumUamt += uamt;
+      });
+
+      $('#sum_setamt').val(sumSetAmt.toLocaleString());
+      $('#sum_saleamt').val(sumSaleAmt.toLocaleString());
+      $('#sum_qty').val(sumQty.toLocaleString());
+      $('#sum_uamt').val(sumUamt.toLocaleString());
+    }
 
     function updateSummary() {
       let setamtSum = 0;
@@ -975,19 +1243,14 @@
       $('#OrderRequestForm tbody tr').each(function () {
         const $row = $(this);
 
-        //if ($row.hasClass('item-template-row')) return;
+        const setamtVal = $row.find('input[name="setamt"]').val()?.replace(/,/g, '') || '';
+        const saleamtVal = $row.find('input[name="saleamt"]').val()?.replace(/,/g, '') || '';
+        const qtyVal = $row.find('input[name="QTY"]').val()?.replace(/,/g, '') || '';
+        const uamtVal = $row.find('input[name="uamt"]').val()?.replace(/,/g, '') || '';
 
-        // 각 값 불러오기
-        const setamtVal = $row.find('input[name="setamt"]').val();
-        const saleamtVal = $row.find('input[name="saleamt"]').val();
-        const qtyVal = $row.find('input[name="QTY"]').val();
-        const uamtVal = $row.find('input[name="uamt"]').val();
-
-        // ✅ 모든 주요 필드가 비어 있다면 합계 계산에서 제외
-        const isEmptyRow = [setamtVal, saleamtVal, qtyVal, uamtVal].every(v => !v || v.trim() === '');
+        const isEmptyRow = [setamtVal, saleamtVal, qtyVal, uamtVal].every(v => v.trim() === '');
         if (isEmptyRow) return;
 
-        // 숫자 추출 및 합계
         const setamt = parseFloat(setamtVal) || 0;
         const saleamt = parseFloat(saleamtVal) || 0;
         const qty = parseFloat(qtyVal) || 0;
@@ -1005,11 +1268,52 @@
       $('#sum_uamt').val(uamtSum.toLocaleString());
     }
 
+    //단가검색
+    function tryShowBaljuPrice(row) {
+      const $unitPrice = row.find('input[name^="BaljuUnitPrice_"]');
+      const $supply = row.find('input[name^="BaljuPrice_"]');
+      const $vat = row.find('input[name^="BaljuVat_"]');
+
+      const mat_pk = row.find('input[name^="Material_id_"]').val();
+      const company_id = $('#cboCompany').val();
+      const JumunDate = $('#JumunDate').val();
+
+      console.log('[단가 조회] 호출됨', { mat_pk, company_id, JumunDate });
+
+      if (!mat_pk || !company_id || !JumunDate) {
+        console.warn('[단가 조회] 필수값 누락으로 요청 취소');
+        return;
+      }
+
+      AjaxUtil.getAsyncData('/api/balju/balju_order/price', {
+        mat_pk, company_id, JumunDate
+      }, function (result) {
+        console.log('[단가 조회 결과]', result);
+
+        if (result?.data?.length) {
+          const item = result.data[0];
+          const unitPrice = item.UnitPrice || 0;
+          $unitPrice.val(unitPrice);
+          $supply.val(unitPrice);
+          $vat.val('');
+
+          row.find('input[name^="originalUnitPrice_"]').val(unitPrice);
+
+        } else {
+          $unitPrice.val('');
+          $supply.val('');
+          $vat.val('');
+          row.find('input[name^="originalUnitPrice_"]').val('');
+        }
+      });
+    }
+
     function formatNumberInput(inputValue, targetSelector) {
       let cleaned = inputValue.replace(/[^0-9]/g, '').replace(/,/g, '');// 숫자만 남기기
       let formatted = cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ',');// 쉼표 넣기
       $(targetSelector).val(formatted);// 값 넣기
     }
+
 
     let page = null;
 
@@ -1025,7 +1329,7 @@
       $('#tab1').on('keydown', 'input, select, textarea', function (e) {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();         // 기본 제출 방지
-          e.stopPropagation();        // 다른 핸들러로 이벤트 전파 방지 (추가)
+          //e.stopPropagation();        // 다른 핸들러로 이벤트 전파 방지 (추가)
 
           const $inputs = $('#tab1')
             .find('input:visible, select:visible, textarea:visible')
@@ -1039,24 +1343,13 @@
         }
       });
 
-      $('#btnCompanySearch').click(function () {
-        let poppage = new PopCompComponent();
-        let $poppage = $(poppage);
-        let searchcallback = function (items) {
-          console.log('items : ',items);
-          document.getElementById('cboCompany').value = items.compcode;
-          document.getElementById('CompanyName').value = items.compname;
-          document.getElementById('cboCompanyHidden').value = items.id;
-        };
-
-        poppage.show(searchcallback);
-      });
       $('#cboCompany').on('input', function () {
         const val = $(this).val();
         if (val === '') {
           $('#cboCompanyHidden').val('');
         }
       });
+
       // .btn-clear 클릭 후 input 이벤트 강제 발생
       $(document).on('click', '.btn-clear', function () {
         const $input = $(this).siblings('input[type="text"]');
@@ -1071,37 +1364,44 @@
         document.getElementById('cboCompanyHidden').value = '';
       });
 
-      $('#btnModelSearch').on('input', function (){
-        const val = $(this).val();
-        if(val === ''){
-
-        }
-      });
-      $('#OrderRequestForm').on('input', 'input[name="QTY"], input[name="saleamt"]', function () {
-        this.value = this.value.replace(/[^0-9.]/g, ''); // 실시간 숫자만 입력되게
+      $('#OrderRequestForm').on('input', 'input[name^="setamt"], input[name^="QTY"], input[name^="saleamt"], input[name^="uamt"]', function () {
+        formatNumberInput(this.value, this);  // 쉼표 자동 입력
       });
 
-      $('#OrderRequestForm').on('input', 'input[name="setamt"], input[name="saleamt"], input[name="QTY"], input[name="uamt"]', function () {
-        updateSummary();
+      $('#OrderRequestForm').on('input', 'input[name^="setamt"], input[name^="saleamt"], input[name^="QTY"], input[name^="uamt"]', function () {
+        updateOrderSummary();
       });
 
       // 행 추가/삭제 후에도 갱신
       $('#OrderRequestForm').on('click', '#addRemark, .btn.del', function () {
-        setTimeout(updateSummary, 50);
+        requestAnimationFrame(updateOrderSummary);
       });
-      $('#OrderRequestForm').on('input', 'input[name="saleamt"], input[name="QTY"]', function () {
+
+      $('#OrderRequestForm').on('input', 'input[name^="saleamt"], input[name^="QTY"]', function () {
         const $row = $(this).closest('tr');
 
-        // 숫자만 추출
-        const rawSaleAmt = $row.find('input[name="saleamt"]').val().replace(/[^0-9.]/g, '');
-        const rawQty = $row.find('input[name="QTY"]').val().replace(/[^0-9.]/g, '');
+        const rawSaleAmt = $row.find('input[name^="saleamt"]').val().replace(/[^0-9.]/g, '');
+        const rawQty = $row.find('input[name^="QTY"]').val().replace(/[^0-9.]/g, '');
 
         const saleamt = parseFloat(rawSaleAmt) || 0;
         const qty = parseFloat(rawQty) || 0;
 
-        $row.find('input[name="uamt"]').val((saleamt * qty).toFixed(0));
+        $row.find('input[name^="uamt"]').val((saleamt * qty).toFixed(0));
 
-        updateSummary();
+        updateOrderSummary();
+      });
+
+      $(document).on('click', '.in_btn', function () {
+        let $row = $(this).closest('tr');
+        let $pnameInput = $row.find('input[name="pname"]');
+        let keyword = $pnameInput.val();
+
+        const pop = new PopMatComponent();
+        pop.material_type = 'product';
+        pop.show(function (item) {
+          $row.find('input[name="pname"]').val(item.Name);
+          $row.find('input[name="Material_id"]').val(item.id);
+        }, keyword);
       });
 
 
@@ -1123,6 +1423,10 @@
 
       // 납기일 계산 및 요일 표시
       getHoliday();
+
+      $('#btnTab2Search').click(function (e) {
+        page.searchTab2Data();
+      });
 
     });
 

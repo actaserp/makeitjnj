@@ -225,23 +225,25 @@ public class BaljuOrderService {
     dicParam.addValue("ApplyStartDate", jumunDate);
 
     String sql = """
-        select mcu.id 
-                 , mcu."Company_id"
-                 , c."Name" as "CompanyName"
-                 , mcu."UnitPrice" 
-                 , mcu."FormerUnitPrice" 
-                 , mcu."ApplyStartDate"
-                 , mcu."ApplyEndDate"
-                 , mcu."ChangeDate"
-                 , mcu."ChangerName" 
-                 from mat_comp_uprice mcu 
-                 inner join company c on c.id = mcu."Company_id"
-                 where 1=1
-                 and mcu."Material_id" = :mat_pk
-                 and mcu."Company_id" = :company_id
-                 and to_date(:ApplyStartDate, 'YYYY-MM-DD') between mcu."ApplyStartDate"::date and mcu."ApplyEndDate"::date
-                 and mcu."Type" = '01'
-                 order by c."Name", mcu."ApplyStartDate" desc
+        SELECT
+            mcu.id,
+            mcu.Company_id,
+            c.Name AS CompanyName,
+            mcu.UnitPrice,
+            mcu.FormerUnitPrice,
+            mcu.ApplyStartDate,
+            mcu.ApplyEndDate,
+            mcu.ChangeDate,
+            mcu.ChangerName
+        FROM mat_comp_uprice mcu
+        INNER JOIN company c ON c.id = mcu.Company_id
+        WHERE 1 = 1
+          AND mcu.Material_id = :mat_pk
+          AND mcu.Company_id = :company_id
+          AND CONVERT(DATE, :ApplyStartDate, 120) BETWEEN CAST(mcu.ApplyStartDate AS DATE) 
+          AND CAST(mcu.ApplyEndDate AS DATE)
+          AND mcu.Type = '01'
+        ORDER BY c.Name, mcu.ApplyStartDate DESC
         """;
 
 //    log.info("발주 단가 데이터 SQL: {}", sql);

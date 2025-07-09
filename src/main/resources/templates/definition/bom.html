@@ -392,7 +392,7 @@
 
     <!-- 구성품목 등록 스크립트 -->
     <script type="text/x-tmpl" id="bomMaterialTemplate">
-        <div class="content_wrap popup">
+        <div class="content_wrap popup" style="max-height: 630px; overflow-y: auto;">
             <!--<header>
                 <h4 id="popTitle">
                 {% if (o.id!='') { %}
@@ -404,9 +404,8 @@
                 <div class="popup_close_box"><button class="btn_popup_close" id="modal-close"><i class="fas fa-times"></i></button></div>
             </header>-->
 
-
             <div class="table-wrap">
-           <form id="materialForm">
+           <form id="materialForm" >
                 <table class="write-table">
                     <input type="hidden" id="BOM_id" name="BOM_id" value="{%=o.BOM_id%}">
                     <input type="hidden" id="id" name="id" value="{%=o.id%}">
@@ -600,10 +599,10 @@
                         {binding: 'mat_name', header: '품목명', width: 350, align: 'left'},
                         {binding: 'Amount', header: '필요수량', width: 120, align: 'right'},
                         {binding: 'unit', header: '단위', width: 100, align: 'center'},
-                        {binding: 'unit', header: '외주단가', width: 100, align: 'center'},
+                     /*   {binding: 'unit', header: '외주단가', width: 100, align: 'center'},
                         {binding: 'unit', header: '납품단가', width: 100, align: 'center'},
                         {binding: 'unit', header: '손익금액', width: 100, align: 'center'},
-                        {binding: 'unit', header: '수익율', width: 100, align: 'center'},
+                        {binding: 'unit', header: '수익율', width: 100, align: 'center'},*/
                         {
                             binding: 'Description',
                             header: '비고',
@@ -867,7 +866,7 @@
                 } else {
                     modalContainer = new PopupDraggable('구성 품목 수정');
                 }
-                modalContainer.open({width: 1025, height: 750, $content});
+                modalContainer.open({width: 1025, height: 650, $content});
                 /*modalContainer.open({width: 600, height: 540, $content});*/
 
                 let $MaterialName = $content.find('#MaterialName');
@@ -918,50 +917,6 @@
                     });
                 });
 
-
-                /*let target = $content.find('[data-ax5grid="material-search-grid"]');
-                let config = {
-                    target: target,
-                    sortable: true,
-                    frozenColumnIndex: 0, // 열 고정
-                    frozenRowIndex: 0,    // 행 고정
-                    showLineNumber: false, // 열의 번호 보이기 여부
-                    showRowSelector: false,  // checkbox(선택) 보이기 여부
-                    multipleSelect: false, // 여러행 선택 가능 여부 (false시 단독 선택)
-                    sortable: true, // 모든 컬럼에 정렬 아이콘 표시 (columns에서 컬럼별 소팅여부 재설정 가능)
-                    multiSort: true, // 다중 정렬 여부
-                    header: {
-                        align: 'center',  // 헤더의 기본 정렬
-                        columnHeight: 30  // 헤더 높이
-                    },
-                    body: {
-                        columnHeight: 25, // body의 기본 높이
-                        onClick: function () {
-                            $matSearchGrid.select(this.dindex);
-                        },
-                        onDBLClick: function () {
-                            $matSearchGrid.select(this.dindex);
-                            //_this.selectData(this.item);
-                            selectedItem = this.item;
-                            $Material_id.val(selectedItem.id);
-                            $MaterialName.val(selectedItem.Name);
-                        },
-                    },
-                    page: {
-                        display: true,  // 페이징 보이기 여부
-                        statusDisplay: true,
-                    },
-                    columns: [
-                        {binding: 'MaterialTypeName', header: '품목구분', width: 100, align: 'left', sortable: false},
-                        {binding: 'group_name', header: '품목그룹', width: 100, align: 'left', sortable: false},
-                        {binding: 'Code', header: '품목코드', width: 100, align: 'center', sortable: false},
-                        {binding: 'Name', header: '품목명', width: 200, align: 'left', sortable: false},
-
-                        //{ binding: 'Description', header: '설명', width: 250, align: 'center', sortable: false },
-                    ]
-                };
-                $matSearchGrid = new ax5.ui.grid(config);*/
-
                 let $popMaterialType = $content.find('#popMaterialType');
                 let $popMaterialGroup = $content.find('#popMaterialGroup');
                 let $keyword = $content.find('#keyword');
@@ -976,7 +931,7 @@
                     AjaxUtil.fillSelectOptions($popMaterialGroup, 'material_group', 'all', '', $popMaterialType.val());
                 });
 
-// 검색 버튼 클릭 이벤트
+                // 검색 버튼 클릭 이벤트
                 $content.find('#btnMatSearch').click(function () {
                     let matType = $popMaterialType.val();
                     let matGroup = $popMaterialGroup.val();
@@ -1000,43 +955,12 @@
                     selectedItem = null;
                 });
 
-                // 검색버튼 클릭
-                /*$btnMatSearch.click(function (e) {
-                    let matType = $popMaterialType.val();
-                    let matGroup = $popMaterialGroup.val();
-                    let keyword = $keyword.val();
-                    let url = '/api/popup/search_material';
-                    let data = {
-                        'material_type': matType,
-                        'material_group': matGroup,
-                        'keyword': keyword,
-                    };
-                    let fncallback = function (result) {
-                        if (result.success) {
-                            let count = result.data.length;
-                            $matSearchGrid.setData({
-                                list: result.data,
-                                page: {
-                                    display: true,
-                                    totalElements: count,
-                                }
-                            });
-                        }
-                    };
-                    AjaxUtil.getAsyncData(url, data, fncallback);
-
-                    //검색버튼을 누르고 초기화한다
-                    selectedItem = null;
-
-                });*/
-
                 $keyword.keydown(function (e) {
                     if (e.key === 'Enter') {
                         //alert('enter');
                         $btnMatSearch.trigger('click');
                     }
                 });
-
 
 
                 /*$content.find('#btnBomMaterialSave').on('click', function () {

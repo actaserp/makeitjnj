@@ -73,7 +73,6 @@
             let _this = this;
             let config = {
                 target: $('[data-ax5grid="material-grid"]'),
-                sortable: true,
                 frozenColumnIndex: 0, // 열 고정
                 frozenRowIndex: 0,    // 행 고정
                 showLineNumber: false, // 열의 번호 보이기 여부
@@ -141,6 +140,7 @@
             let ret_data = { 'Code': item.Code, 'Name': item.Name, 'MaterialGroup_id': item.MaterialGroup_id };
             parent[param.callBack](ret_data);
         }
+
 
     }
 

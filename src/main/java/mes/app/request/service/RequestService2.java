@@ -1,4 +1,4 @@
-package mes.app.request.request.service;
+package mes.app.request.service;
 
 import lombok.extern.slf4j.Slf4j;
 import mes.domain.entity.actasEntity.TB_DA006W;
@@ -20,7 +20,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class RequestService {
+public class RequestService2 {
 
     @Autowired
     SqlRunner sqlRunner;
@@ -481,4 +481,6 @@ public class RequestService {
         List<Map<String, Object>> items = this.sqlRunner.getRows(sql, dicParam);
         return items;
     }
+
+
 }

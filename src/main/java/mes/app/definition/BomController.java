@@ -236,8 +236,8 @@ public class BomController {
 		MapSqlParameterSource paramMap = new MapSqlParameterSource();
 		paramMap.addValue("bom_id", id);
 		result.data = this.sqlRunner.getRows(sql, paramMap);
-		log.info("🔍 [getBomCompList List] 실행 SQL: {}", sql);
-		log.info("🔍 [getBomCompList List] 파라미터: {}", paramMap.getValues());
+//		log.info("🔍 [getBomCompList List] 실행 SQL: {}", sql);
+//		log.info("🔍 [getBomCompList List] 파라미터: {}", paramMap.getValues());
 		return result;
 	}
 
