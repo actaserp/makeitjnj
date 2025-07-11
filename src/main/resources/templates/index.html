@@ -715,8 +715,10 @@
 <script type="text/javascript">
     // 날씨 정보
     fetchWeatherData();
-    // 1시간마다 날씨 정보 자동 갱신
-    setInterval(fetchWeatherData, 3600000);
+    // 30초마다 날씨 정보 자동 갱신 (테스트용)
+    // setInterval(fetchWeatherData, 30000);
+    // 30분마다 날씨 정보 자동 갱신
+    setInterval(fetchWeatherData, 1800000);
 
     function sseConnect(){
 

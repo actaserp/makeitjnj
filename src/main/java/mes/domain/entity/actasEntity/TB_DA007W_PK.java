@@ -5,11 +5,10 @@ import lombok.*;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
-@Setter
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
+@Data
 public class TB_DA007W_PK implements Serializable {
 
     private String custcd;      // 회사코드

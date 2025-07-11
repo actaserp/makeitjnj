@@ -1,110 +1,148 @@
 package mes.domain.entity.actasEntity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-@Getter
+import javax.persistence.*;
+import java.math.BigDecimal;
+
 @Entity
-@Setter
 @Table(name = "TB_DA006W") //WEB주문서HEAD정보 table
+@Data
 @NoArgsConstructor
 public class TB_DA006W {
-
     @EmbeddedId
-    private TB_DA006W_PK pk;
+    private TB_DA006W_PK id;
 
-    @Column(name = "\"cltcd\"")  // 거래처코드
-    String cltcd;
+    // 5 거래처코드
+    @Column(name = "cltcd")
+    private String cltcd;
 
-    @Column(name = "\"cltnm\"")  // 거래처명
-    String cltnm;
+    // 6 거래처명
+    @Column(name = "cltnm")
+    private String cltnm;
 
-    @Column(name = "\"saupnum\"")  // 사업자번호
-    String saupnum;
+    // 7 사업자번호
+    @Column(name = "saupnum")
+    private String saupnum;
 
-    @Column(name = "\"cltzipcd\"")  // 업체우편번호
-    String cltzipcd;
+    // 8 업체우편번호
+    @Column(name = "cltzipcd")
+    private String cltzipcd;
 
-    @Column(name = "\"cltaddr\"")  // 업체주소
-    String cltaddr;
+    // 9 업체주소
+    @Column(name = "cltaddr")
+    private String cltaddr;
 
-    @Column(name = "\"cltaddr02\"") // 업체 상세주소
-    String cltaddr02;
+    // 9 상세주소
+    @Column(name = "cltaddr02")
+    private String cltaddr02;
 
-    @Column(name = "\"delzipcd\"")  //
-    String delzipcd;
+    // 10 납품우편번호
+    @Column(name = "delzipcd")
+    private String delzipcd;
 
-    @Column(name = "\"deladdr\"")  // 납품주소
-    String deladdr;
+    // 11 납품주소
+    @Column(name = "deladdr")
+    private String deladdr;
 
-    @Column(name = "\"deldate\"")  // 납기희망일
-    String deldate;
+    // 12 납기희망일
+    @Column(name = "deldate")
+    private String deldate;
 
-    @Column(name = "\"perid\"")  // 담당자
-    String perid;
+    // 13 담당자
+    @Column(name = "perid")
+    private String perid;
 
-    @Column(name = "\"divicd\"")  //
-    String divicd;
+    // 14 부서코드
+    @Column(name = "divicd")
+    private String divicd;
 
-    @Column(name = "\"domcls\"")  //
-    String domcls;
+    // 15 내수구분
+    @Column(name = "domcls")
+    private String domcls;
 
-    @Column(name = "\"moncls\"")  //
-    String moncls;
+    // 16 화폐단위
+    @Column(name = "moncls")
+    private String moncls;
 
-    @Column(name = "\"monrate\"")  //
-    String monrate;
+    // 17 환율
+    @Column(name = "monrate", precision = 18, scale = 4)
+    private BigDecimal monrate;
 
-    @Column(name = "\"remark\"")
-    String remark;
+    // 18 제목
+    @Lob
+    @Column(name = "remark")
+    private String remark;
 
-    @Column(name = "\"operid\"")
-    String operid;
+    // 19 발주담당
+    @Column(name = "operid")
+    private String operid;
 
-    @Column(name = "\"dperid\"")
-    String dperid;
+    // 20 납품담당
+    @Column(name = "dperid")
+    private String dperid;
 
-    @Column(name = "\"sperid\"")
-    String sperid;
+    // 21 확인자
+    @Column(name = "sperid")
+    private String sperid;
 
-    @Column(name = "\"ordflag\"")
-    String ordflag = "0";
+    // 22 상태구분
+    @Column(name = "ordflag")
+    private String ordflag;
 
-    @Column(name = "\"egrb\"")
-    String egrb;
+    // 23 용도별
+    @Column(name = "egrb")
+    private String egrb;
 
-    @Column(name = "\"fgrb\"")
-    String fgrb;
+    // 24 모델명
+    @Column(name = "modeltxt")
+    private String modeltxt;
 
-    @Column(name = "\"panel_ht\"")
-    String panel_ht;
+    // 25 공급기준
+    @Column(name = "setsamt")
+    private Long setsamt;
 
-    @Column(name = "\"panel_hw\"")
-    String panel_hw;
+    // 26 수량
+    @Column(name = "setqty")
+    private Long setqty;
 
-    @Column(name = "\"panel_hl\"")
-    String panel_hl;
+    // 27 공급계
+    @Column(name = "amount")
+    private Long amount;
 
-    @Column(name = "\"panel_hh\"")
-    String panel_hh;
+    // 28 외주계
+    @Column(name = "outamt")
+    private Long outamt;
 
-    @Column(name = "\"indate\"")
-    String indate;
+    // 29 이윤
+    @Column(name = "eyunamt")
+    private Long eyunamt;
 
-    @Column(name = "\"inperid\"")
-    String inperid;
+    // 30 개당이윤
+    @Column(name = "pereyunamt")
+    private Long pereyunamt;
 
-    @Column(name = "\"telno\"")
-    String telno;
+    // 31 이윤율
+    @Column(name = "eyunyul")
+    private Double eyunyul;
 
-    @Column(name = "\"adflag\"")  // 관리자 알림확인 칼럼
-    String adflag = "0";
+    // 32 전체이윤
+    @Column(name = "toteyunamt")
+    private Long toteyunamt;
 
-    @Column(name = "\"userflag\"")  // 일반거래처 알림확인 칼럼
-    String userflag = "1";
+    // 33 프로젝트번호
+    @Column(name = "projectno")
+    private String projectno;
+
+    // 34 입력일자
+    @Column(name = "indate")
+    private String indate;
+
+    // 35 입력자
+    @Column(name = "inperid", length = 10)
+    private String inperid;
+
+    // 36 연락처
+    @Column(name = "telno", length = 20)
+    private String telno;
 }

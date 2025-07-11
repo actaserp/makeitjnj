@@ -17,4 +17,7 @@ public interface TB_DA006WRepository extends JpaRepository<TB_DA006W,String> {
                       @Param("spjangcd") String spjangcd,
                       @Param("reqdate") String reqdate);
 
+  String getNextReqnum(String custcd, String spjangcd, String reqdate);
+
+
 }

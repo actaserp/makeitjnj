@@ -21,4 +21,6 @@ public interface TB_DA007WRepository extends JpaRepository<TB_DA007W,String> {
     List<String> findReqseq(@Param("reqnum") String reqnum
                             , @Param("custcd") String custcd
                             , @Param("spjangcd") String spjangcd);
+
+    void deleteByPk(String custcd, String spjangcd, String reqdate, String reqnum);
 }

@@ -144,7 +144,7 @@
             <div class="button-wrap">
               <ul>
                 <li>
-                  <a id="newdataBtn" class="btn btn-excell" title="신규등록" onclick="resetFormFields()">
+                  <a id="newdataBtn" class="btn btn-excell" title="신규등록">
                     <img src="/images/icon/ico-plus.svg" alt="등록 아이콘">
                     신규등록
                   </a>
@@ -162,7 +162,7 @@
                   </a>
                 </li>
                 <li>
-                  <a class="btn btn-edit" id="btnAddNew" title="저장">
+                  <a class="btn btn-edit" id="btnSave" title="저장">
                     <img src="/images/icon/ico-save.svg" alt="저장 아이콘">
                     저장
                   </a>
@@ -173,8 +173,6 @@
           <div class="table-wrap">
             <table class="write-table">
               <caption>주문등록 테이블</caption>
-              <input type="hidden" id="reqnum" name="reqnum" value="">
-              <input type="hidden" id="saupnumHidden" name="saupnumHidden" value="">
               <tbody>
               <tr>
                 <th style="text-align: center">
@@ -184,6 +182,7 @@
                 </th>
                 <td style="white-space: nowrap;">
                   <input id="cboCompany" name="cboCompany" type="hidden">
+                  <input id="reqnum" name="reqnum" type="hidden">
                   <input id="cboCompanyHidden" name="cboCompanyHidden" type="hidden">
                   <input class="form-control2" type="text" id="CompanyName" name="CompanyName"
                          placeholder="버튼을 클릭하여 검색하세요"
@@ -214,12 +213,12 @@
                   <span id="deldate_day"></span>
                 </td>
                 <th style="text-align: center">
-                  <label for="telno">
+                  <label for="projectno">
                     Project No
                   </label>
                 </th>
                 <td>
-                  <input type="text" id="telno" name="telno" style="width: 200px">
+                  <input type="text" id="projectno" name="projectno" style="width: 200px">
                 </td>
               </tr>
 
@@ -353,7 +352,7 @@
                     모델 생성
                   </a>
                 </li>
-                <li>
+               <!-- <li>
                   <a class="btn btn-saverow" id="btn-addrow" name="addrow" title="행 복사">
                     <img src="/images/icon/ico-edit.svg" alt="등록 아이콘">
                     부품 추가
@@ -364,7 +363,7 @@
                     <img src="/images/icon/ico-delete.svg" alt="삭제 아이콘">
                     행 삭제
                   </a>
-                </li>
+                </li>-->
               </ul>
             </div>
           </div>
@@ -407,20 +406,13 @@
                 <tbody>
                 <tr class="item-template-row" style="display: none;">
                   <td>
-                    <div class="input-with-button" style="display: flex; gap: 4px;">
-                      <input type="text" name="txtModelNm" placeholder="모델명" style="flex: 1; width: 170px;"
-                             autocomplete="off"/>
-                      <!--<a class="btn in_btn" title="모델 검색" id="btnModelSearch" style="width: 28px; height: 32px;">
-                        <img src="/images/icon/btn-srch-black.svg" alt="검색 아이콘" />
-                      </a>
-                      <input type="hidden" name="MaterialGroupName"/>
-                      <input type="hidden" name="Material_id" />
-                      <input type="hidden" name="product_code" />-->
+                    <div class="input-with-button" >
+                      <input type="text" name="txtModelNm" placeholder="모델명" readonly style="width: 200px;" autocomplete="off"/>
                     </div>
                   </td>
                   <td>
                     <div class="input-with-button" style="display: flex; gap: 4px;">
-                      <input type="text" name="pname" placeholder="부품명" style="flex: 1; width: 170px;"/>
+                      <input type="text" name="pname" placeholder="입력 후 엔터" style="flex: 1; width: 170px;" autocomplete="off"/>
                       <input type="hidden" name="Material_id" />
                       <a class="btn in_btn" title="부품 검색" id="btnpartSearch" style="width: 28px; height: 32px;">
                         <img src="/images/icon/btn-srch-black.svg" alt="검색 아이콘"/>
@@ -443,8 +435,7 @@
                   <td><input type="text" name="QTY" placeholder="수량" style="width: 100%;"/></td>
                   <td><input type="text" name="uamt" placeholder="제품가" style="width: 100%;"/></td>
                   <td>
-                    <input type="hidden" name="State"/>
-                    <input type="text" name="balju_StateName" readonly placeholder="단가이력" style="width: 100%;"/>
+                    <input type="text" name="balju_StateName" placeholder="단가이력" style="width: 100%;"/>
                   </td>
                   <td class="al_c item_border" style="text-align: center; vertical-align: middle;">
                     <a class="btn in_btn del" title="행 삭제"
@@ -722,7 +713,7 @@
   </script>
   <script type="text/javascript">
     const ProductInputHandler = {
-      bind: function ({rowSelector, $content, tryShowBaljuPrice}) {
+      bind: function ({rowSelector, $content, tryShowBaljuPrice, disablePopup = false}) {
         const $row = $(rowSelector); // jQuery 객체로 변환 – 안전함
 
         const $unit = $row.find('input[name^="BaljuUnitPrice"]');
@@ -745,50 +736,39 @@
         });
 
         // ✅ [1] 부품명 Enter 키 처리
-        const $pnameInput = $row.find('input[name^="pname"]');
-        $pnameInput.off('keydown').on('keydown', function (e) {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            e.stopPropagation();
+        if (!disablePopup) {
+          $pnameInput.off('keydown').on('keydown', function (e) {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              e.stopPropagation();
 
-            const spjangcd = sessionStorage.getItem('spjangcd');
+              const spjangcd = sessionStorage.getItem('spjangcd');
 
-            $.get('/api/popup/search_material', {
-              material_group: '21',
-              material_type: 'product,sangpum',
-              keyword: '',
-              spjangcd: spjangcd
-            }, function (res) {
-              console.log('📦 응답:', res);
-              if (res.data?.length === 1) {
-                setResult(res.data[0]);
-              } else {
-                showPopup();
-              }
-            });
-          }
-        });
+              $.get('/api/popup/search_material', {
+                material_group: '21',
+                material_type: 'product,sangpum',
+                keyword: '',
+                spjangcd: spjangcd
+              }, function (res) {
+                console.log('📦 응답:', res);
+                if (res.data?.length === 1) {
+                  setResult(res.data[0]);
+                } else {
+                  //showPopup();
+                }
+              });
+            }
+          });
+
+          $row.find('[id^="btnpartSearch"]').off('click').on('click', function () {
+            showPopup();
+          });
+        }
 
         // ✅ [2] 검색 버튼 클릭 처리
-        $row.find('#btnpartSearch').off('click').on('click', function () {
+        $row.find('[id^="btnpartSearch"]').off('click').on('click', function () {
           showPopup();
         });
-
-        // ✅ [3] 팝업 열기 함수
-        function showPopup() {
-          const pop = new PopMatComponent();
-          pop.material_type = 'product,sangpum';
-          pop.material_group = 21;
-          pop.show(setResult, $pnameInput.val());
-
-          setTimeout(() => {
-            if (pop.$keyword) {
-              pop.$keyword.val($pnameInput.val());
-              if (pop.$cboMaterialGrp) pop.$cboMaterialGrp.val('');
-              pop.searchDataBind();
-            }
-          }, 100);
-        }
 
         // ✅ [4] 검색 결과 설정 함수
         function setResult(item) {
@@ -804,7 +784,7 @@
         this.itemIndex = 0;  // 🔥 클래스 수준으로 선언
         this.theGrid = null;
         this.$btnEdit = $('#btnEdit');
-        this.$btnAddNew = $('#btnAddNew');
+        this.$btnSave = $('#btnSave');
         this.spjangcd = $('#spjangcdHidden');
         this.viewData = new wijmo.collections.CollectionView();
         this.url = '/api/request/request';
@@ -815,16 +795,75 @@
         let _this = this;
         let $content = $('#tab1');
 
-        $('#addModel').click(function (){
-
+        $('#newdataBtn').click(function () {
+          clearForm();
         });
 
         // 주문 등록
-        this.$btnAddNew.click(function () {
+        this.$btnSave.click(function () {
           let defaultData = {
-            spjangcd: _this.spjangcd.val()
+            spjangcd: _this.spjangcd.val(),
+            cboCompany: $('#cboCompany').val(),
+            cboCompanyHidden: $('#cboCompanyHidden').val(),
+            CompanyName: $('#CompanyName').val(),
+            reqdate: $('#reqdate').val(),
+            deldate: $('#deldate').val(),
+            telno: $('#telno').val(),
+            projectno: $('#projectno').val(),
+            perid: $('#perid').val(),
+            postno: $('#postno').val(),
+            address1: $('#address1').val(),
+            placeAddress: $('#placeAddress').val(),
+            setsamt: $('#setsamt').val(),
+            setqty: $('#setqty').val(),
+            amount: $('#amount').val(),
+            outamt: $('#outamt').val(),
+            eyunamt: $('#eyunamt').val(),
+            pereyunamt: $('#pereyunamt').val(),
+            eyunyul: $('#eyunyul').val(),
+            toteyunamt: $('#toteyunamt').val(),
+            modeltxt: $('#modeltxt').val(),
+            MaterialGroupName: $('#MaterialGroupName').val(),
+            Material_id: $('#Material_id').val(),
+            product_code: $('#product_code').val(),
+            reqnum: $('#reqnum').val()
           };
-          _this.save(defaultData);
+
+          let detailList = [];
+          $('#OrderRequestForm tbody tr').each(function () {
+            let $row = $(this);
+            if (!$row.hasClass('item-template-row')) {
+              detailList.push({
+                txtModelNm: $row.find('input[name="txtModelNm"]').val(),
+                pname: $row.find('input[name="pname"]').val(),
+                remark: $row.find('input[name="remark"]').val(),
+                jobflag: $row.find('select[name="jobflag_"]').val(),
+                setamt: $row.find('input[name="setamt"]').val(),
+                saleamt: $row.find('input[name="saleamt"]').val(),
+                qty: $row.find('input[name="QTY"]').val(),
+                uamt: $row.find('input[name="uamt"]').val(),
+                state: $row.find('input[name="State"]').val()
+              });
+            }
+          });
+
+          defaultData.detailList = detailList;
+
+          // 🔹 FormData로 JSON + 파일 동시에 전송
+          const formData = new FormData();
+          formData.append('jsonData', new Blob([JSON.stringify(defaultData)], { type: 'application/json' }));
+
+          // 🔹 첨부파일 추가
+          $('.popup-file-input').each(function () {
+            const files = this.files;
+            for (let i = 0; i < files.length; i++) {
+              formData.append('files', files[i]);
+            }
+          });
+
+          Alert.confirm('', '저장하시겠습니까?', function () {
+            _this.orderSave(defaultData);
+          });
         });
 
         // 삭제 버튼
@@ -846,7 +885,9 @@
         });
 
         // 행 추가
-        $('#addRemark').click(function () {
+        $('#addRemark').on('click', function(e) {
+          e.preventDefault(); // a 태그 기본 동작 차단
+          e.stopPropagation(); // 이벤트 버블링 방지
           const $tbody = $('#OrderRequestForm tbody');
           const $template = $tbody.find('.item-template-row');
 
@@ -867,6 +908,7 @@
             ProductInputHandler.bind({
               rowSelector: $newRow,
               $content: $content,
+              disablePopup: true
             });
 
             _this.itemIndex++;
@@ -874,7 +916,9 @@
         });
 
         //행삭제
-        $(document).on('click', '.btn[title="행 삭제"]', function () {
+        $(document).on('click', '.btn[title="행 삭제"]', function(e) {
+          e.preventDefault(); // a 태그 기본 동작 차단
+          e.stopPropagation(); // 이벤트 버블링 방지
           const $tbody = $('#OrderRequestForm tbody');
           const $rows = $tbody.find('tr').filter(':visible'); // 보여지는 행 기준
           const $targetRow = $(this).closest('tr');
@@ -935,7 +979,7 @@
             document.getElementById('modeltxt').value = items.Name;
 
             // bom 리스트가지고와서 동적행에
-            AjaxUtil.getAsyncData('/api/request/request2/bomList', { Material_id: items.id }, function (result) {
+            AjaxUtil.getAsyncData('/api/request/request/bomList', { Material_id: items.id }, function (result) {
               if (result.success && result.data.length > 0) {
                 const bomList = result.data;
                 const $tbody = $('#OrderRequestForm tbody');
@@ -1015,6 +1059,8 @@
           _this.$btnEdit.trigger('click');
         });
 
+
+
       }//init
       addDetailRow() {
         const $tbody = $('#OrderRequestForm tbody');
@@ -1035,13 +1081,28 @@
         ProductInputHandler.bind({
           rowSelector: $newRow,
           $content: $('#tab1'),
+          disablePopup: true
         });
 
         this.itemIndex++;
       }
 
-      save(defaultData) {
-
+      orderSave(formData) {
+        $.ajax({
+          url: this.url+'/saveWithFiles',
+          method: 'POST',
+          processData: false,
+          contentType: false,
+          data: formData,
+          success: function (res) {
+            Alert.alert('', '저장 되었습니다.');
+            clearForm();
+          },
+          error: function (xhr) {
+            console.error(xhr);
+            Alert.alert('', '저장 실패: ' + xhr.statusText);
+          }
+        });
       }//save
 
       deleteSujuData(id, state) {
@@ -1169,84 +1230,23 @@
       input.addEventListener("change", setDay);
       setDay();  // 초기 실행
     }
+
     function updateOrderSummary() {
       let sumSetAmt = 0;
       let sumSaleAmt = 0;
       let sumQty = 0;
       let sumUamt = 0;
 
+      // 🔹 행별 누적 합계 계산
       $('#OrderRequestForm tbody tr').each(function () {
         const $row = $(this);
 
-        // 템플릿 행 또는 합계 행은 제외
         if ($row.hasClass('item-template-row') || $row.hasClass('sum-row')) return;
 
-        // 값 추출 + 쉼표 제거
-        const setamtVal = $row.find('input[name="setamt"]').val()?.replace(/,/g, '') || '';
-        const saleamtVal = $row.find('input[name="saleamt"]').val()?.replace(/,/g, '') || '';
-        const qtyVal = $row.find('input[name="QTY"]').val()?.replace(/,/g, '') || '';
-        const uamtVal = $row.find('input[name="uamt"]').val()?.replace(/,/g, '') || '';
-
-        // 값이 모두 비어 있으면 무시
-        const isEmptyRow = [setamtVal, saleamtVal, qtyVal, uamtVal].every(v => v.trim() === '');
-        if (isEmptyRow) return;
-
-        // 숫자로 변환
-        const setamt = parseFloat(setamtVal) || 0;
-        const saleamt = parseFloat(saleamtVal) || 0;
-        const qty = parseFloat(qtyVal) || 0;
-        const uamt = parseFloat(uamtVal) || 0;
-
-        // 합계 누적
-        sumSetAmt += setamt;
-        sumSaleAmt += saleamt;
-        sumQty += qty;
-        sumUamt += uamt;
-      });
-
-      // 합계 출력
-      $('#sum_setamt').val(sumSetAmt.toLocaleString());
-      $('#sum_saleamt').val(sumSaleAmt.toLocaleString());
-      $('#sum_qty').val(sumQty.toLocaleString());
-      $('#sum_uamt').val(sumUamt.toLocaleString());
-    }
-
-    function updateOrderSum() {
-      let sumSetAmt = 0, sumSaleAmt = 0, sumQty = 0, sumUamt = 0;
-
-      $('#OrderRequestForm tbody tr').not('.item-template-row, .sum-row').each(function () {
-        const $row = $(this);
-
-        const setamt = parseFloat(($row.find('input[name="setamt"]').val() || '').replace(/,/g, '')) || 0;
-        const saleamt = parseFloat(($row.find('input[name="saleamt"]').val() || '').replace(/,/g, '')) || 0;
-        const qty = parseFloat(($row.find('input[name="QTY"]').val() || '').replace(/,/g, '')) || 0;
-        const uamt = parseFloat(($row.find('input[name="uamt"]').val() || '').replace(/,/g, '')) || 0;
-
-        sumSetAmt += setamt;
-        sumSaleAmt += saleamt;
-        sumQty += qty;
-        sumUamt += uamt;
-      });
-
-      $('#sum_setamt').val(sumSetAmt.toLocaleString());
-      $('#sum_saleamt').val(sumSaleAmt.toLocaleString());
-      $('#sum_qty').val(sumQty.toLocaleString());
-      $('#sum_uamt').val(sumUamt.toLocaleString());
-    }
-
-    function updateSummary() {
-      let setamtSum = 0;
-      let saleamtSum = 0;
-      let qtySum = 0;
-      let uamtSum = 0;
-
-      $('#OrderRequestForm tbody tr').each(function () {
-        const $row = $(this);
-
-        const setamtVal = $row.find('input[name="setamt"]').val()?.replace(/,/g, '') || '';
-        const saleamtVal = $row.find('input[name="saleamt"]').val()?.replace(/,/g, '') || '';
-        const qtyVal = $row.find('input[name="QTY"]').val()?.replace(/,/g, '') || '';
-        const uamtVal = $row.find('input[name="uamt"]').val()?.replace(/,/g, '') || '';
+        const setamtVal = $row.find('input[name^="setamt"]').val()?.replace(/,/g, '') || '';
+        const saleamtVal = $row.find('input[name^="saleamt"]').val()?.replace(/,/g, '') || '';
+        const qtyVal = $row.find('input[name^="QTY"]').val()?.replace(/,/g, '') || '';
+        const uamtVal = $row.find('input[name^="uamt"]').val()?.replace(/,/g, '') || '';
 
         const isEmptyRow = [setamtVal, saleamtVal, qtyVal, uamtVal].every(v => v.trim() === '');
         if (isEmptyRow) return;
@@ -1256,16 +1256,67 @@
         const qty = parseFloat(qtyVal) || 0;
         const uamt = parseFloat(uamtVal) || 0;
 
-        setamtSum += setamt;
-        saleamtSum += saleamt;
-        qtySum += qty;
-        uamtSum += uamt;
+        sumSetAmt += setamt;
+        sumSaleAmt += saleamt;
+        sumQty += qty;
+        sumUamt += uamt;
       });
 
-      $('#sum_setamt').val(setamtSum.toLocaleString());
-      $('#sum_saleamt').val(saleamtSum.toLocaleString());
-      $('#sum_qty').val(qtySum.toLocaleString());
-      $('#sum_uamt').val(uamtSum.toLocaleString());
+      // 🔹 합계 표시
+      $('#sum_setamt').val(sumSetAmt.toLocaleString());
+      $('#sum_saleamt').val(sumSaleAmt.toLocaleString());
+      $('#sum_qty').val(sumQty.toLocaleString());
+      $('#sum_uamt').val(sumUamt.toLocaleString());
+
+      // 🔹 루프 바깥에서 이윤 계산
+      const setsamt = parseFloat($('#setsamt').val()?.replace(/,/g, '') || 0);
+      const setqty = parseFloat($('#setqty').val()?.replace(/,/g, '') || 0);
+      const amount = setsamt * setqty;
+      const outamt = sumUamt;
+
+      const eyunamt = amount - outamt;
+      const pereyunamt = sumSetAmt - setsamt;
+      const eyunyul = setsamt !== 0 ? (pereyunamt / setsamt) * 100 : 0;
+      const toteyunamt = amount !== 0 ? (eyunamt / amount) * 100 : 0;
+
+      $('#amount').val(amount.toLocaleString(undefined, { maximumFractionDigits: 2 }));
+      $('#outamt').val(outamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
+      $('#eyunamt').val(eyunamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
+      $('#pereyunamt').val(pereyunamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
+      $('#eyunyul').val(eyunyul.toFixed(2));
+      $('#toteyunamt').val(toteyunamt.toFixed(2));
+    }
+
+    function clearForm() {
+      // OrderRequestForm 전체 초기화
+      document.getElementById('OrderRequestForm').reset();
+
+      // 추가 입력 요소 초기화 (form 바깥 포함)
+      const $container = $('.table-wrap');
+
+      $container.find('input').each(function () {
+        const type = $(this).attr('type');
+        if (type === 'hidden' || type === 'text' || type === 'date') {
+          $(this).val('');
+        }
+      });
+
+      $container.find('select, textarea').val('');
+      // 🔹 납기일 초기화
+      const holidays = [];  // 필요시 휴일 정보 배열로 채워넣기
+      const delDate = addBusinessDays(new Date(), 3, holidays);
+      $('#deldate').val(formatDate(delDate));
+
+      // 🔹 요일 표시
+      updateDayDisplay("reqdate", "reqdate_day");
+      updateDayDisplay("deldate", "deldate_day");
+
+      // 🔹 납기일 비활성화 유지
+      $('#deldate').prop('disabled', true);
+
+      // 🔹 주문일자 오늘 날짜로 설정
+      const today = new Date().toISOString().split('T')[0];
+      $('#reqdate').val(today);
     }
 
     //단가검색
@@ -1309,11 +1360,13 @@
     }
 
     function formatNumberInput(inputValue, targetSelector) {
-      let cleaned = inputValue.replace(/[^0-9]/g, '').replace(/,/g, '');// 숫자만 남기기
-      let formatted = cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ',');// 쉼표 넣기
-      $(targetSelector).val(formatted);// 값 넣기
-    }
+      let cleaned = inputValue.replace(/[^\d.]/g, '').replace(/,/g, ''); // 숫자, 소수점만
+      let parts = cleaned.split('.');
+      let intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      let formatted = parts.length > 1 ? intPart + '.' + parts[1] : intPart;
 
+      $(targetSelector).val(formatted);
+    }
 
     let page = null;
 
@@ -1325,7 +1378,7 @@
       AjaxUtil.fillSelectOptions($('#searchOrdflag'), 'system_code', 'all', false, 'ordflag');//주문/진행현황 선택구분용
 
       page = new OrderRequestPage();
-
+      requestAnimationFrame(updateOrderSummary);
       $('#tab1').on('keydown', 'input, select, textarea', function (e) {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();         // 기본 제출 방지
@@ -1356,12 +1409,22 @@
         $input.val('');
         $input.trigger('input'); // 🔥 input 이벤트 강제 발생
       });
+
       // 초기화 버튼 클릭 이벤트
       $('#btnClear').click(function () {
 
         document.getElementById('cboCompany').value = '';
         document.getElementById('CompanyName').value = '';
         document.getElementById('cboCompanyHidden').value = '';
+      });
+      // 공급 관련 필드들 자동 쉼표 처리
+      $('#setsamt, #setqty, #amount, #outamt, #eyunamt, #pereyunamt, #eyunyul, #toteyunamt')
+        .on('input', function () {
+          formatNumberInput(this.value, this);
+        });
+
+      $('#setsamt, #amount, #setqty').on('input', function () {
+        updateOrderSummary();
       });
 
       $('#OrderRequestForm').on('input', 'input[name^="setamt"], input[name^="QTY"], input[name^="saleamt"], input[name^="uamt"]', function () {
@@ -1386,24 +1449,28 @@
         const saleamt = parseFloat(rawSaleAmt) || 0;
         const qty = parseFloat(rawQty) || 0;
 
-        $row.find('input[name^="uamt"]').val((saleamt * qty).toFixed(0));
+        const result = (saleamt * qty).toFixed(0);
+
+        const $uamtInput = $row.find('input[name^="uamt"]');
+        $uamtInput.val(result);
+        formatNumberInput(result, $uamtInput);
 
         updateOrderSummary();
       });
 
       $(document).on('click', '.in_btn', function () {
+        if ($(this).attr('title') === '행 삭제') return;
         let $row = $(this).closest('tr');
-        let $pnameInput = $row.find('input[name="pname"]');
+        let $pnameInput = $row.find('input[name^="pname"]');
         let keyword = $pnameInput.val();
 
         const pop = new PopMatComponent();
         pop.material_type = 'product';
         pop.show(function (item) {
-          $row.find('input[name="pname"]').val(item.Name);
-          $row.find('input[name="Material_id"]').val(item.id);
+          $row.find('input[name^="pname"]').val(item.Name);
+          $row.find('input[name^="Material_id"]').val(item.id);
         }, keyword);
       });
-
 
       const reqdateField = document.getElementById("reqdate");
       const deldateField = document.getElementById("deldate");

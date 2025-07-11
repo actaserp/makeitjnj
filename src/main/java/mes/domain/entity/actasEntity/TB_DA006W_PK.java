@@ -1,18 +1,14 @@
 package mes.domain.entity.actasEntity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
-@Setter
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
+@Data
 public class TB_DA006W_PK implements Serializable {
 
     private String custcd;      // 회사코드

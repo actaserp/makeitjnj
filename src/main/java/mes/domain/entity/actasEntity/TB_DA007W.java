@@ -1,76 +1,80 @@
 package mes.domain.entity.actasEntity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.*;
 
 import javax.persistence.*;
 
-@Getter
+
 @Entity
-@Setter
-@Table(name = "TB_DA007W") //WEB주문서BODY정보 table
+@Data
+@Table(name = "TB_DA007W") //주문서BODY 정보
 @NoArgsConstructor
 public class TB_DA007W {
 
     @EmbeddedId
-    private TB_DA007W_PK pk;
+    private TB_DA007W_PK id;
 
-    @Column(name = "\"egrb\"")  // 용도별
-    String egrb;
+    // 6 모품목코드
+    @Column(name = "pcode")
+    private Long pcode;
 
-    @Column(name = "\"fgrb\"")  // 톤별
-    String fgrb;
+    // 7 모델명
+    @Column(name = "modelnm")
+    private String modelnm;
 
-    @Column(name = "\"hgrb\"")  // 제품구성
-    String hgrb;
+    // 8 자재품목코드
+    @Column(name = "japcode")
+    private Long japcode;
 
-    @Column(name = "\"panel_t\"")  // 판넬규격(두께)
-    String panel_t;
+    // 9 부품명
+    @Column(name = "pname")
+    private String pname;
 
-    @Column(name = "\"panel_w\"")  // 판넬규격(폭)
-    String panel_w;
+    // 10 비고
+    @Column(name = "remark")
+    private String remark;
 
-    @Column(name = "\"panel_l\"")  // 판넬규격(길이)
-    String panel_l;
+    // 11 작업방식
+    @Column(name = "jobflag")
+    private String jobflag;
 
-    @Column(name = "\"panel_h\"")  // 판넬규격(높이)
-    String panel_h;
+    // 12 set단가
+    @Column(name = "setamt")
+    private Long setamt;
 
-    @Column(name = "\"qty\"")  // 수량
-    int qty;
+    // 13 판매단가
+    @Column(name = "saleamt")
+    private Long saleamt;
 
-    @Column(name = "\"exfmtypedv\"")  // 외부마감재
-    String exfmtypedv;
+    // 14 수량
+    @Column(name = "QTY")
+    private Double qty;
 
-    @Column(name = "\"infmtypedv\"")  // 외부보강재
-    String infmtypedv;
+    // 15 제품가
+    @Column(name = "uamt")
+    private Double uamt;
 
-    @Column(name = "\"stframedv\"")  // 내부보강재
-    String stframedv;
+    // 16 단가이력
+    @Column(name = "uamttxt")
+    private String uamttxt;
 
-    @Column(name = "\"stexplydv\"")  // 내부마감재
-    String stexplydv;
+    // 22 입력일자
+    @Column(name = "indate")
+    private String indate;
 
-    // 질문필요 컬럼들 -----------------------------------
+    // 23 입력자
+    @Column(name = "inperid")
+    private String inperid;
 
-    @Column(name = "\"stinplyyn\"")  //
-    String stinplyyn;
+    // 24 옵션 및 요청사항
+    @Lob
+    @Column(name = "ordtext")
+    private String ordtext;
 
-    @Column(name = "\"stexinsyn\"")  //
-    String stexinsyn;
+    @Column(name = "stframedv")
+    private String stframedv;
 
-    @Column(name = "\"stininsyn\"")  //
-    String stininsyn;
-
-    @Column(name = "\"indate\"")  //
-    String indate;
-
-    @Column(name = "\"inperid\"")  //
-    String inperid;
-
-    @Column(name = "\"ordtext\"")  // 옵션 및 요청사항
-    String ordtext;
+    @Column(name = "stexplydv")
+    private String stexplydv;
 
 }

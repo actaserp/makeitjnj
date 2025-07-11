@@ -1,3 +1,4 @@
+/*
 package mes.app.request;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -41,7 +42,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @RestController
-@RequestMapping("/api/request/request")
+@RequestMapping("/api/request/request2")
 public class RequestController2 {
 
     @Autowired
@@ -727,3 +728,4 @@ public class RequestController2 {
 
 }
 
+*/
