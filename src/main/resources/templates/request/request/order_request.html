@@ -413,7 +413,7 @@
                   <td>
                     <div class="input-with-button" style="display: flex; gap: 4px;">
                       <input type="text" name="pname" placeholder="입력 후 엔터" style="flex: 1; width: 170px;" autocomplete="off"/>
-                      <input type="hidden" name="Material_id" />
+                      <input type="hidden" name="mat_code" />
                       <a class="btn in_btn" title="부품 검색" id="btnpartSearch" style="width: 28px; height: 32px;">
                         <img src="/images/icon/btn-srch-black.svg" alt="검색 아이콘"/>
                       </a>
@@ -588,7 +588,7 @@
                   <div class="upload-filebox2">
                     <img src="/images/icon/ico-fileupload.svg" alt="업로드아이콘">
                     <a class="btn" title="파일업로드">파일 업로드</a>
-                    <input type="file" id="fileInput2" class="fileInput2" multiple>
+                    <input type="file" id="fileInput2" class="fileInput2 popup-file-input" multiple>
                     <p>Maximun upload file size <span>1GiB</span></p>
                   </div>
 
@@ -735,7 +735,7 @@
           }
         });
 
-        // ✅ [1] 부품명 Enter 키 처리
+        /*// ✅ [1] 부품명 Enter 키 처리
         if (!disablePopup) {
           $pnameInput.off('keydown').on('keydown', function (e) {
             if (e.key === 'Enter') {
@@ -761,13 +761,20 @@
           });
 
           $row.find('[id^="btnpartSearch"]').off('click').on('click', function () {
-            showPopup();
+            let poppage = new PopMatComponent();
+            let $poppage = $(poppage);
+            poppage.material_group = 21;
+            poppage.show();
+
           });
         }
 
         // ✅ [2] 검색 버튼 클릭 처리
         $row.find('[id^="btnpartSearch"]').off('click').on('click', function () {
-          showPopup();
+          let poppage = new PopMatComponent();
+          let $poppage = $(poppage);
+          poppage.material_group = 21;
+          poppage.show();
         });
 
         // ✅ [4] 검색 결과 설정 함수
@@ -775,9 +782,75 @@
           $pnameInput.val(item.Name);
           $row.find('input[name^="Material_id"]').val(item.id);
           $row.find('input[name^="product_code"]').val(item.Code);
-        }
+        }*/
       }
     };//ProductInputHandler
+
+    function bindProductSearchEvents($container) {
+      // 🔍 품목 검색 버튼 클릭 처리
+      $container.on('click', 'a[title="품목 검색"]', function () {
+        const $row = $(this).closest('tr');
+
+        const $productInput = $row.find('input[name^="txtProductName_"]');
+        const $productId = $row.find('input[name^="Material_id_"]');
+        const $productCode = $row.find('input[name^="product_code_"]');
+        const $materialGroup = $row.find('input[name^="MaterialGroupName_"]');
+
+        const pop = new PopMatComponent();
+        pop.material_type = 'product,sangpum';
+
+        pop.show(function (item) {
+          $productInput.val(item.Name);
+          $productId.val(item.id);
+          $productCode.val(item.Code);
+          $materialGroup.val(item.group_name);
+          tryShowBaljuPrice($row); // 단가 자동 조회
+        });
+      });
+
+      // 🔍 Enter 키로 품목 자동 검색 (1건일 때 자동입력, 아니면 팝업)
+      $container.on('keydown', 'input[name^="txtProductName_"]', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+
+          const $row = $(this).closest('tr');
+          const $productInput = $(this);
+          const $productId = $row.find('input[name^="Material_id_"]');
+          const $productCode = $row.find('input[name^="product_code_"]');
+          const $materialGroup = $row.find('input[name^="MaterialGroupName_"]');
+
+          const keyword = $productInput.val();
+          const spjangcd = sessionStorage.getItem('spjangcd');
+
+          $.get('/api/popup/search_material', {
+            material_group: '21',
+            material_type: 'product,sangpum',
+            keyword,
+            spjangcd
+          }, function (res) {
+            if (res.data?.length === 1) {
+              const item = res.data[0];
+              $productInput.val(item.Name);
+              $productId.val(item.id);
+              $productCode.val(item.Code);
+              $materialGroup.val(item.group_name);
+              tryShowBaljuPrice($row);
+            } else {
+              const pop = new PopMatComponent();
+              pop.material_type = 'product,sangpum';
+              pop.show(function (item) {
+                $productInput.val(item.Name);
+                $productId.val(item.id);
+                $productCode.val(item.Code);
+                $materialGroup.val(item.group_name);
+                tryShowBaljuPrice($row);
+              }, keyword);
+            }
+          });
+        }
+      });
+    }
+
 
     class OrderRequestPage {
       constructor() {
@@ -801,6 +874,8 @@
 
         // 주문 등록
         this.$btnSave.click(function () {
+          const formData = new FormData();
+
           let defaultData = {
             spjangcd: _this.spjangcd.val(),
             cboCompany: $('#cboCompany').val(),
@@ -814,14 +889,14 @@
             postno: $('#postno').val(),
             address1: $('#address1').val(),
             placeAddress: $('#placeAddress').val(),
-            setsamt: $('#setsamt').val(),
-            setqty: $('#setqty').val(),
-            amount: $('#amount').val(),
-            outamt: $('#outamt').val(),
-            eyunamt: $('#eyunamt').val(),
-            pereyunamt: $('#pereyunamt').val(),
-            eyunyul: $('#eyunyul').val(),
-            toteyunamt: $('#toteyunamt').val(),
+            setsamt: $('#setsamt').val().replaceAll(',', ''),
+            setqty: $('#setqty').val().replaceAll(',', ''),
+            amount: $('#amount').val().replaceAll(',', ''),
+            outamt: $('#outamt').val().replaceAll(',', ''),
+            eyunamt: $('#eyunamt').val().replaceAll(',', ''),
+            pereyunamt: $('#pereyunamt').val().replaceAll(',', ''),
+            eyunyul: $('#eyunyul').val().replaceAll(',', ''),
+            toteyunamt: $('#toteyunamt').val().replaceAll(',', ''),
             modeltxt: $('#modeltxt').val(),
             MaterialGroupName: $('#MaterialGroupName').val(),
             Material_id: $('#Material_id').val(),
@@ -838,31 +913,41 @@
                 pname: $row.find('input[name="pname"]').val(),
                 remark: $row.find('input[name="remark"]').val(),
                 jobflag: $row.find('select[name="jobflag_"]').val(),
-                setamt: $row.find('input[name="setamt"]').val(),
-                saleamt: $row.find('input[name="saleamt"]').val(),
-                qty: $row.find('input[name="QTY"]').val(),
-                uamt: $row.find('input[name="uamt"]').val(),
-                state: $row.find('input[name="State"]').val()
+                setamt: $row.find('input[name="setamt"]').val().replaceAll(',', ''),
+                saleamt: $row.find('input[name="saleamt"]').val().replaceAll(',', ''),
+                qty: $row.find('input[name="QTY"]').val().replaceAll(',', ''),
+                uamt: $row.find('input[name="uamt"]').val().replaceAll(',', ''),
+                mat_code: $row.find('input[name="mat_code"]').val()
+
               });
             }
           });
 
           defaultData.detailList = detailList;
 
-          // 🔹 FormData로 JSON + 파일 동시에 전송
-          const formData = new FormData();
-          formData.append('jsonData', new Blob([JSON.stringify(defaultData)], { type: 'application/json' }));
+        // 🔸 JSON 데이터 추가
+          formData.append('jsonData', new Blob([JSON.stringify(defaultData)], {
+            type: 'application/json'
+          }));
 
-          // 🔹 첨부파일 추가
-          $('.popup-file-input').each(function () {
-            const files = this.files;
-            for (let i = 0; i < files.length; i++) {
-              formData.append('files', files[i]);
-            }
+        // ✅ uploadedFiles2 → 서버 전송용으로 formData에 넣기
+          uploadedFiles2.forEach(file => {
+            formData.append('filelist', file);
           });
 
+          // 🔸 삭제된 파일 정보 (옵션)
+          if (typeof deletedFiles2 !== 'undefined') {
+            deletedFiles2.forEach(file => {
+              formData.append('deletedFiles2', new Blob([JSON.stringify(file)], {
+                type: 'application/json'
+              }));
+            });
+          }
+
+
           Alert.confirm('', '저장하시겠습니까?', function () {
-            _this.orderSave(defaultData);
+
+            _this.orderSave(formData);
           });
         });
 
@@ -966,7 +1051,6 @@
           poppage.show(searchcallback);
         });
 
-
         $('#btnProductSearch').click(function () {
           let poppage = new PopMatComponent();
           let $poppage = $(poppage);
@@ -997,13 +1081,14 @@
                   $row.find('input[name="remark"]').val(bom.Description || ''); //비고
                   $row.find('select[name="jobflag_"]').val('j01');  //구분
 
-                  $row.find('input[name="setamt"]').val(bom.quantity);  //단가
-                  $row.find('input[name="SetAmtUnitPrice"]').val(bom.bom_ratio);  //세트단가
+                  $row.find('input[name="setamt"]').val();  //단가
+                  $row.find('input[name="SetAmtUnitPrice"]').val();  //세트단가
                   $row.find('input[name="saleamt"]').val(''); //판매단가
                   $row.find('input[name="QTY"]').val(bom.quantity);  //수량
                   $row.find('input[name="uamt"]').val(); // 제품가
                   $row.find('input[name="balju_StateName"]').val(''); //단가이력
                   $row.find('input[name="Material_id"]').val(bom.mat_id);
+                  $row.find('input[name="mat_code"]').val(bom.mat_code);
 
                   // 테이블 삽입
                   $template.before($row);
@@ -1088,12 +1173,41 @@
       }
 
       orderSave(formData) {
+        const jsonDataBlob = formData.get('jsonData');
+
+        if (jsonDataBlob instanceof Blob) {
+          jsonDataBlob.text().then(text => {
+            const parsed = JSON.parse(text);
+            console.log('[jsonData 내용 확인]', parsed);
+          });
+        }
+
+        for (let pair of formData.entries()) {
+          if (pair[1] instanceof Blob) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              try {
+                const parsed = JSON.parse(e.target.result);
+                console.log(`[FormData] ${pair[0]} (Blob/JSON):`, parsed);
+              } catch (err) {
+                console.warn(`[FormData] ${pair[0]} (Blob/Text):`, e.target.result);
+              }
+            };
+            reader.readAsText(pair[1]);
+          } else {
+            console.log(`[FormData] ${pair[0]}:`, pair[1]);
+          }
+        }
+
         $.ajax({
           url: this.url+'/saveWithFiles',
           method: 'POST',
           processData: false,
           contentType: false,
           data: formData,
+          headers: {
+            'X-CSRF-Token': $('[name=_csrf]').val() // CSRF 토큰을 헤더에 추가
+          },
           success: function (res) {
             Alert.alert('', '저장 되었습니다.');
             clearForm();
@@ -1371,6 +1485,9 @@
     let page = null;
 
     $(document).ready(function (e) {
+
+      bindProductSearchEvents($('#OrderRequestForm'));
+
       const spjangcd = sessionStorage.getItem('spjangcd');
       if (spjangcd) {
         $('#spjangcdHidden').val(spjangcd);  // hidden input이 있어야 함
@@ -1427,11 +1544,13 @@
         updateOrderSummary();
       });
 
-      $('#OrderRequestForm').on('input', 'input[name^="setamt"], input[name^="QTY"], input[name^="saleamt"], input[name^="uamt"]', function () {
-        formatNumberInput(this.value, this);  // 쉼표 자동 입력
-      });
+  /*    $('#OrderRequestForm').on('input', 'input[name^="setamt"], input[name^="QTY"], input[name^="saleamt"], input[name^="uamt"]', function () {
+         // 쉼표 자동 입력
+      });*/
 
       $('#OrderRequestForm').on('input', 'input[name^="setamt"], input[name^="saleamt"], input[name^="QTY"], input[name^="uamt"]', function () {
+        console.log("setamt changed:", this.value);
+        formatNumberInput(this.value, this);
         updateOrderSummary();
       });
 

@@ -64,14 +64,5 @@ public class SseController {
         }, 0, 120, TimeUnit.SECONDS); // 바로 시작, 3분마다 반복
     }*/
 
-    private String getDefaultSpjangcdForUser(String userid) {
-        String sql = "SELECT TOP 1 tx.spjangcd " +
-            "FROM tb_xa012 tx " +
-            "LEFT JOIN auth_user au ON tx.spjangcd = au.spjangcd " +
-            "WHERE au.username = ?";
-
-        List<String> result = jdbcTemplate.queryForList(sql, String.class, userid);
-        return result.isEmpty() ? "ZZ" : result.get(0); // fallback: ZZ
-    }
 
 }

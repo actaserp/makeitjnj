@@ -24,7 +24,7 @@ public class TB_DA007W {
 
     // 8 자재품목코드
     @Column(name = "japcode")
-    private Long japcode;
+    private String japcode;
 
     // 9 부품명
     @Column(name = "pname")
@@ -40,11 +40,11 @@ public class TB_DA007W {
 
     // 12 set단가
     @Column(name = "setamt")
-    private Long setamt;
+    private Double setamt;
 
     // 13 판매단가
     @Column(name = "saleamt")
-    private Long saleamt;
+    private Double saleamt;
 
     // 14 수량
     @Column(name = "QTY")

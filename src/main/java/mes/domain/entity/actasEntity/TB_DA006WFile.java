@@ -1,5 +1,6 @@
 package mes.domain.entity.actasEntity;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,11 +8,10 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.math.BigDecimal;
 
-@Getter
 @Entity
-@Setter
 @Table(name = "tb_DA006WFILE") //주문등록 head file 정보
 @NoArgsConstructor
+@Data
 public class TB_DA006WFile {
 
     @Id

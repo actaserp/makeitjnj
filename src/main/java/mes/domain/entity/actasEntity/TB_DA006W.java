@@ -124,11 +124,11 @@ public class TB_DA006W {
 
     // 31 이윤율
     @Column(name = "eyunyul")
-    private Double eyunyul;
+    private BigDecimal eyunyul;
 
     // 32 전체이윤
     @Column(name = "toteyunamt")
-    private Long toteyunamt;
+    private BigDecimal toteyunamt;
 
     // 33 프로젝트번호
     @Column(name = "projectno")
