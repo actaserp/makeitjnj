@@ -47,5 +47,8 @@ public class BomComponent extends AbstractAuditModel {
 	
 	@Column(name = "\"_order\"")
 	Integer _order;
+
+	@Column(name = "spjangcd")
+	String spjangcd;
 	
 }

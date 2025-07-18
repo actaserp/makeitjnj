@@ -328,11 +328,19 @@
                     Model
                   </label>
                 </th>
-                <td colspan="7">
-                  <input type="text" id="modeltxt" name="modeltxt" style="width: 70%">
+                <td >
+                  <input type="text" id="modeltxt" name="modeltxt">
                   <input type="hidden" id="MaterialGroupName" name="MaterialGroupName">
                   <input type="hidden" id="Material_id" name="Material_id">
                   <input type="hidden" id="product_code" name="product_code">
+                </td>
+                <th style="text-align: center">
+                  <label for="modeltxt_history">
+                    Model 이력
+                  </label>
+                </th>
+                <td colspan="5">
+                  <input type="text" id="modeltxt_history" name="modeltxt_history" style="width: 100%">
                 </td>
               </tr>
 
@@ -347,23 +355,17 @@
             <div class="button-wrap" style="margin-bottom: 10px; margin-top: 10px">
               <ul>
                 <li>
+                  <a class="btn btn-saverow" id="btnProduct" name="addModel" title="모델 생성">
+                    <img src="/images/icon/ico-plus.svg" alt="등록 아이콘">
+                    모델 이력
+                  </a>
+                </li>
+                <li>
                   <a class="btn btn-saverow" id="btnProductSearch" name="addModel" title="모델 생성">
                     <img src="/images/icon/ico-plus.svg" alt="등록 아이콘">
                     모델 생성
                   </a>
                 </li>
-               <!-- <li>
-                  <a class="btn btn-saverow" id="btn-addrow" name="addrow" title="행 복사">
-                    <img src="/images/icon/ico-edit.svg" alt="등록 아이콘">
-                    부품 추가
-                  </a>
-                </li>
-                <li>
-                  <a class="btn btn-deleterow" id="btn-deleterow" name="deleterow" title="행삭제">
-                    <img src="/images/icon/ico-delete.svg" alt="삭제 아이콘">
-                    행 삭제
-                  </a>
-                </li>-->
               </ul>
             </div>
           </div>
@@ -373,9 +375,8 @@
               <table class="write-table">
                 <caption>주문 등록 테이블</caption>
                 <colgroup>
-                  <col style="width: 15%"> <!-- 모델명: -->
-                  <col style="width: 15%"> <!-- 부품명:-->
-                  <col style="width: 10%"> <!-- 비고 -->
+                  <col style="width: 25%"> <!-- 부품명:-->
+                  <col style="width: 15%"> <!-- 비고 -->
                   <col style="width: 10%"> <!-- 작업방식 -->
                   <col style="width: 10%"> <!-- 1set/원가 -->
                   <col style="width: 10%"> <!-- 판매단가 -->
@@ -386,7 +387,6 @@
                 </colgroup>
                 <thead>
                 <tr id="itemHeaderRow">
-                  <th>모델명</th>
                   <th>부품명</th>
                   <th>비고</th>
                   <th>작업방식</th>
@@ -394,7 +394,6 @@
                   <th>판매단가</th>
                   <th>수량</th>
                   <th>제품가</th>
-                  <th>단가이력</th>
                   <th >
                     <a class="btn in_btn plus" id="addRemark" title="추가" style="width:30px; height:35px;">
                       <img src="/images/icon/ico-plus.svg" alt="등록 아이콘"
@@ -406,13 +405,8 @@
                 <tbody>
                 <tr class="item-template-row" style="display: none;">
                   <td>
-                    <div class="input-with-button" >
-                      <input type="text" name="txtModelNm" placeholder="모델명" readonly style="width: 200px;" autocomplete="off"/>
-                    </div>
-                  </td>
-                  <td>
                     <div class="input-with-button" style="display: flex; gap: 4px;">
-                      <input type="text" name="pname" placeholder="입력 후 엔터" style="flex: 1; width: 170px;" autocomplete="off"/>
+                      <input type="text" name="pname" placeholder="입력 후 엔터" style="flex: 1; width: 320px" autocomplete="off"/>
                       <input type="hidden" name="mat_code" />
                       <a class="btn in_btn" title="부품 검색" id="btnpartSearch" style="width: 28px; height: 32px;">
                         <img src="/images/icon/btn-srch-black.svg" alt="검색 아이콘"/>
@@ -434,9 +428,6 @@
                   <td><input type="text" name="saleamt" placeholder="판매단가" style="width: 100%;"/></td>
                   <td><input type="text" name="QTY" placeholder="수량" style="width: 100%;"/></td>
                   <td><input type="text" name="uamt" placeholder="제품가" style="width: 100%;"/></td>
-                  <td>
-                    <input type="text" name="balju_StateName" placeholder="단가이력" style="width: 100%;"/>
-                  </td>
                   <td class="al_c item_border" style="text-align: center; vertical-align: middle;">
                     <a class="btn in_btn del" title="행 삭제"
                        style="display: flex; justify-content: center; align-items: center; width: 35px; height: 35px; margin: 0 auto;">
@@ -448,16 +439,16 @@
                 </tbody>
                 <tfoot>
                 <tr class="sum-row" style="background-color: #f2f2f2; font-weight: bold;">
-                  <td colspan="4" style="text-align: center;">합계</td>
+                  <td colspan="3" style="text-align: center;">합계</td>
                   <td><input type="text" id="sum_setamt" readonly style="width: 100%; text-align: right;"/></td>
                   <td><input type="text" id="sum_saleamt" readonly style="width: 100%; text-align: right;"/></td>
                   <td><input type="text" id="sum_qty" readonly style="width: 100%; text-align: right;"/></td>
                   <td><input type="text" id="sum_uamt" readonly style="width: 100%; text-align: right;"/></td>
-                  <td colspan="2"></td>
+                  </td>
                 </tr>
                 </tfoot>
               </table>
-              <input type="hidden" id="bh_id" name="bh_id">
+              <input type="hidden" id="reqnum" name="reqnum">
               <input type="hidden" id="spjangcdHidden" name="spjangcd"/>
             </form>
           </div>
@@ -497,26 +488,14 @@
               <dd>
                 <div class="srch-box">
                   <input id="cboCompany2" name="cboCompany2" type="hidden">
+                  <input id="cboCompanyHidden2" name="cboCompanyHidden2" type="hidden">
                   <input class="form-control2" type="text" id="CompanyName2" name="CompanyName2"
-                         placeholder="검색버튼을 클릭하여 구매처를 검색하세요" readonly/>
+                         placeholder="검색버튼을 클릭하여 구매처를 검색하세요"/>
                   &nbsp;
                   <a class="btn btn-delete" title="구매처검색" id="btnCompanySearch2">
                     <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
                     구매처 검색
                   </a>
-                </div>
-              </dd>
-            </dl>
-            <dl>
-              <dt>
-                <label for="searchRemark">
-                  제목<span class="eq">*</span>
-                </label>
-              </dt>
-              <dd>
-                <div class="srch-box">
-                  <input type="text" id="searchRemark" name="searchRemark" class="input-srch"
-                         placeholder="제목" style="border-radius: 5px;">
                 </div>
               </dd>
             </dl>
@@ -612,54 +591,12 @@
       </div>
     </div>
   </div>
-  <!--요청사항 popup -->
-  <div class="modal">
-    <div class="popup-wrapper w700" id="popup2" style="min-width: 1050px">
-      <div class="popup-title">
-        <h3>옵션 및 요청사항</h3>
-        <a title="팝업닫기" onclick="closePopup('popup2')" class="btn-popup-close">
-          <img src="/images/icon/btn-popup-close.svg" alt="닫기">
-        </a>
-      </div>
-      <div class="popup-contents">
-        <div class="table-wrap">
-          <colgroup>
-            <col class="wp20">
-            <col class="wp80">
-          </colgroup>
-          <div class="table-wrap">
-            <table class="write-table">
-              <caption>요청사항</caption>
-              <tbody>
-              <tr style="align-items: center">
-                <th>
-                  <label for="ordtext">
-                    내&nbsp;&nbsp;용
-                  </label>
-                </th>
-                <td colspan="3">
-                  <div class="textarea-box">
-                    <textarea id="ordtext" style="height: 300px"></textarea>
-                    <!--<p class="text-count" id="text-count">0/100</p>-->
-                  </div>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-            <a style="color: red;margin-top: 4px;margin-left: 5px;">&nbsp;&nbsp;(첨부파일 및 이미지는 파일첨부를 이용하여 주세요)</a>
-          </div>
-        </div>
-        <div class="popup-button">
-          <button type="button" onclick="endtext('popup2')" class="btn-navy">작성완료</button>
-        </div>
-      </div>
-    </div>
-  </div>
 </th:block>
 
 <th:block layout:fragment="scripts">
   <th:block th:replace="/common/popup_company :: popup_company"></th:block>
   <th:block th:replace="/common/multiform_material :: multiform_material"></th:block>
+  <th:block th:replace="/common/balju/popup_model_history :: model_history"></th:block>
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <script>
     //본 예제에서는 도로명 주소 표기 방식에 대한 법령에 따라, 내려오는 데이터를 조합하여 올바른 주소를 구성하는 방법을 설명합니다.
@@ -955,7 +892,7 @@
         $('#btnDelete').click(function () {
           let items = _this.grid.selectedItems;
           if (items.length > 0) {
-            let id = items[0].bh_id;
+            let id = items[0].reqnum;
             let state = (items[0].BalJuHeadType || '').toLowerCase();
             if (state !== 'draft') {
               Alert.alert('', '미입고 상태일 때만 삭제할 수 있습니다.');
@@ -1104,6 +1041,16 @@
           poppage.show(searchcallback);
         });
 
+        $('#btnProduct').click(function () {
+          let poppage = new PopModel_history();
+          let $poppage = $(poppage);
+          let searchcallback = function (items) {
+            console.log('모델이력 팝업', items);
+
+          }
+          poppage.show(searchcallback);
+        });//모델 이력
+
         // tab2
         this.grid = new wijmo.grid.FlexGrid('#theGrid', {
           selectionMode: wijmo.grid.SelectionMode.Row,
@@ -1117,24 +1064,25 @@
             }
           },
           columns: [
-            {binding: '', header: 'bh_id', width: 150, visible: false},
-            {binding: '', header: '진행구분', width: 150},
-            {binding: '', header: '업체명', width: 70, align: 'center'},
-            {binding: '', header: '주문일자', width: 120, align: 'center'},
-            {binding: '', header: '제목', width: 120},
-            {binding: '', header: '품목', width: 100},
-            {binding: '', header: '규격', width: 150},
-            {binding: '', header: '수량', width: 60, align: 'right', format: 'n0'},
-            {binding: '', header: '단가', width: 100, align: 'right'},
-            {binding: '', header: '금액', width: 100, align: 'right'},
-            {binding: '', header: '요청사항', width: 100, align: 'center'},
-            {binding: '', header: '납품 희망일', width: 120, align: 'center'}
+            {binding: 'reqnum', header: 'reqnum', width: 150, visible: false},
+            {binding: 'ordflag', header: '진행구분', width: 130},
+            {binding: 'cltnm', header: '업체명', width: 70, align: 'center'},
+            {binding: 'indate', header: '주문일자', width: 120, align: 'center'},
+            {binding: 'modeltxt', header: 'model', width: 200, visible: false},
+            {binding: 'model_naem', header: 'model', width: 250},
+            {binding: 'pname', header: '품목', width: 200},
+            {binding: 'total_qty', header: '수량', width: 60, align: 'right', format: 'n0'},
+            {binding: 'total_saleamt', header: '판매단가', width: 100, align: 'right'},
+            {binding: 'total_uamt', header: '금액', width: 100, align: 'right'},
+            {binding: 'deldate', header: '납품 희망일', width: 120, align: 'center'},
+            {binding: 'remark', header: '비고', width: 100, align: 'center'},
+            {binding: 'file', header: '첨부파일', width: 100, align: 'center'},
           ],
           itemsSource: this.viewData, // 데이터를 설정할 배열
         });
 
         new FlexGridContextMenu(this.grid);
-        this.grid.downloadFileName = '발주 등록';
+        this.grid.downloadFileName = '발주 현황';
 
         this.grid.hostElement.addEventListener('dblclick', function (e) {
           let items = _this.grid.selectedItems;
@@ -1142,6 +1090,37 @@
             return false;
           }
           _this.$btnEdit.trigger('click');
+        });
+
+
+        $('#btnCompanySearch2').click(function () {
+          let poppage = new PopCompComponent();
+          let $poppage = $(poppage);
+          let searchcallback = function (items) {
+            console.log('items : ', items);
+            document.getElementById('cboCompany2').value = items.compcode;
+            document.getElementById('CompanyName2').value = items.compname;
+            document.getElementById('cboCompanyHidden2').value = items.id;
+          };
+          poppage.show(searchcallback);
+        });
+
+        $('#CompanyName2').keydown(function (event) {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+
+            let keyword = $('#CompanyName2').val();
+            let poppage = new PopCompComponent();
+            let $poppage = $(poppage);
+
+            let searchcallback = function (items) {
+              document.getElementById('cboCompany2').value = items.compcode;
+              document.getElementById('CompanyName2').value = items.compname;
+              document.getElementById('cboCompanyHidden2').value = items.id;
+            };
+
+            poppage.show(searchcallback, keyword);
+          }
         });
 
 
@@ -1225,13 +1204,15 @@
 
       searchTab2Data() {
         let _this = this;
-        let date_kind = $('#cboDateKind').val();  //발주구분
-        let start = $('#srchStartDt').val();  //시작일
-        let end = $('#srchEndDt').val();      //종료일
+        let cboCompany = $('#cboCompany2').val();  //거래처코드
+        let ord_flag = $('#searchOrdflag').val();  //구분
+        let start = $('#startDate').val();  //시작일
+        let end = $('#endDate').val();      //종료일
         let url = this.url + '/read';
 
         let data = {
-          'date_kind': date_kind,
+          'cboCompany': cboCompany,
+          'ord_flag': ord_flag,
           'start': start,
           'end': end,
           'action': 'read',
@@ -1385,13 +1366,13 @@
       // 🔹 루프 바깥에서 이윤 계산
       const setsamt = parseFloat($('#setsamt').val()?.replace(/,/g, '') || 0);
       const setqty = parseFloat($('#setqty').val()?.replace(/,/g, '') || 0);
-      const amount = setsamt * setqty;
-      const outamt = sumUamt;
+      const amount = setsamt * setqty;  //공급계(amount) = 공급기준(setsamt) * 수량(setqty)
+      const outamt = sumUamt;   //외주계(outamt)  = 제품가 합계(sum_uamt)
 
-      const eyunamt = amount - outamt;
-      const pereyunamt = sumSetAmt - setsamt;
-      const eyunyul = setsamt !== 0 ? (pereyunamt / setsamt) * 100 : 0;
-      const toteyunamt = amount !== 0 ? (eyunamt / amount) * 100 : 0;
+      const eyunamt = amount - outamt;    //이윤(eyunamt) = 공급계(amount) - 외주계(outamt)
+      const pereyunamt = sumSetAmt - setsamt;   //개당이윤(pereyunamt) = 1set합계(sum_setamt) - 공급기준(setsamt)
+      const eyunyul = setsamt !== 0 ? (pereyunamt / setsamt) * 100 : 0; //이윤율(eyunyul) = 개당이윤(pereyunamt) / 공급기준(setsamt) *100
+      const toteyunamt = amount !== 0 ? (eyunamt / amount) * 100 : 0;   //전체이윤(toteyunamt) = 이윤(eyunamt)/공급계(amount) * 100
 
       $('#amount').val(amount.toLocaleString(undefined, { maximumFractionDigits: 2 }));
       $('#outamt').val(outamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
@@ -1613,6 +1594,9 @@
       $('#btnTab2Search').click(function (e) {
         page.searchTab2Data();
       });
+
+      $('#startDate').val(CommonUtil.getMonthFirstDay());
+      $('#endDate').val(CommonUtil.getYYYYMMDD());
 
     });
 

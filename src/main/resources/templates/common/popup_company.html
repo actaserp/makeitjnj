@@ -117,7 +117,7 @@
             this.close();
         }
 
-        show(callback) {
+        show(callback, keyword = '') {
             let _this = this;
 
             this.callback = callback;
@@ -149,6 +149,10 @@
             this.$business_number = $content.find('#business_number');
             this.$btnCompSelect = $content.find('#btnCompSelect');
 
+            if (keyword) {
+              this.$compName.val(keyword);
+            }
+            this.searchDataBind();
 
             this.$btnCompSearch.click(function (e) {
                 _this.searchDataBind();
@@ -184,6 +188,18 @@
                 }
                 _this.selectData(items[0]); // btnCompSelect 클릭과 동일한 동작
             });
+          this.grid.hostElement.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.keyCode === 13) {
+              setTimeout(() => {
+                const selected = _this.grid.selectedItems;
+                if (selected.length > 0) {
+                  _this.selectData(selected[0]);
+                } else {
+                  console.log('선택된 행 없음');
+                }
+              }, 0); // 다음 이벤트 루프에서 실행
+            }
+          });
         }
 
         close() {

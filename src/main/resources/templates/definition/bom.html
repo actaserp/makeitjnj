@@ -357,10 +357,15 @@
                     <tbody>
                         <tr>
                             <th style="text-align: center">
-                                <label>일자</label>
+                                <label>엑셀양식</label>
                             </th>
                             <td>
-                                <input style="width:300px;" type="date" id="data_date" name="data_date" value=""  />
+                                <select style="width:300px;" id="excelType">
+                                    <option value="" >선택</option>
+                                    <option value="00" >제일전기</option>
+                                    <option value="01" >대양전기</option>
+                                    <option value="02" >기타(아크로)</option>
+                                </select>
                             </td>
                         </tr>
                         <tr>
@@ -376,7 +381,7 @@
                 </form>
             </div>
             <div class="pt-2">
-                <span style="padding-top:30px;">*미리 등록된 거래처만 엑셀 업로드가 가능합니다.</span>
+                <span style="padding-top:30px;">* 등록된 엑셀양식만 업로드가 가능합니다.</span>
                 <textarea id="upload_message" style='display:none;width:100%;height:150px;'></textarea>
             </div>
 
@@ -867,7 +872,6 @@
                     modalContainer = new PopupDraggable('구성 품목 수정');
                 }
                 modalContainer.open({width: 1025, height: 650, $content});
-                /*modalContainer.open({width: 600, height: 540, $content});*/
 
                 let $MaterialName = $content.find('#MaterialName');
                 let $Material_id = $content.find('#Material_id');
@@ -975,9 +979,9 @@
                     );
                 });*/
 
-                if (data.action === 'edit') {
+                /*if (data.action === 'edit') {
                     $btnMatSearch.attr('disabled', true);
-                }
+                }*/
 
                 //새로고침
                 let $btnTest = $content.find('#btnTest');
@@ -1332,11 +1336,17 @@
 
                 $content.find('#btn_excel_save').on('click', function () {
                     let $form = $content.find('#excelUploadForm');
+                    if (!$('#upload_file').val()) {
+                        Alert.alert('', '파일을 선택하여 주십시오');
+                        return;
+                    } else if($('#excelType').val() === ""){
+                        Alert.alert('', '엑셀양식을 선택하여 주십시오');
+                        return;
+                    }
                     Alert.confirm('',
                         '저장하시겠습니까?',
                         function () {
                             _this.saveBomBulkData($form, modalContainer);
-                            //modalContainer.close();
                         },
                         function () { }
                     );
@@ -1350,6 +1360,7 @@
                 var formData = new FormData(form);
 
                 formData['data_date'] = $('#srchStartDt').val();
+                formData.append("excelType", $('#excelType').val());
                 formData.append("uploadfile", $('#upload_file')[0].files[0].name);
 
                 let result = AjaxUtil.postFileSyncData('/api/definition/bom' + '/upload_save', formData);
@@ -1358,7 +1369,7 @@
                     let message = '저장되었습니다.';
                     if (result.success) {
                         Notify.success(message);
-                        _this.searchMainData();
+                        _this.searchBomList();
                         modalContainer.close();
                     } else {
 
@@ -1371,8 +1382,6 @@
                 }
 
             }
-
-
         }
 
         let page = null;

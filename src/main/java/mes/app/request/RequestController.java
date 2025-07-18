@@ -13,6 +13,7 @@ import mes.domain.repository.actasRepository.TB_DA006WFILERepository;
 import mes.domain.repository.actasRepository.TB_DA006WRepository;
 import mes.domain.repository.actasRepository.TB_DA007WRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -124,6 +126,7 @@ public class RequestController {
     head.setOutamt(Long.parseLong((String) data.get("outamt")));    //외주계
     head.setEyunamt(Long.parseLong((String) data.get("eyunamt")));  //이윤
     head.setPereyunamt(Long.parseLong((String) data.get("pereyunamt")));  //개당이윤율
+    head.setOrdflag("0"); //0 : 주문의뢰 1:견적작성 2:제작 3:출고
     if (eyunyulObj != null && !eyunyulObj.toString().isBlank()) {
       head.setEyunyul(new BigDecimal(eyunyulObj.toString()));
     }  //이윤율
@@ -242,6 +245,23 @@ public class RequestController {
         "message", "주문 저장 완료", "reqnum", reqnum));
   }
 
+  //tab2 read
+  @GetMapping("/read")
+  public AjaxResult getTab2Read(@RequestParam(value = "cboCompany", required = false) Integer compcd ,
+                                @RequestParam(value = "ord_flag") String ordflag,
+                                @RequestParam(value = "start") String start_date,
+                                @RequestParam(value = "end") String end_date,
+                                @RequestParam(value = "spjangcd") String spjangcd){
+    AjaxResult result = new AjaxResult();
+    start_date = start_date + " 00:00:00";
+    end_date = end_date + " 23:59:59";
+    Timestamp start = Timestamp.valueOf(start_date);
+    Timestamp end = Timestamp.valueOf(end_date);
+
+    List<Map<String, Object>> Tab2Read = requestService.getTab2Read(compcd, ordflag ,start, end, spjangcd);
+    result.data = Tab2Read;
+    return result;
+  }
   // 휴일 조회 메서드
   @GetMapping("/getHoliday")
   public AjaxResult getHoliday(){

@@ -300,6 +300,12 @@ var CommonUtil = {
 	    }
   		return str;
 	},
+    getMonthFirstDay: function () {
+        const d = new Date();
+        d.setDate(1); // 날짜를 1일로 설정
+        return this.formatYYYYMMDD(d); // 기존 포맷 함수 재활용
+    },
+
     //from to 숫자 입력값 유효성 체크(title 입력 필요)
     checkValidNumberRange: function (from, to) {
         if (Number(from.val()) > Number(to.val())) {

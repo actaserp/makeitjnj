@@ -75,8 +75,8 @@ public class PopupController {
 		paramMap.addValue("material_group", material_group, java.sql.Types.INTEGER);
 		paramMap.addValue("keyword", keyword);
 		result.data = this.sqlRunner.getRows(sql, paramMap);
-//		log.info("read SQL: {}", sql);
-//    log.info("SQL Parameters: {}", paramMap.getValues());
+		log.info("read SQL: {}", sql);
+    log.info("SQL Parameters: {}", paramMap.getValues());
 		return result;
 	}	
 	
@@ -372,4 +372,58 @@ public class PopupController {
 
 		return result;
 	}
+
+	@RequestMapping("/search_model_history")
+	public AjaxResult getModel_history(
+			@RequestParam(value = "start", required = false) String start,
+			@RequestParam(value = "end", required = false) String end,
+			@RequestParam(value = "modeltxt", required = false) String modeltxt){
+
+		MapSqlParameterSource paramMap = new MapSqlParameterSource();
+		paramMap.addValue("start", start);
+		paramMap.addValue("end", end);
+		paramMap.addValue("modeltxt", modeltxt);
+		AjaxResult result = new AjaxResult();
+
+		String sql = """
+            select id as id
+            , "Name" as compname
+            , "Code" as compcode
+            , "BusinessNumber" as business_number
+            , "TelNumber" as tel_number
+            , "CEOName" as invoiceeceoname
+            , "Address" as invoiceeaddr
+            , "BusinessType" as invoiceebiztype
+            , "BusinessItem" as invoiceebizclass
+            , "AccountManager" as invoiceecontactname1
+            , "AccountManagerPhone" as invoiceetel1
+            , "Email" as invoiceeemail1
+            from company
+            where "relyn" = '0'
+			""";
+
+		if (start != null && !start.isEmpty()) {
+			sql += " AND LOWER([Code]) LIKE LOWER(:start) ";
+			paramMap.addValue("start", "%" + start + "%");
+		}
+
+		if (end != null && !end.isEmpty()) {
+			sql += " AND LOWER([Name]) LIKE LOWER(:end) ";
+			paramMap.addValue("end", "%" + end + "%");
+		}
+
+		if (modeltxt != null && !modeltxt.isEmpty()) {
+			sql += " AND modeltxt LIKE :modeltxt ";
+			paramMap.addValue("modeltxt", "%" + modeltxt + "%");
+		}
+
+		sql += " ORDER BY [Name] ASC ";
+
+		result.data = this.sqlRunner.getRows(sql, paramMap);
+
+		return result;
+	}
+
+
+
 }
