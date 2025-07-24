@@ -798,6 +798,7 @@
         this.spjangcd = $('#spjangcdHidden');
         this.viewData = new wijmo.collections.CollectionView();
         this.url = '/api/request/request';
+        this.grid = null;
         this.init();
       }
 
@@ -1052,6 +1053,7 @@
         });//모델 이력
 
         // tab2
+
         this.grid = new wijmo.grid.FlexGrid('#theGrid', {
           selectionMode: wijmo.grid.SelectionMode.Row,
           headersVisibility: wijmo.grid.HeadersVisibility.Column,
@@ -1076,9 +1078,23 @@
             {binding: 'total_uamt', header: '금액', width: 100, align: 'right'},
             {binding: 'deldate', header: '납품 희망일', width: 120, align: 'center'},
             {binding: 'remark', header: '비고', width: 100, align: 'center'},
-            {binding: 'file', header: '첨부파일', width: 100, align: 'center'},
+            {binding: 'downloads', header: '첨부파일', width: 100, align: 'center'},
+            {binding: 'isdownload', visible: false},
+            {binding: 'hd_files', visible: false},
+            {binding: 'saupnum', visible: false},
           ],
           itemsSource: this.viewData, // 데이터를 설정할 배열
+          itemFormatter: function (panel, r, c, cell) {
+            if (panel.cellType === wijmo.grid.CellType.Cell) {
+              var item = panel.rows[r].dataItem; // 현재 행의 데이터 항목
+              if (panel.columns[c].binding === 'downloads') {
+                cell.innerHTML = ''; // 셀 내용 초기화
+                if (item.isdownload) {
+                  cell.innerHTML = '<a title="다운로드" class="btn-filedown" onclick="downloadFile_order()">다운로드</a>';
+                }
+              }
+            }
+          }
         });
 
         new FlexGridContextMenu(this.grid);
@@ -1265,6 +1281,21 @@
           console.error('휴일정보를 불러오는데 실패했습니다.', error);
         }
       });
+    }
+
+    //다운로드
+    function downloadFile_order() {
+      const selectedItems = page.grid.selectedItems;
+      const downloadList = [];
+
+      selectedItems.forEach(function (item) {
+        downloadList.push({
+          reqnum: item.reqnum
+        });
+      });
+
+      const downloadUrl = '/api/request/request/downloader';
+      downloadFiles(downloadList, downloadUrl);
     }
 
     // YYYYMMDD → Date 객체 변환
@@ -1515,6 +1546,7 @@
         document.getElementById('CompanyName').value = '';
         document.getElementById('cboCompanyHidden').value = '';
       });
+
       // 공급 관련 필드들 자동 쉼표 처리
       $('#setsamt, #setqty, #amount, #outamt, #eyunamt, #pereyunamt, #eyunyul, #toteyunamt')
         .on('input', function () {
@@ -1524,10 +1556,6 @@
       $('#setsamt, #amount, #setqty').on('input', function () {
         updateOrderSummary();
       });
-
-  /*    $('#OrderRequestForm').on('input', 'input[name^="setamt"], input[name^="QTY"], input[name^="saleamt"], input[name^="uamt"]', function () {
-         // 쉼표 자동 입력
-      });*/
 
       $('#OrderRequestForm').on('input', 'input[name^="setamt"], input[name^="saleamt"], input[name^="QTY"], input[name^="uamt"]', function () {
         console.log("setamt changed:", this.value);

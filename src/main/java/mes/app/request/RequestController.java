@@ -13,24 +13,31 @@ import mes.domain.repository.actasRepository.TB_DA006WFILERepository;
 import mes.domain.repository.actasRepository.TB_DA006WRepository;
 import mes.domain.repository.actasRepository.TB_DA007WRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.relational.core.sql.In;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Slf4j
 @RestController
@@ -247,7 +254,7 @@ public class RequestController {
 
   //tab2 read
   @GetMapping("/read")
-  public AjaxResult getTab2Read(@RequestParam(value = "cboCompany", required = false) Integer compcd ,
+  public AjaxResult getTab2Read(@RequestParam(value = "cboCompany2", required = false) Integer compcd ,
                                 @RequestParam(value = "ord_flag") String ordflag,
                                 @RequestParam(value = "start") String start_date,
                                 @RequestParam(value = "end") String end_date,
@@ -258,16 +265,172 @@ public class RequestController {
     Timestamp start = Timestamp.valueOf(start_date);
     Timestamp end = Timestamp.valueOf(end_date);
 
+    log.info("tab2 read :cboCompany ");
+
     List<Map<String, Object>> Tab2Read = requestService.getTab2Read(compcd, ordflag ,start, end, spjangcd);
+    for (Map<String, Object> item : Tab2Read) {
+      ObjectMapper objectMapper = new ObjectMapper();
+      if (item.get("hd_files") != null) {
+        try {
+          // JSON 문자열을 List<Map<String, Object>>로 변환
+          List<Map<String, Object>> fileitems = objectMapper.readValue((String) item.get("hd_files"), new TypeReference<List<Map<String, Object>>>() {
+          });
+
+          for (Map<String, Object> fileitem : fileitems) {
+            if (fileitem.get("filepath") != null && fileitem.get("fileornm") != null) {
+              String filenames = (String) fileitem.get("fileornm");
+              String filepaths = (String) fileitem.get("filepath");
+              String filesvnms = (String) fileitem.get("filesvnm");
+
+              List<String> fileornmList = filenames != null ? Arrays.asList(filenames.split(",")) : Collections.emptyList();
+              List<String> filepathList = filepaths != null ? Arrays.asList(filepaths.split(",")) : Collections.emptyList();
+              List<String> filesvnmList = filesvnms != null ? Arrays.asList(filesvnms.split(",")) : Collections.emptyList();
+
+              item.put("isdownload", !fileornmList.isEmpty() && !filepathList.isEmpty());
+            } else {
+              item.put("isdownload", false);
+            }
+          }
+
+          // fileitems를 다시 item에 넣어 업데이트
+          item.remove("hd_files");
+          item.put("hd_files", fileitems);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+
     result.data = Tab2Read;
     return result;
   }
+
   // 휴일 조회 메서드
   @GetMapping("/getHoliday")
   public AjaxResult getHoliday(){
     AjaxResult result = new AjaxResult();
     result.data = requestService.getHoliday();
     return result;
+  }
+
+
+  @PostMapping("/downloader")
+  public ResponseEntity<?> downloadFile(@RequestBody List<Map<String, Object>> reqnums) throws IOException {
+
+    // 파일 목록과 파일 이름을 담을 리스트 초기화
+    List<File> filesToDownload = new ArrayList<>();
+    List<String> fileNames = new ArrayList<>();
+
+    // ZIP 파일 이름을 설정할 변수 초기화
+    String tketcrdtm = null;
+    String tketnm = null;
+
+    // 파일을 메모리에 쓰기
+    for (Map<String, Object> reqnum : reqnums) {
+      // 다운로드 위한 파일 정보 조회
+      List<Map<String, Object>> fileList = requestService.download(reqnum);
+
+      for (Map<String, Object> fileInfo : fileList) {
+        String filePath = (String) fileInfo.get("filepath");    // 파일 경로
+        String fileName = (String) fileInfo.get("filesvnm");    // 파일 이름(uuid)
+        String originFileName = (String) fileInfo.get("fileornm");  //파일 원본이름(origin Name)
+
+        if (tketcrdtm == null) {
+          tketcrdtm = (String) fileInfo.get("reqdate");
+        }
+        if (tketnm == null) {
+          tketnm = "주문등록";
+        }
+
+        File file = new File(filePath + File.separator + fileName);
+
+        // 파일이 실제로 존재하는지 확인
+        if (file.exists()) {
+          filesToDownload.add(file);
+          fileNames.add(originFileName); // 다운로드 받을 파일 이름을 originFileName으로 설정
+        }
+      }
+    }
+
+    // 파일이 없는 경우
+    if (filesToDownload.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+
+    // 파일이 하나인 경우 그 파일을 바로 다운로드
+    if (filesToDownload.size() == 1) {
+      File file = filesToDownload.get(0);
+      String originFileName = fileNames.get(0); // originFileName 가져오기
+
+      HttpHeaders headers = new HttpHeaders();
+      String encodedFileName = URLEncoder.encode(originFileName, StandardCharsets.UTF_8.toString()).replaceAll("\\+", "%20");
+      headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=*''" + encodedFileName);
+      headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+      headers.setContentLength(file.length());
+
+      ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(file.toPath()));
+
+      return ResponseEntity.ok()
+          .headers(headers)
+          .body(resource);
+    }
+
+    String zipFileName = (tketcrdtm != null && tketnm != null) ? tketcrdtm + "_" + tketnm + ".zip" : "download.zip";
+
+    // 파일이 두 개 이상인 경우 ZIP 파일로 묶어서 다운로드
+    ByteArrayOutputStream zipBaos = new ByteArrayOutputStream();
+    try (ZipOutputStream zipOut = new ZipOutputStream(zipBaos)) {
+
+      Set<String> addedFileNames = new HashSet<>(); // 이미 추가된 파일 이름을 저장할 Set
+      int fileCount = 1;
+
+      for (int i = 0; i < filesToDownload.size(); i++) {
+        File file = filesToDownload.get(i);
+        String originFileName = fileNames.get(i); // originFileName 가져오기
+
+        // 파일 이름이 중복될 경우 숫자를 붙여 고유한 이름으로 만듦
+        String uniqueFileName = originFileName;
+        while (addedFileNames.contains(uniqueFileName)) {
+          uniqueFileName = originFileName.replace(".", "_" + fileCount++ + ".");
+        }
+
+        // 고유한 파일 이름을 Set에 추가
+        addedFileNames.add(uniqueFileName);
+
+        try (FileInputStream fis = new FileInputStream(file)) {
+          ZipEntry zipEntry = new ZipEntry(originFileName);
+          zipOut.putNextEntry(zipEntry);
+
+          byte[] buffer = new byte[1024];
+          int len;
+          while ((len = fis.read(buffer)) > 0) {
+            zipOut.write(buffer, 0, len);
+          }
+
+          zipOut.closeEntry();
+        } catch (IOException e) {
+          e.printStackTrace();
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+      }
+
+      zipOut.finish();
+    } catch (IOException e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+
+    ByteArrayResource zipResource = new ByteArrayResource(zipBaos.toByteArray());
+
+    HttpHeaders headers = new HttpHeaders();
+    String encodedZipFileName = URLEncoder.encode(zipFileName, StandardCharsets.UTF_8.toString()).replaceAll("\\+", "%20");
+    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=*''" + encodedZipFileName);
+    headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+    headers.setContentLength(zipResource.contentLength());
+
+    return ResponseEntity.ok()
+        .headers(headers)
+        .body(zipResource);
   }
 
 }

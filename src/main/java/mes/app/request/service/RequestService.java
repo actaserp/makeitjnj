@@ -112,7 +112,18 @@ public class RequestService {
           a.remark,
           a.pname,
           a.reqseq,
-          STUFF(STUFF(h.deldate, 5, 0, '-'), 8, 0, '-') AS deldate
+          STUFF(STUFF(h.deldate, 5, 0, '-'), 8, 0, '-') AS deldate,
+          (
+             SELECT bd.filepath, bd.filesvnm, bd.fileextns,
+             bd.fileurl, bd.fileornm, bd.filesize, bd.fileid
+             FROM tb_DA006WFILE bd
+             WHERE bd.custcd = h.custcd
+               AND bd.spjangcd = h.spjangcd
+               AND bd.reqdate = h.reqdate
+               AND bd.reqnum = h.reqnum
+             ORDER BY bd.indatem DESC
+             FOR JSON PATH
+         ) AS hd_files
         FROM TB_DA006W h
         LEFT JOIN summary s
           ON h.reqdate = s.reqdate AND h.reqnum = s.reqnum
@@ -133,5 +144,25 @@ public class RequestService {
     }
 
     return sqlRunner.getRows(sql, param);
+  }
+
+  public List<Map<String, Object>> download(Map<String, Object> reqnum) {
+    MapSqlParameterSource dicParam = new MapSqlParameterSource();
+
+    StringBuilder sql = new StringBuilder();
+    dicParam.addValue("reqnum", reqnum.get("reqnum"));
+
+    sql.append("""
+                select
+                        filepath,
+                        reqdate,
+                        filesvnm,
+                        fileornm
+                from tb_DA006WFILE
+                where
+                    reqnum = :reqnum
+                """);
+    List<Map<String, Object>> items = this.sqlRunner.getRows(sql.toString(), dicParam);
+    return items;
   }
 }
