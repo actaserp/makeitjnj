@@ -175,9 +175,9 @@ public class RequestService {
             h.cltcd,
             h.cltnm,
             h.indate,
-            h.modeltxt,
-            m.Name AS model_naem,
-            mh.modeltxt_current ,
+            h.modeltxt AS model_naem,
+           h.pcode as model_code,
+           mh.modeltxt_current ,
             s.total_qty,
             s.total_saleamt,
             s.total_uamt,
@@ -201,8 +201,6 @@ public class RequestService {
             ON h.reqdate = s.reqdate AND h.reqnum = s.reqnum
         LEFT JOIN aggregated a
             ON h.reqdate = a.reqdate AND h.reqnum = a.reqnum
-        LEFT JOIN material m
-            ON h.modeltxt = m.Code
         LEFT JOIN latest_model_history mh
             ON h.modeltxt = mh.modelid
         WHERE h.spjangcd = :spjangcd
@@ -216,8 +214,8 @@ public class RequestService {
       sql += " and h.compcd like :compcd ";
       param.addValue("compcd", "%" + compcd + "%");
     }
-    log.info("getTab2Read  SQL: {}", sql);
-    log.info("SQL Parameters: {}", param.getValues());
+//    log.info("getTab2Read  SQL: {}", sql);
+//    log.info("SQL Parameters: {}", param.getValues());
     return sqlRunner.getRows(sql, param);
   }
 
@@ -253,7 +251,8 @@ public class RequestService {
         SELECT 
           h.reqdate,
           h.reqnum,
-          h.modeltxt as modelcd,
+          h.pcode as model_code,
+          h.modeltxt as model_name,
           m.Name as modeltxt,
           m.MaterialGroup_id ,
           m.id as Material_id,
@@ -312,8 +311,8 @@ public class RequestService {
           AND h.spjangcd = :spjangcd
     """;
 
-    log.info("getOrderDetail  SQL: {}", sql);
-    log.info("SQL Parameters: {}", paramMap.getValues());
+//    log.info("getOrderDetail  SQL: {}", sql);
+//    log.info("SQL Parameters: {}", paramMap.getValues());
     return this.sqlRunner.getRows(sql, paramMap);
   }
 

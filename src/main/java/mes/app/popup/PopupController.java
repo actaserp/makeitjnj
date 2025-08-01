@@ -75,8 +75,8 @@ public class PopupController {
 		paramMap.addValue("material_group", material_group, java.sql.Types.INTEGER);
 		paramMap.addValue("keyword", keyword);
 		result.data = this.sqlRunner.getRows(sql, paramMap);
-		log.info("read SQL: {}", sql);
-    log.info("SQL Parameters: {}", paramMap.getValues());
+//		log.info("read SQL: {}", sql);
+//    log.info("SQL Parameters: {}", paramMap.getValues());
 		return result;
 	}	
 	
@@ -375,10 +375,10 @@ public class PopupController {
 
 	@RequestMapping("/search_model_history")
 	public AjaxResult getModel_history(
-			@RequestParam(value = "modeltxt" ) String modeltxt){
+			@RequestParam(value = "modelid" ) String modelid){
 
 		MapSqlParameterSource paramMap = new MapSqlParameterSource();
-		paramMap.addValue("modelid", modeltxt);
+		paramMap.addValue("modelid", modelid);
 		AjaxResult result = new AjaxResult();
 
 		String sql = """
@@ -390,11 +390,15 @@ public class PopupController {
 				 mh.modeltxt_current
 				 from model_history mh
 				 where modelid =:modelid
-				 ORDER BY version_no DESC
 			""";
 
-		result.data = this.sqlRunner.getRows(sql, paramMap);
+		sql+= """
+				 ORDER BY version_no DESC
+				""";
 
+		result.data = this.sqlRunner.getRows(sql, paramMap);
+		log.info("getModel_history SQL: {}", sql);
+		log.info("SQL : {}", paramMap.getValues());
 		return result;
 	}
 

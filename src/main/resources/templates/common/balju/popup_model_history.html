@@ -5,7 +5,7 @@
 
         <section class="section" style="padding-top: 10px;">
 
-            <!--<div class="section-top">
+            <div class="section-top">
                 <div class="search-wrap" style="text-align: left;">
                     <dl>
                       <dt>
@@ -30,12 +30,12 @@
                     <dl>
                         <dt>
                             <label for="modeltxt">
-                                모델명<span class="eq"></span>
+                                모델ID<span class="eq"></span>
                             </label>
                         </dt>
                         <dd>
                             <div class="srch-box">
-                                <input class="form-control2" type="text" id="modeltxt" name="modeltxt" style="width:160px;"/>
+                                <input class="form-control2" type="text" id="modeltxt" name="modelid" style="width:160px;"/>
                             </div>
                         </dd>
                     </dl>
@@ -45,14 +45,13 @@
                         <dd>
                             <li>
                                 <a class="btn btn-delete" title="검색" id="btnacmtnmSearch">
-                                    &lt;!&ndash;                                        class 쓰이는 곳 찾고 없으면 클래스명 수정하기&ndash;&gt;
                                     <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
                                     검색
                                 </a>
                             </li>
                         </dd>
                     </dl>
-                </div>-->
+                </div>
                 <div class="container-fluid">
                     <div id="theGrid2" style="height: 270px;"></div>
                 </div>
@@ -83,7 +82,7 @@
         this.modalContainer = new PopupDraggable('모델 이력');
         this.$btnmodel_historySearch = null;
         this.$btnCompSelect = null;
-        this.$modeltxt = null;
+        this.$modelid = null;
         this.$start = $('#startDate').val();  //시작일
         this.$end = $('#endDate').val();      //종료일
       }
@@ -93,7 +92,7 @@
         let url = '/api/popup/search_model_history';
 
         let data = {
-          'modeltxt' : _this.$modeltxt.val()
+          'modelid':  _this.$modelid.val() ,
         };
 
         let result = AjaxUtil.getSyncData(url, data);
@@ -134,9 +133,8 @@
         this.close();
       }
 
-      show(callback, presetKeyword = '') {
+      show(callback, presetKeyword = {}) {
         let _this = this;
-
         this.callback = callback;
 
         let content = tmpl('popup_model_historySearchTemplate', {});
@@ -144,8 +142,14 @@
         this.modalContainer.open({width: 800, height: 500, $content});
 
         setTimeout(() => {
+          this.$modelid = $content.find('#modelid');
 
+          if (presetKeyword.modelid && this.$modelid.length > 0) {
+            this.$modelid.val(presetKeyword.modelid);
+          }
+          this.searchDataBind();
           const el = document.getElementById('theGrid2');
+
           if (!el) {
             return;
           }

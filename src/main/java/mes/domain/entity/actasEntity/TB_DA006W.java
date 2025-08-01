@@ -145,4 +145,8 @@ public class TB_DA006W {
     // 36 연락처
     @Column(name = "telno", length = 20)
     private String telno;
+    //모델 코드
+    @Column(name = "pcode")
+    private Long pcode;
+    
 }

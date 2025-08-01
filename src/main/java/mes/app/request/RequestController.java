@@ -129,7 +129,8 @@ public class RequestController {
     head.setOperid(String.valueOf(data.get("perid"))); //발주담당
     head.setCltzipcd(String.valueOf(data.get("cltzipcd"))); //우편번호
     head.setCltaddr(String.valueOf(data.get("address1")));  //업체 주소
-    head.setModeltxt((String) data.get("Material_id"));  //모델명
+    head.setPcode(Long.parseLong((String) data.get("Material_id")));//모델코드
+    head.setModeltxt((String) data.get("modeltxt"));  //모델명
     head.setSetsamt(Long.parseLong((String) data.get("setsamt")));  //공급기준
     head.setSetqty(Long.parseLong((String) data.get("setqty")));    //수량
     head.setAmount(Long.parseLong((String) data.get("amount")));    //공급계
@@ -152,15 +153,15 @@ public class RequestController {
 
     // ✅ 1-1. 모델 이력 저장
     if (modeltxt_history != null && !modeltxt_history.isBlank()) {
-      String modelid = head.getModeltxt();
+      Long modelid = head.getPcode();
 
       // 🔍 최신 version_no 조회
       Integer lastVersion = modelHistoryRepository
-          .findMaxVersionNoByModelid(modelid)
+          .findMaxVersionNoByModelid(String.valueOf(modelid))
           .orElse(0);  // 없으면 0
 
       ModelHistory history = new ModelHistory();
-      history.setModelid(modelid);
+      history.setModelid(String.valueOf(modelid));
       history.setCustcd(custcd);
       history.setSpjangcd(spjangcd);
       history.setReqdate(reqdate);
@@ -187,12 +188,12 @@ public class RequestController {
     int seq = 1;
 
     for (Map<String, Object> row : detailList) {
-      String modelId = head.getModeltxt();
+      Long modelId = head.getPcode();
       TB_DA007W_PK detailPk = new TB_DA007W_PK(custcd, spjangcd, reqdate, reqnum, String.format("%03d", seq++));
       TB_DA007W detail = new TB_DA007W();
       detail.setId(detailPk);
       detail.setModelnm((String) row.get("txtModelNm"));
-      detail.setPcode(Long.valueOf(modelId));
+      detail.setPcode(Long.valueOf(modelId)); //모델 코드
       detail.setPname((String) row.get("pname"));
       detail.setJapcode((String) row.get("mat_code"));
       detail.setQty(parseDoubleSafe(row.get("qty")));
@@ -212,59 +213,6 @@ public class RequestController {
     File uploadDir = new File(uploadPath);
     if (!uploadDir.exists()) uploadDir.mkdirs();
 
-    /*if (files != null) {
-      for (MultipartFile multipartFile : files) {
-        String path = settings.getProperty("file_upload_path") + "주문등록";
-        String originalFilename = multipartFile.getOriginalFilename();
-        long fileSize = multipartFile.getSize();
-        log.info("업로드 시도 - 파일명: {}, 크기: {} bytes", originalFilename, fileSize);
-        if (fileSize > 52428800) {
-          result.message = "파일의 크기가 초과하였습니다.";
-          log.info("파일 크기 초과 - 파일명: {}, 크기: {} bytes", originalFilename, fileSize);
-          return ResponseEntity.badRequest().body(result);
-        }
-
-        String fileName = multipartFile.getOriginalFilename();
-        String ext = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-        String file_uuid_name = UUID.randomUUID().toString() + "." + ext;
-
-        File saveDir = new File(path);
-        if (!saveDir.isDirectory()) {
-          saveDir.mkdirs();
-        }
-
-        File saveFile = new File(path + File.separator + file_uuid_name);
-        multipartFile.transferTo(saveFile);
-
-        TB_DA006WFile tbDa006WFile = new TB_DA006WFile();
-        tbDa006WFile.setFilepath(path);
-        tbDa006WFile.setFilesvnm(file_uuid_name);
-        tbDa006WFile.setFileornm(fileName);
-        tbDa006WFile.setFilesize(BigDecimal.valueOf(fileSize));
-        tbDa006WFile.setFileextns(ext);
-        tbDa006WFile.setFileurl(path);
-
-        tbDa006WFile.setCustcd(custcd);
-        tbDa006WFile.setSpjangcd(spjangcd);
-        tbDa006WFile.setReqdate(reqdate);
-        tbDa006WFile.setReqnum(reqnum);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        LocalDate localDate = LocalDate.parse(reqdate, formatter);
-        Timestamp timestamp = Timestamp.valueOf(localDate.atStartOfDay());  // 시간은 00:00:00
-
-        tbDa006WFile.setIndatem(timestamp);
-
-        tbDa006WFile.setInuserid(user.getUsername());
-        tbDa006WFile.setInusernm(user.getUsername());
-
-        if (!requestService.saveFile(tbDa006WFile)) {
-          result.success = false;
-          result.message = "저장에 실패하였습니다.";
-          break;
-        }
-      }
-    }*/
     if (files != null) {
       for (MultipartFile multipartFile : files) {
         String path = settings.getProperty("file_upload_path") + "주문등록";

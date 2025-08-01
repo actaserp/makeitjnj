@@ -357,7 +357,7 @@
             <div class="button-wrap" style="margin-bottom: 10px; margin-top: 10px">
               <ul>
                 <li>
-                  <a class="btn btn-saverow" id="ModelCurrentList" name="ModelCurrentList" title="모델 생성">
+                  <a class="btn btn-saverow" id="ModelCurrentList" name="ModelCurrentList" title="모델 이력">
                     <img src="/images/icon/ico-plus.svg" alt="등록 아이콘">
                     모델 이력
                   </a>
@@ -685,18 +685,16 @@
       $container.on('click', 'a[title="부품 검색"]', function () {
         const $row = $(this).closest('tr');
 
-        const $productInput = $row.find('input[name^="txtProductName"]');
         const $productId = $row.find('input[name^="Material_id"]');
         const $productCode = $row.find('input[name^="product_code"]');
         const $mat_code = $row.find('input[name^="mat_code"]');
         const $materialGroup = $row.find('input[name^="MaterialGroupName"]');
+        const $pname = $row.find('input[name^="pname_"]');
 
         const pop = new PopMatComponent();
-        pop.material_group = 21;
-        pop.material_type = 'mat_grp, sangpum';
-
+        pop.material_group  = 21;
         pop.show(function (item) {
-          $productInput.val(item.Name);
+          $pname.val(item.Name);
           $productId.val(item.id);
           $productCode.val(item.Code);
           $mat_code.val(item.Code)
@@ -706,12 +704,12 @@
       });
 
       // 🔍 Enter 키로 품목 자동 검색 (1건일 때 자동입력, 아니면 팝업)
-      $container.on('keydown', 'input[name^="pname_"]', function (e) {
+      $container.on('keydown', 'input[name^="pname"]', function (e) {
         if (e.key === 'Enter') {
           e.preventDefault();
 
           const $row = $(this).closest('tr');
-          const $productInput = $(this);
+          const $pname = $row.find('input[name^="pname_"]');
           const $productId = $row.find('input[name^="Material_id_"]');
           const $productCode = $row.find('input[name^="product_code_"]');
           const $materialGroup = $row.find('input[name^="MaterialGroupName_"]');
@@ -720,23 +718,21 @@
           const spjangcd = sessionStorage.getItem('spjangcd');
 
           $.get('/api/popup/search_material', {
-            material_group: 21 ,
-            material_type: 'mat_grp,sangpum',
+            material_group : 21,
             keyword,
             spjangcd
           }, function (res) {
             if (res.data?.length === 1) {
               const item = res.data[0];
-              $productInput.val(item.Name);
+              $pname.val(item.Name);
               $productId.val(item.id);
               $productCode.val(item.Code);
               $materialGroup.val(item.group_name);
               tryShowBaljuPrice($row);
             } else {
               const pop = new PopMatComponent();
-              pop.material_type = 'product,sangpum';
               pop.show(function (item) {
-                $productInput.val(item.Name);
+                $pname.val(item.Name);
                 $productId.val(item.id);
                 $productCode.val(item.Code);
                 $materialGroup.val(item.group_name);
@@ -795,7 +791,7 @@
             pereyunamt: $('#pereyunamt').val().replaceAll(',', ''),
             eyunyul: $('#eyunyul').val().replaceAll(',', ''),
             toteyunamt: $('#toteyunamt').val().replaceAll(',', ''),
-            modeltxt: $('#modeltxt').val(),
+            modeltxt: $('#modeltxt').val(), //모델명
             MaterialGroupName: $('#MaterialGroupName').val(),
             Material_id: $('#Material_id').val(),
             product_code: $('#product_code').val(),
@@ -1016,9 +1012,11 @@
         $('#ModelCurrentList').click(function () {
           let poppage = new PopModel_history();
           let $poppage = $(poppage);
-          let searchcallback = function (items) {
-            console.log('모델이력 팝업', items);
+          poppage.modelid = $('#product_code').val();
+          poppage.modeltxt =  $('#modeltxt').val();
 
+          let searchcallback = function (item) {
+            console.log('모델이력 팝업', item);
           }
           poppage.show(searchcallback);
         });//모델 이력
@@ -1037,11 +1035,11 @@
           },
           columns: [
             {binding: 'reqnum', header: 'reqnum', width: 100, visible: false},
-            {binding: 'ordflag', header: '진행구분', width: 100},
+            {binding: 'ordflag', header: '진행구분', width: 70},
             {binding: 'cltcd', header: '업체명', width: 15, align: 'center', visible: false},
             {binding: 'cltnm', header: '업체명', width: 150, align: 'center'},
             {binding: 'reqdate', header: '주문일자', width: 120, align: 'center'},
-            {binding: 'modeltxt', header: 'model', width: 200, visible: false},
+            {binding: 'model_code', header: 'model', width: 200, visible: false},
             {binding: 'model_naem', header: 'model', width: 250},
             {binding: 'pname', header: '품목', width: 200},
             {binding: 'total_qty', header: '수량', width: 60, align: 'right', format: 'n0'},
@@ -1133,7 +1131,8 @@
         $('#postno').val(item.cltzipcd || '');
         $('#address1').val(item.cltaddr || '');
         $('#remark').val(item.remark || '');
-        $('#modeltxt').val( item.model_naem || '');
+        $('#modeltxt').val( item.model_name || '');
+        $('#Material_id').val( item.model_code || '');
         $('#CompanyName').val(item.cltnm || '');
 
         const fileList = Array.isArray(item.hd_files) ? item.hd_files : [];
@@ -1551,8 +1550,11 @@
       $('#amount').val(amount.toLocaleString(undefined, { maximumFractionDigits: 2 }));
       $('#outamt').val(outamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
       $('#eyunamt').val(eyunamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
-      $('#pereyunamt').val(pereyunamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
-      $('#eyunyul').val(eyunyul.toFixed(2));
+      $('#pereyunamt').val((pereyunamt < 0 ? '-' : '') + Math.abs(pereyunamt).toLocaleString(undefined, { maximumFractionDigits: 2 }));
+      $('#eyunyul').val((eyunyul < 0 ? '-' : '') + Math.abs(eyunyul).toFixed(2));
+
+      // $('#pereyunamt').val(pereyunamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
+      // $('#eyunyul').val(eyunyul.toFixed(2));
       $('#toteyunamt').val(toteyunamt.toFixed(2));
     }
 
@@ -1741,12 +1743,12 @@
         let $pnameInput = $row.find('input[name^="pname"]');
         let keyword = $pnameInput.val();
 
-        const pop = new PopMatComponent();
+        /*const pop = new PopMatComponent();
         pop.material_type = 'product';
         pop.show(function (item) {
           $row.find('input[name^="pname"]').val(item.Name);
           $row.find('input[name^="Material_id"]').val(item.id);
-        }, keyword);
+        }, keyword);*/
       });
 
       const reqdateField = document.getElementById("reqdate");
