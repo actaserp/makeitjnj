@@ -22,4 +22,10 @@ public interface MaterialRepository extends JpaRepository<Material, Integer>{
 	String findMaxCodeBy4000Prefix();
 
 	boolean existsByCode(String s);
+
+	@Query(value = "SELECT TOP 1 Code FROM material WHERE Code LIKE '2000%' AND ISNUMERIC(Code) = 1 ORDER BY CAST(Code AS INT) DESC", nativeQuery = true)
+	String findMaxCodeForMaterial();
+
+	@Query(value = "SELECT TOP 1 Code FROM material WHERE Code LIKE '1000%' AND ISNUMERIC(Code) = 1 ORDER BY CAST(Code AS INT) DESC", nativeQuery = true)
+	String findMaxCodeForModel();
 }

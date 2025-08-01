@@ -104,16 +104,16 @@ public class BomController {
 		Timestamp endTs = Timestamp.valueOf(endDate);
 
 		// ✅ smalldatetime 범위 제한 적용
-		LocalDateTime maxDate = LocalDateTime.of(2079, 6, 6, 23, 59);
+		LocalDateTime maxDate = LocalDateTime.of(2100, 12, 31, 23, 59);
 		if (endTs.toLocalDateTime().isAfter(maxDate)) {
 			endTs = Timestamp.valueOf(maxDate);
 		}
 
-		// checkSameVersion
 		boolean isSameVersion = this.bomService.checkSameVersion(id, materialId, bomType, version);
-		if (isSameVersion) {
+
+		if (isSameVersion==true) {
 			result.success = false;
-			result.message = "중복된 BOM버전이 존재합니다.";
+			result.message="중복된 BOM버전이 존재합니다.";
 			return result;
 		}
 
@@ -310,7 +310,7 @@ public class BomController {
 			@RequestParam("spjangcd") String spjangcd,
 			@RequestParam("upload_file") MultipartFile upload_file,
 			Authentication auth) throws IOException {
-
+//		log.info("saveBomBulkData들어옴   excelType:{},spjangcd:{},upload_file:{}",excelType,spjangcd,upload_file);
 		User user = (User)auth.getPrincipal();
 		Integer userId = user.getId();
 		AjaxResult result = new AjaxResult();
@@ -320,8 +320,13 @@ public class BomController {
 		String formattedDate = dtf.format(LocalDateTime.now());
 		String upload_filename = settings.getProperty("file_temp_upload_path") + formattedDate + "_" + upload_file.getOriginalFilename();
 		File file = new File(upload_filename);
-		if (file.exists()) file.delete();
-		try (FileOutputStream destination = new FileOutputStream(upload_filename)) {
+		// 디렉토리 자동 생성
+		File parentDir = file.getParentFile();
+		if (!parentDir.exists()) {
+			parentDir.mkdirs();
+		}
+		//파일 저장
+		try (FileOutputStream destination = new FileOutputStream(file)) {
 			destination.write(upload_file.getBytes());
 		}
 
@@ -517,9 +522,12 @@ public class BomController {
 
 				// 그룹정보(구분) 수집
 				String groupStr = row.get(0) != null ? row.get(0).trim() : "";
-				int materialGroupId = 48; // 구분이 SMD, 대양 둘다 아닐경우 48
-				if (groupStr.equals("SMD 동영자재")) materialGroupId = 44;
-				else if (groupStr.equals("대양 수삽자재")) materialGroupId = 49;
+				int materialGroupId;
+				if ("자재".equals(groupStr)) {
+					materialGroupId = 21;
+				} else {
+					materialGroupId = 20;
+				}
 
 				// 자재명 수집
 				String materialName = row.get(1) != null ? row.get(1).replaceAll("[\\r\\n]+", " ").trim() : "";
@@ -691,7 +699,7 @@ public class BomController {
 		Material newProd = new Material();
 		newProd.setName(productName);
 		newProd.setMaterialGroupId(45); // <-- 대양전기 그룹ID로
-		newProd.setCode(getNextMaterialCode());
+		newProd.setCode(getNextModelCode());
 		newProd.set_created(Timestamp.valueOf(LocalDateTime.now()));
 		newProd.setFactory_id(1);
 		newProd.setUnitId(3); // 기본단위
@@ -717,7 +725,7 @@ public class BomController {
 		newMat.set_created(Timestamp.valueOf(LocalDateTime.now()));
 		newMat.setSpjangcd(spjangcd);
 		// ... 추가 필드
-		newMat.setCode(getNextMaterialCode()); // '4000' + N
+		newMat.setCode(getNextMaterialCode());
 		newMat.setLotUseYn("0");
 		newMat.setMtyn("1");
 		newMat.setUseyn("0");
@@ -786,8 +794,8 @@ public class BomController {
 		// 신규 등록: 제품 (materialGroupId=46, Code 자동)
 		Material newProd = new Material();
 		newProd.setName(productName);
-		newProd.setMaterialGroupId(46);
-		newProd.setCode(getNextMaterialCode()); // '4000' + N
+		newProd.setMaterialGroupId(20);
+		newProd.setCode(getNextMaterialCode());
 		newProd.set_created(Timestamp.valueOf(LocalDateTime.now()));
 		newProd.setFactory_id(1);
 		newProd.setUnitId(3);
@@ -810,7 +818,7 @@ public class BomController {
 		// 신규 등록: 자재 (materialGroupId=50, Code 자동)
 		Material newMat = new Material();
 		newMat.setName(materialName);
-		newMat.setMaterialGroupId(50);
+		newMat.setMaterialGroupId(21);
 		newMat.setCode(getNextMaterialCode()); // '4000' + N
 		newMat.set_created(Timestamp.valueOf(LocalDateTime.now()));
 		newMat.setFactory_id(1);
@@ -825,8 +833,28 @@ public class BomController {
 		return newMat.getId();
 	}
 
-	/** material.code의 다음 '4000'+N 값을 생성하는 메서드 (실제 구현 필요!) */
 	public String getNextMaterialCode() {
+		String maxCode = materialRepository.findMaxCodeForMaterial(); // ex: 200031
+		int next = (maxCode != null) ? Integer.parseInt(maxCode) + 1 : 200000;
+		while (materialRepository.existsByCode(String.valueOf(next))) {
+			next++;
+		}
+		return String.valueOf(next);
+	}
+
+	public String getNextModelCode() {
+		String maxCode = materialRepository.findMaxCodeForModel(); // ex: 100023
+		int next = (maxCode != null) ? Integer.parseInt(maxCode) + 1 : 100000;
+		while (materialRepository.existsByCode(String.valueOf(next))) {
+			next++;
+		}
+		return String.valueOf(next);
+	}
+
+
+
+	/** material.code의 다음 '4000'+N 값을 생성하는 메서드 (실제 구현 필요!) */
+	/*public String getNextMaterialCode() {
 		String maxCode = materialRepository.findMaxCodeBy4000Prefix();
 		int nextNumber = 4000;
 		if (maxCode != null && !maxCode.isEmpty()) {
@@ -841,5 +869,5 @@ public class BomController {
 			nextNumber++;
 		}
 		return String.valueOf(nextNumber);
-	}
+	}*/
 }

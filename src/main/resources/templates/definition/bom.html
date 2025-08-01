@@ -361,10 +361,7 @@
                             </th>
                             <td>
                                 <select style="width:300px;" id="excelType">
-                                    <option value="" >선택</option>
-                                    <option value="00" >제일전기</option>
-                                    <option value="01" >대양전기</option>
-                                    <option value="02" >기타(아크로)</option>
+                                    <option value="01" >JNJ</option>
                                 </select>
                             </td>
                         </tr>
@@ -1332,8 +1329,6 @@
                 let modalContainer = new PopupDraggable('엑셀 업로드');
                 modalContainer.open({ width: 440, height: 220, $content });
 
-
-
                 $content.find('#btn_excel_save').on('click', function () {
                     let $form = $content.find('#excelUploadForm');
                     if (!$('#upload_file').val()) {
@@ -1362,6 +1357,7 @@
                 formData['data_date'] = $('#srchStartDt').val();
                 formData.append("excelType", $('#excelType').val());
                 formData.append("uploadfile", $('#upload_file')[0].files[0].name);
+                formData.append("spjangcd", sessionStorage.getItem('spjangcd'));
 
                 let result = AjaxUtil.postFileSyncData('/api/definition/bom' + '/upload_save', formData);
 
