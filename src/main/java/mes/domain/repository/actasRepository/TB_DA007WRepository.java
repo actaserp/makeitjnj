@@ -26,4 +26,12 @@ public interface TB_DA007WRepository extends JpaRepository<TB_DA007W, TB_DA007W_
                             , @Param("spjangcd") String spjangcd);
 
     List<TB_DA007W> findById_CustcdAndId_SpjangcdAndId_ReqdateAndId_Reqnum(String custcd, String spjangcd, String reqdate, String reqnum);
+
+    @Modifying
+    @Query("DELETE FROM TB_DA007W d WHERE d.id.custcd = :custcd AND d.id.spjangcd = :spjangcd AND d.id.reqdate = :reqdate AND d.id.reqnum = :reqnum")
+    void deleteByPk(@Param("custcd") String custcd,
+                    @Param("spjangcd") String spjangcd,
+                    @Param("reqdate") String reqdate,
+                    @Param("reqnum") String reqnum);
+
 }

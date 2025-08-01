@@ -14,4 +14,5 @@ public interface TB_DA006WFILERepository extends JpaRepository<TB_DA006WFile,Int
 
     @Query(value = "SELECT t.* FROM TB_DA006WFile t WHERE t.reqnum = :reqnum", nativeQuery = true)
     List<TB_DA006WFile> findAllByReqnum(String reqnum);
+
 }

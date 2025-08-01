@@ -375,49 +375,23 @@ public class PopupController {
 
 	@RequestMapping("/search_model_history")
 	public AjaxResult getModel_history(
-			@RequestParam(value = "start", required = false) String start,
-			@RequestParam(value = "end", required = false) String end,
-			@RequestParam(value = "modeltxt", required = false) String modeltxt){
+			@RequestParam(value = "modeltxt" ) String modeltxt){
 
 		MapSqlParameterSource paramMap = new MapSqlParameterSource();
-		paramMap.addValue("start", start);
-		paramMap.addValue("end", end);
-		paramMap.addValue("modeltxt", modeltxt);
+		paramMap.addValue("modelid", modeltxt);
 		AjaxResult result = new AjaxResult();
 
 		String sql = """
-            select id as id
-            , "Name" as compname
-            , "Code" as compcode
-            , "BusinessNumber" as business_number
-            , "TelNumber" as tel_number
-            , "CEOName" as invoiceeceoname
-            , "Address" as invoiceeaddr
-            , "BusinessType" as invoiceebiztype
-            , "BusinessItem" as invoiceebizclass
-            , "AccountManager" as invoiceecontactname1
-            , "AccountManagerPhone" as invoiceetel1
-            , "Email" as invoiceeemail1
-            from company
-            where "relyn" = '0'
+      select 
+				 mh.modelid,
+				 mh.cltnm ,
+				 STUFF(STUFF(mh.reqdate, 5, 0, '-'), 8, 0, '-') AS reqdate, 
+				 mh.version_no ,
+				 mh.modeltxt_current
+				 from model_history mh
+				 where modelid =:modelid
+				 ORDER BY version_no DESC
 			""";
-
-		if (start != null && !start.isEmpty()) {
-			sql += " AND LOWER([Code]) LIKE LOWER(:start) ";
-			paramMap.addValue("start", "%" + start + "%");
-		}
-
-		if (end != null && !end.isEmpty()) {
-			sql += " AND LOWER([Name]) LIKE LOWER(:end) ";
-			paramMap.addValue("end", "%" + end + "%");
-		}
-
-		if (modeltxt != null && !modeltxt.isEmpty()) {
-			sql += " AND modeltxt LIKE :modeltxt ";
-			paramMap.addValue("modeltxt", "%" + modeltxt + "%");
-		}
-
-		sql += " ORDER BY [Name] ASC ";
 
 		result.data = this.sqlRunner.getRows(sql, paramMap);
 

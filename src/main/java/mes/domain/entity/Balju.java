@@ -18,6 +18,9 @@ public class Balju extends AbstractAuditModel{
   @Column(name = "id")
   Integer id;
 
+  @Column(name="\"BaljuHead_id\"")
+  Integer BaljuHeadId;
+
   @Column(name = "\"JumunNumber\"")
   String jumunNumber;
 
@@ -80,9 +83,6 @@ public class Balju extends AbstractAuditModel{
 
   @Column(name = "\"Company_id\"", nullable = false)
   Integer companyId;
-
-  @Column(name ="\"SujuHead_id\"")
-  Integer sujuHeadId;
 
   @Column(name="\"_status\"")
   String _status;

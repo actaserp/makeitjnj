@@ -200,13 +200,12 @@
                 let _this = this;
                 let url = '/api/popup/search_material';
                 let data = {
-                    // 'material_type': _this.$cboMaterialType.val(),
-                    //'material_group': _this.$cboMaterialGrp.val(),
-                    'material_group': _this.material_group !== undefined ? _this.material_group : _this.$cboMaterialGrp.val(),
-                    'keyword': _this.$keyword.val(),
-                    'spjangcd': sessionStorage.getItem('spjangcd')
+                    material_group: _this.material_group,
+                    material_type: _this.material_type,
+                    keyword: _this.$keyword.val(),
+                    spjangcd: sessionStorage.getItem('spjangcd')
                 };
-
+                console.log('🔍 요청 파라미터:', data);
                 let result = AjaxUtil.getSyncData(url, data);
                 if (result.success) {
                     _this.viewData.sourceCollection = result.data;
@@ -304,6 +303,11 @@
                     // this.$cboMaterialType.change(function (e) {
                     //     AjaxUtil.fillSelectOptions(_this.$cboMaterialGrp, 'material_group', 'all', false, _this.$cboMaterialType.val());
                     // })
+                    if (_this.material_group !== undefined && _this.material_group !== null) {
+                        setTimeout(() => {
+                            _this.$cboMaterialGrp.val(_this.material_group); // ✅ select box에도 값 반영
+                        }, 0);
+                    }
 
                     this.$btnMaterialSearch.click(function (e) {
                         _this.searchDataBind();

@@ -380,7 +380,11 @@ public class BomService {
 				    u.Name AS unit,
 				    bt.Description,
 				    bt.bc_id,
-				    bt.tot_order
+				    bt.tot_order,
+				    CASE 
+								 WHEN bt.lvl = 1 THEN '모품목'
+								 ELSE '자품목'
+						 END AS part_type
 				FROM bom_tree bt
 				INNER JOIN material m ON m.id = bt.Material_id
 				LEFT JOIN unit u ON u.id = m.Unit_id

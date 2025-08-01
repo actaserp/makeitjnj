@@ -3,6 +3,7 @@ package mes.domain.entity.actasEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 
 @Entity
@@ -40,11 +41,11 @@ public class TB_DA007W {
 
     // 12 set단가
     @Column(name = "setamt")
-    private Double setamt;
+    private BigDecimal setamt;
 
     // 13 판매단가
     @Column(name = "saleamt")
-    private Double saleamt;
+    private BigDecimal saleamt;
 
     // 14 수량
     @Column(name = "QTY")

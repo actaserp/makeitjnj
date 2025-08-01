@@ -9,12 +9,12 @@ import mes.config.Settings;
 import mes.domain.entity.User;
 import mes.domain.entity.actasEntity.*;
 import mes.domain.model.AjaxResult;
+import mes.domain.repository.actasRepository.ModelHistoryRepository;
 import mes.domain.repository.actasRepository.TB_DA006WFILERepository;
 import mes.domain.repository.actasRepository.TB_DA006WRepository;
 import mes.domain.repository.actasRepository.TB_DA007WRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,9 +49,6 @@ public class RequestController {
   RequestService requestService;
 
   @Autowired
-  BomService bomService;
-
-  @Autowired
   private TB_DA007WRepository tbDa007WRepository;
 
   @Autowired
@@ -59,6 +57,8 @@ public class RequestController {
   @Autowired
   private TB_DA006WFILERepository tbDa006WFILERepository;
 
+  @Autowired
+  ModelHistoryRepository modelHistoryRepository;
   @Autowired
   Settings settings;
 
@@ -74,7 +74,7 @@ public class RequestController {
     }
     Integer bomId = (Integer) bomList.get(0).get("id");
 
-    List<Map<String, Object>> bomTree = bomService.getBomComponentTreeList(bomId);
+    List<Map<String, Object>> bomTree = requestService.getBomComponentTreeList(bomId,"ZZ");
     result.data = bomTree;
     return result;
   }
@@ -96,12 +96,13 @@ public class RequestController {
     String rawReqdate = (String) data.get("reqdate");
     String reqdate = rawReqdate != null ? rawReqdate.replace("-", "") : null;
     String reqnum = (String) data.get("reqnum");
+    String modeltxt_history =  (String) data.get("modeltxt_history");
 
     boolean isNew = (reqnum == null || reqnum.isBlank());
 
     if (isNew) {
       // 🔹 신규일 경우 reqnum 채번
-      reqnum = tbDa006WRepository.getNextReqnum(custcd, spjangcd, reqdate);
+      reqnum = tbDa006WRepository.getNextReqnum(spjangcd);
     }
 
     // ✅ 1. TB_DA006W 저장 (헤더)
@@ -124,9 +125,11 @@ public class RequestController {
     head.setCltnm((String) data.get("CompanyName"));  //회사이름
 
     head.setDeldate(deldate); //납기 희망일
+    head.setPerid(String.valueOf(data.get("perid"))); //담당자
+    head.setOperid(String.valueOf(data.get("perid"))); //발주담당
     head.setCltzipcd(String.valueOf(data.get("cltzipcd"))); //우편번호
     head.setCltaddr(String.valueOf(data.get("address1")));  //업체 주소
-    head.setModeltxt((String) data.get("product_code"));  //모델명
+    head.setModeltxt((String) data.get("Material_id"));  //모델명
     head.setSetsamt(Long.parseLong((String) data.get("setsamt")));  //공급기준
     head.setSetqty(Long.parseLong((String) data.get("setqty")));    //수량
     head.setAmount(Long.parseLong((String) data.get("amount")));    //공급계
@@ -146,6 +149,34 @@ public class RequestController {
     head.setTelno((String) data.get("telno"));
     tbDa006WRepository.save(head);
     log.info("헤더 저장 완료: {}", head);
+
+    // ✅ 1-1. 모델 이력 저장
+    if (modeltxt_history != null && !modeltxt_history.isBlank()) {
+      String modelid = head.getModeltxt();
+
+      // 🔍 최신 version_no 조회
+      Integer lastVersion = modelHistoryRepository
+          .findMaxVersionNoByModelid(modelid)
+          .orElse(0);  // 없으면 0
+
+      ModelHistory history = new ModelHistory();
+      history.setModelid(modelid);
+      history.setCustcd(custcd);
+      history.setSpjangcd(spjangcd);
+      history.setReqdate(reqdate);
+      history.setReqnum(reqnum);
+      history.setCltcd(head.getCltcd());
+      history.setCltnm(head.getCltnm());
+      history.setPrev_modeltxt(modeltxt_history);  // 🔄 이전 모델 설명
+      history.setModeltxt_current(data.get("modeltxt_history").toString()); // 현재 모델 설명
+      history.setVersion_no(lastVersion + 1);
+      history.setChange_date(LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE));
+      history.setChanger_name(user.getUsername());
+
+      modelHistoryRepository.save(history);
+      log.info("모델 이력 저장 완료: {}", history);
+    }
+
     // ✅ 2. TB_DA007W 저장 (상세항목들)
     List<TB_DA007W> oldDetails = tbDa007WRepository.findById_CustcdAndId_SpjangcdAndId_ReqdateAndId_Reqnum(
         custcd, spjangcd, reqdate, reqnum);
@@ -154,17 +185,20 @@ public class RequestController {
 
     List<Map<String, Object>> detailList = (List<Map<String, Object>>) data.get("detailList");
     int seq = 1;
+
     for (Map<String, Object> row : detailList) {
+      String modelId = head.getModeltxt();
       TB_DA007W_PK detailPk = new TB_DA007W_PK(custcd, spjangcd, reqdate, reqnum, String.format("%03d", seq++));
       TB_DA007W detail = new TB_DA007W();
       detail.setId(detailPk);
       detail.setModelnm((String) row.get("txtModelNm"));
+      detail.setPcode(Long.valueOf(modelId));
       detail.setPname((String) row.get("pname"));
       detail.setJapcode((String) row.get("mat_code"));
-      detail.setQty(Double.parseDouble((String) row.get("qty")));
-      detail.setSetamt(Double.parseDouble((String) row.get("setamt")));
-      detail.setSaleamt(Double.parseDouble((String) row.get("saleamt")));
-      detail.setUamt(Double.parseDouble((String) row.get("uamt")));
+      detail.setQty(parseDoubleSafe(row.get("qty")));
+      detail.setSetamt(parseBigDecimalSafe(row.get("setamt")));
+      detail.setSaleamt(parseBigDecimalSafe(row.get("saleamt")));
+      detail.setUamt(parseDoubleSafe(row.get("uamt")));
       detail.setRemark((String) row.get("remark"));
       detail.setJobflag((String) row.get("jobflag"));
       detail.setInperid(user.getUsername());
@@ -178,13 +212,15 @@ public class RequestController {
     File uploadDir = new File(uploadPath);
     if (!uploadDir.exists()) uploadDir.mkdirs();
 
-    if (files != null) {
+    /*if (files != null) {
       for (MultipartFile multipartFile : files) {
         String path = settings.getProperty("file_upload_path") + "주문등록";
-        int fileSize = (int) multipartFile.getSize();
-
+        String originalFilename = multipartFile.getOriginalFilename();
+        long fileSize = multipartFile.getSize();
+        log.info("업로드 시도 - 파일명: {}, 크기: {} bytes", originalFilename, fileSize);
         if (fileSize > 52428800) {
           result.message = "파일의 크기가 초과하였습니다.";
+          log.info("파일 크기 초과 - 파일명: {}, 크기: {} bytes", originalFilename, fileSize);
           return ResponseEntity.badRequest().body(result);
         }
 
@@ -196,6 +232,7 @@ public class RequestController {
         if (!saveDir.isDirectory()) {
           saveDir.mkdirs();
         }
+
         File saveFile = new File(path + File.separator + file_uuid_name);
         multipartFile.transferTo(saveFile);
 
@@ -212,7 +249,65 @@ public class RequestController {
         tbDa006WFile.setReqdate(reqdate);
         tbDa006WFile.setReqnum(reqnum);
 
-        tbDa006WFile.setIndatem(reqdate);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate localDate = LocalDate.parse(reqdate, formatter);
+        Timestamp timestamp = Timestamp.valueOf(localDate.atStartOfDay());  // 시간은 00:00:00
+
+        tbDa006WFile.setIndatem(timestamp);
+
+        tbDa006WFile.setInuserid(user.getUsername());
+        tbDa006WFile.setInusernm(user.getUsername());
+
+        if (!requestService.saveFile(tbDa006WFile)) {
+          result.success = false;
+          result.message = "저장에 실패하였습니다.";
+          break;
+        }
+      }
+    }*/
+    if (files != null) {
+      for (MultipartFile multipartFile : files) {
+        String path = settings.getProperty("file_upload_path") + "주문등록";
+        String originalFilename = multipartFile.getOriginalFilename();
+        long fileSize = multipartFile.getSize(); // ✅ 수정 완료
+        log.info("업로드 시도 - 파일명: {}, 크기: {} bytes", originalFilename, fileSize);
+
+        if (fileSize > 52428800L) {
+          result.message = "파일의 크기가 초과하였습니다.";
+          log.info("파일 크기 초과 - 파일명: {}, 크기: {} bytes", originalFilename, fileSize);
+          return ResponseEntity.badRequest().body(result);
+        }
+
+        String fileName = originalFilename;
+        String ext = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+        String file_uuid_name = UUID.randomUUID().toString() + "." + ext;
+
+        File saveDir = new File(path);
+        if (!saveDir.isDirectory()) {
+          saveDir.mkdirs();
+        }
+
+        File saveFile = new File(path + File.separator + file_uuid_name);
+        multipartFile.transferTo(saveFile);
+
+        TB_DA006WFile tbDa006WFile = new TB_DA006WFile();
+        tbDa006WFile.setFilepath(path);
+        tbDa006WFile.setFilesvnm(file_uuid_name);
+        tbDa006WFile.setFileornm(fileName);
+        tbDa006WFile.setFilesize(BigDecimal.valueOf(fileSize));
+        tbDa006WFile.setFileextns(ext);
+        tbDa006WFile.setFileurl(path);
+
+        tbDa006WFile.setCustcd(custcd);
+        tbDa006WFile.setSpjangcd(spjangcd);
+        tbDa006WFile.setReqdate(reqdate);
+        tbDa006WFile.setReqnum(reqnum);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate localDate = LocalDate.parse(reqdate, formatter);
+        Timestamp timestamp = Timestamp.valueOf(localDate.atStartOfDay());
+        tbDa006WFile.setIndatem(timestamp);
+
         tbDa006WFile.setInuserid(user.getUsername());
         tbDa006WFile.setInusernm(user.getUsername());
 
@@ -224,14 +319,28 @@ public class RequestController {
       }
     }
 
+
     // ✅ 4. 파일 삭제
-    if (deletedFiles2 != null && !deletedFiles2.isEmpty()) {
+    if (!isNew && deletedFiles2 != null && !deletedFiles2.isEmpty()) {
       List<TB_DA006WFile> tbDa006WFileList = new ArrayList<>();
 
       for (MultipartFile deletedFile : deletedFiles2) {
         String content = new String(deletedFile.getBytes(), StandardCharsets.UTF_8);
         Map<String, Object> deletedFileMap = new ObjectMapper().readValue(content, new TypeReference<>() {});
-        Integer fileid = (Integer) deletedFileMap.get("fileid");
+
+        Object fileidObj = deletedFileMap.get("fileid");
+        if (fileidObj == null) {
+          log.warn("fileid 누락: {}", deletedFileMap);
+          continue;
+        }
+
+        Integer fileid;
+        try {
+          fileid = Integer.parseInt(fileidObj.toString());
+        } catch (NumberFormatException e) {
+          log.warn("fileid 파싱 실패: {}", fileidObj);
+          continue;
+        }
 
         TB_DA006WFile tbDa006WFile = tbDa006WFILERepository.findById(fileid).orElse(null);
         if (tbDa006WFile != null) {
@@ -247,9 +356,20 @@ public class RequestController {
       tbDa006WFILERepository.deleteAll(tbDa006WFileList);
     }
 
-
     return ResponseEntity.ok(Map.of("success", true,
         "message", "주문 저장 완료", "reqnum", reqnum));
+  }
+
+  private static Double parseDoubleSafe(Object val) {
+    if (val == null) return null;
+    String clean = val.toString().trim().replace(",", "");
+    if (clean.isEmpty()) return null;
+    try {
+      return Double.parseDouble(clean);
+    } catch (NumberFormatException e) {
+      System.err.println("Double 변환 실패: [" + val + "]");
+      return null;
+    }
   }
 
   //tab2 read
@@ -265,7 +385,7 @@ public class RequestController {
     Timestamp start = Timestamp.valueOf(start_date);
     Timestamp end = Timestamp.valueOf(end_date);
 
-    log.info("tab2 read :cboCompany ");
+    //log.info("tab2 read :cboCompany ");
 
     List<Map<String, Object>> Tab2Read = requestService.getTab2Read(compcd, ordflag ,start, end, spjangcd);
     for (Map<String, Object> item : Tab2Read) {
@@ -431,6 +551,81 @@ public class RequestController {
     return ResponseEntity.ok()
         .headers(headers)
         .body(zipResource);
+  }
+
+  @GetMapping("/getDetailList")
+  public AjaxResult getOrderDetail(
+      @RequestParam("custcd") String custcd,
+      @RequestParam("spjangcd") String spjangcd,
+      @RequestParam("reqdate") String reqdate,
+      @RequestParam("reqnum") String reqnum,
+      HttpServletRequest request) {
+
+    String formattedReqdate = reqdate.replace("-", "");
+
+    log.info("getDetailList 들어옴 custcd:{},spjangcd:{}, reqdate:{}, reqnum:{}",custcd ,spjangcd,formattedReqdate,reqnum);
+    List<Map<String, Object>> detailList = requestService.getOrderDetail(reqnum, formattedReqdate, custcd, spjangcd);
+
+    AjaxResult result = new AjaxResult();
+    result.data = detailList;
+
+    return result;
+  }
+
+  @PostMapping("/delete")
+  @Transactional
+  public AjaxResult deleteOrderData(@RequestParam("id") String reqnum) {
+    AjaxResult result = new AjaxResult();
+
+    try {
+
+      // 🔍 헤더 정보 조회
+      TB_DA006W head = tbDa006WRepository.findByReqnum(reqnum)
+          .orElseThrow(() -> new RuntimeException("해당 reqnum에 대한 주문 헤더가 없습니다."));
+
+      String custcd = head.getId().getCustcd();
+      String spjangcd = head.getId().getSpjangcd();
+      String reqdate = head.getId().getReqdate();
+      String modeltxt = head.getModeltxt();
+
+      // 🔽 파일 삭제 (물리 + DB)
+      List<TB_DA006WFile> files = tbDa006WFILERepository.findAllByReqnum(reqnum);
+      for (TB_DA006WFile file : files) {
+        File physicalFile = new File(file.getFilepath(), file.getFilesvnm());
+        if (physicalFile.exists()) physicalFile.delete();
+        tbDa006WFILERepository.deleteById(file.getFileid());
+      }
+
+      // 🔽 모델 이력 삭제
+      modelHistoryRepository.deleteByModelHistoryKey(modeltxt, custcd, spjangcd, reqdate, reqnum);
+
+      // 🔽 상세/헤더 삭제
+      tbDa007WRepository.deleteByPk(custcd, spjangcd, reqdate, reqnum);
+      tbDa006WRepository.deleteByPk(custcd, spjangcd, reqdate, reqnum);
+
+      result.success = true;
+      result.message = "삭제가 완료되었습니다.";
+    } catch (Exception e) {
+      result.success = false;
+      result.message = "삭제 중 오류가 발생했습니다: " + e.getMessage();
+      log.error("❌ 주문 삭제 실패", e);
+      throw e;
+    }
+
+    return result;
+  }
+
+
+  private static BigDecimal parseBigDecimalSafe(Object val) {
+    if (val == null) return null;
+    String clean = val.toString().trim().replace(",", "");
+    if (clean.isEmpty()) return null;
+    try {
+      return new BigDecimal(clean);
+    } catch (NumberFormatException e) {
+      System.err.println("BigDecimal 변환 실패: [" + val + "]");
+      return null;
+    }
   }
 
 }
