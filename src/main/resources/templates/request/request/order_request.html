@@ -597,6 +597,7 @@
     </div>
   </div>
 
+
 </th:block>
 
 <th:block layout:fragment="scripts">
@@ -1012,15 +1013,17 @@
         $('#ModelCurrentList').click(function () {
           let poppage = new PopModel_history();
           let $poppage = $(poppage);
-          poppage.modelid = $('#product_code').val();
-          poppage.modeltxt =  $('#modeltxt').val();
+          let modelidVal = $('#Material_id').val();
+          let modeltxtVal = $('#modeltxt').val();
 
           let searchcallback = function (item) {
             console.log('모델이력 팝업', item);
           }
-          poppage.show(searchcallback);
-        });//모델 이력
-
+          poppage.show(searchcallback, {
+            modelid: modelidVal,
+            modeltxt: modeltxtVal
+          });//
+        });
         // tab2
         this.grid = new wijmo.grid.FlexGrid('#theGrid', {
           selectionMode: wijmo.grid.SelectionMode.Row,

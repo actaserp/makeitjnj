@@ -29,13 +29,13 @@
 
                     <dl>
                         <dt>
-                            <label for="modeltxt">
+                            <label for="modelid">
                                 모델ID<span class="eq"></span>
                             </label>
                         </dt>
                         <dd>
                             <div class="srch-box">
-                                <input class="form-control2" type="text" id="modeltxt" name="modelid" style="width:160px;"/>
+                                <input class="form-control2" type="text" id="modelid" name="modelid" style="width:160px;"/>
                             </div>
                         </dd>
                     </dl>
@@ -139,6 +139,7 @@
 
         let content = tmpl('popup_model_historySearchTemplate', {});
         let $content = $(content);
+        this.$modelid = $content.find('#modeltxt');
         this.modalContainer.open({width: 800, height: 500, $content});
 
         setTimeout(() => {
@@ -180,7 +181,7 @@
 
           this.$btnmodel_historySearch = $content.find('#btnmodel_historySearch');
           this.$reqdate = $content.find('#reqdate');
-          this.$modeltxt = $content.find('#modeltxt');
+          this.$modelid = $content.find('#modelid');
           this.$btnCompSelect = $content.find('#btnCompSelect');
 
 
@@ -300,7 +301,7 @@
       }
     });
 
-    $(document).on('keydown', '#modeltxt', function (e) {
+    $(document).on('keydown', '#modelid', function (e) {
       if (e.key === 'Enter' || e.keyCode === 13) {
         e.preventDefault();
         $('#btnmodel_historySearch').trigger('click');
