@@ -330,10 +330,10 @@
                 </th>
                 <td >
                   <div class="input-with-button" style="display: flex; gap: 4px;">
-                    <input type="text" id="Material_id" name="Material_id" readonly style="width:100px " placeholder="Model코드">
+                    <input type="hidden" id="Material_id" name="Material_id" readonly style="width:100px " >
+                    <input type="text" id="product_code" name="product_code" readonly style="width:100px " placeholder="Model코드">
                     <input type="text" id="modeltxt" name="modeltxt" style="width:200px " placeholder="ModelName">
                     <input type="hidden" id="MaterialGroupName" name="MaterialGroupName">
-                    <input type="hidden" id="product_code" name="product_code">
                   </div>
                 </td>
                 <th style="text-align: center">
@@ -1319,10 +1319,10 @@
       $('#address1').val(header.cltaddr);
       $('#projectno').val(header.projectno);
       $('#CompanyName').val(header.cltnm);
-      $('#product_code').val(header.modelcd);
+      $('#product_code').val(header.model_code);
       $('#MaterialGroup_id').val(header.MaterialGroup_id);
       $('#Material_id').val(header.Material_id);
-      $('#modeltxt').val(header.modeltxt);
+      $('#modeltxt').val(header.model_name);
       $('#modeltxt_history').val(header.modeltxt_current || '');
 
       // 금액 관련 필드 (있다면 추가로 넣기)
@@ -1346,9 +1346,9 @@
         const $row = $('.item-template-row').clone().removeClass('item-template-row').show();
 
         $row.find('input[name="pname"]').val(item.pname);
-        $row.find('input[name="mat_code"]').val(item.modelcd);
+        $row.find('input[name="mat_code"]').val(item.item_code);
         $row.find('input[name="remark"]').val(item.detail_remark);
-        $row.find('select[name="jobflag_"]').val(item.jobflag);
+        $row.find('select[name="jobflag"]').val((item.jobflag || '').trim());
         $row.find('input[name="setamt"]').val(item.setamt);
         $row.find('input[name="saleamt"]').val(item.saleamt);
         $row.find('input[name="QTY"]').val(item.qty);

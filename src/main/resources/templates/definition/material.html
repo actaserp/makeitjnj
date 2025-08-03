@@ -136,9 +136,9 @@
                     <li><a href="#tab_basic" name="tabs_basic" id="tabs_basic">기본정보</a></li>
                     <!-- <li><a href="#tab_production" name="tab_production" id="tabs_production" >생산/출하정보</a></li> -->
                     <!-- <li><a href="#tab_inventory" name="tab_inventory" id="tabs_inventory">발주/재고정보</a></li> -->
-                    <li><a href="#tab_bom" name="tab_bom">BOM</a></li>
+<!--                    <li><a href="#tab_bom" name="tab_bom">BOM</a></li>-->
                     <!-- <li><a href="#tab_bom_reverse" name="tab_bom_reverse">BOM(역전개)</a></li> -->
-                    <li><a href="#tab_unitcost" name="tab_unitcost" id="tabs_unitcost">단가정보</a></li>
+<!--                    <li><a href="#tab_unitcost" name="tab_unitcost" id="tabs_unitcost">단가정보</a></li>-->
                     <!-- <li><a href="#tab_test_master" name="tab_test_master">검사정보</a></li> -->
                     <!-- <li><a href="#tab_routing" name="tab_routing">라우팅</a></li> -->
 
@@ -903,6 +903,7 @@
                     },
                     columns: [
                         {binding: 'id', header: '품목번호', width: 100, align: 'center'},
+                        {binding: 'material_group_id', header: 'material_group_id', width: 100, visible: false },
                         {binding: 'mat_type_name', header: '품목구분', width: 100, align: 'center'},
                         {binding: 'mat_grp_name', header: '품목그룹', width: 150, align: 'left'},
                         {binding: 'mat_code', header: '품목코드', width: 150, align: 'left'},
@@ -1011,7 +1012,9 @@
                         let row = hitTest.row;
                         let selectedItem = this.grid.rows[row].dataItem;
                         _this.showBomList(selectedItem.id)
-                        _this.showBomReverseList(selectedItem.id)
+
+                        _this.bindMatBasicForm(selectedItem);
+                        // _this.showBomReverseList(selectedItem.id)
                         //_this.showTestList(selectedItem.id)
                         //_this.showRoutingProcessList(selectedItem.id)
                         /*_this.showPriceHistoryList(selectedItem.id)*/
@@ -1296,6 +1299,26 @@
                 AjaxUtil.fillSelectOptions($('#cboTestMaster'), 'test_master', 'choose', false); // 검사마스터
             }
 
+             bindMatBasicForm(item) {
+                if (!item) return;
+
+                $('#matBasicForm #id').val(item.id);
+                $('#matBasicForm #MaterialGroup_id').val(item.material_group_id);
+                $('#matBasicForm #Code').val(item.mat_code);
+                $('#matBasicForm #Name').val(item.mat_name);
+                $('#matBasicForm #Unit_id').val(item.unit_id);
+                $('#matBasicForm #Factory_id').val(item.factory_id);
+                $('#matBasicForm #mtyn').prop('checked', item.mtyn == 1 || item.mtyn == '1');
+                $('#matBasicForm #useyn').prop('checked', item.useyn == 1 || item.useyn == '1');
+                $('#matBasicForm #Class1').val(item.class1);
+                $('#matBasicForm #Standard1').val(item.starndard1 || item.standard1); // 오타 대응
+                $('#matBasicForm #Standard2').val(item.standard2);
+                $('#matBasicForm #Usage').val(item.usage);
+                $('#matBasicForm #Class2').val(item.class2);
+                $('#matBasicForm #LotSize').val(item.lot_size);
+                $('#matBasicForm #Description').val(item.description);
+            }
+
 
             setButtonState() {
                 let pk = $('#matBasicForm').find('#id').val();
@@ -1347,11 +1370,11 @@
                     $('#matBasicForm')[0].reset();
                     $('#matBasicForm').find('#id').val('');
                     // 재고정보 리셋
-                    $('#matProductionForm')[0].reset();
+                    //$('#matProductionForm')[0].reset();
                     // 재고정보 리셋
-                    $('#matStockForm')[0].reset();
+                    //$('#matStockForm')[0].reset();
                     // 검사정보 리셋
-                    $('#matTestForm')[0].reset();
+                    //$('#matTestForm')[0].reset();
                     // 라우팅정보 리셋
                     //$('#matRoutingForm')[0].reset();
                     // 도면 파일 리셋

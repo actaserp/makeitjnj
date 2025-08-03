@@ -75,10 +75,10 @@ public class PopupController {
 		paramMap.addValue("material_group", material_group, java.sql.Types.INTEGER);
 		paramMap.addValue("keyword", keyword);
 		result.data = this.sqlRunner.getRows(sql, paramMap);
-//		log.info("read SQL: {}", sql);
-//    log.info("SQL Parameters: {}", paramMap.getValues());
+		log.info("read SQL: {}", sql);
+    log.info("SQL Parameters: {}", paramMap.getValues());
 		return result;
-	}	
+	}
 	
 	
 	@RequestMapping("/search_equipment")
@@ -402,6 +402,59 @@ public class PopupController {
 		return result;
 	}
 
+	@RequestMapping("/search_Comp_purchase")
+	public AjaxResult getSearchCompPurchase(
+			@RequestParam(value = "compCode", required = false) String compCode,
+			@RequestParam(value = "compName", required = false) String compName,
+			@RequestParam(value = "business_number", required = false) String business_number){
 
+		MapSqlParameterSource paramMap = new MapSqlParameterSource();
+		paramMap.addValue("compCode", compCode);
+		paramMap.addValue("compName", compName);
+		paramMap.addValue("business_number", business_number);
+		AjaxResult result = new AjaxResult();
+
+		String sql = """
+        SELECT 
+            id AS id,
+            Name AS compname,
+            Code AS compcode,
+            BusinessNumber AS business_number,
+            TelNumber AS tel_number,
+            CEOName AS invoiceeceoname,
+            Address AS invoiceeaddr,
+            BusinessType AS invoiceebiztype,
+            BusinessItem AS invoiceebizclass,
+            AccountManager AS invoiceecontactname1,
+            AccountManagerPhone AS invoiceetel1,
+            Email AS invoiceeemail1
+        FROM company
+        WHERE 
+            (CompanyType = 'purchase' OR CompanyType = 'sale-purchase')
+            AND ISNULL(relyn, '0') = '0'
+        """;
+		//relyn = 거래중지 여부
+
+		if (compCode != null && !compCode.isEmpty()) {
+			sql += " AND Code LIKE :compCode ";
+			paramMap.addValue("compCode", "%" + compCode + "%");
+		}
+
+		if (compName != null && !compName.isEmpty()) {
+			sql += " AND Name LIKE :compName ";
+			paramMap.addValue("compName", "%" + compName + "%");
+		}
+
+		if (business_number != null && !business_number.isEmpty()) {
+			sql += " AND BusinessNumber LIKE :business_number ";
+			paramMap.addValue("business_number", "%" + business_number + "%");
+		}
+
+		sql += " ORDER BY Name ASC ";
+
+		result.data = this.sqlRunner.getRows(sql, paramMap);
+
+		return result;
+	}
 
 }

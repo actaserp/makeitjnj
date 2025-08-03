@@ -129,7 +129,7 @@ public class RequestController {
     head.setOperid(String.valueOf(data.get("perid"))); //발주담당
     head.setCltzipcd(String.valueOf(data.get("cltzipcd"))); //우편번호
     head.setCltaddr(String.valueOf(data.get("address1")));  //업체 주소
-    head.setPcode(Long.parseLong((String) data.get("Material_id")));//모델코드
+    head.setPcode(Long.parseLong((String) data.get("product_code")));//모델코드
     head.setModeltxt((String) data.get("modeltxt"));  //모델명
     head.setSetsamt(Long.parseLong((String) data.get("setsamt")));  //공급기준
     head.setSetqty(Long.parseLong((String) data.get("setqty")));    //수량
@@ -189,10 +189,11 @@ public class RequestController {
 
     for (Map<String, Object> row : detailList) {
       Long modelId = head.getPcode();
+      String modelname = head.getModeltxt();
       TB_DA007W_PK detailPk = new TB_DA007W_PK(custcd, spjangcd, reqdate, reqnum, String.format("%03d", seq++));
       TB_DA007W detail = new TB_DA007W();
       detail.setId(detailPk);
-      detail.setModelnm((String) row.get("txtModelNm"));
+      detail.setModelnm(modelname);
       detail.setPcode(Long.valueOf(modelId)); //모델 코드
       detail.setPname((String) row.get("pname"));
       detail.setJapcode((String) row.get("mat_code"));

@@ -31,6 +31,7 @@ public class MaterialService {
 				SELECT
 						m.id,
 						sc.Value as mat_type_name,
+							mg.id as material_group_id,
 						mg.MaterialType AS mat_type,
 						mg.Name AS mat_grp_name,
 						m.Code AS mat_code,

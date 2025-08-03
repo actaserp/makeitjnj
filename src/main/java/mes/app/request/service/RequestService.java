@@ -250,6 +250,7 @@ public class RequestService {
     String sql = """
         SELECT 
           h.reqdate,
+             h.deldate ,
           h.reqnum,
           h.pcode as model_code,
           h.modeltxt as model_name,
@@ -273,6 +274,7 @@ public class RequestService {
           h.cltzipcd,
           h.cltaddr,
           d.reqseq,
+          d.pcode as item_code,
           d.pname,
           d.modelnm,
           d.jobflag,

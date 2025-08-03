@@ -362,13 +362,13 @@ public class BaljuOrderController {
       Files.createFile(tempXlsx);                   // 새 파일 생성
 
 
-      try (FileInputStream fis = new FileInputStream("C:/Temp/mes21/문서/BaljuTemplate.xlsx");
+      try (FileInputStream fis = new FileInputStream("C:/Temp/mes21/문서/JNJBaljuTemplate.xlsx");
            Workbook workbook = new XSSFWorkbook(fis);
            FileOutputStream fos = new FileOutputStream(tempXlsx.toFile())) {
 
         // 시트 열기 및 이름 변경
         Sheet sheet = workbook.getSheetAt(0);
-        workbook.setSheetName(workbook.getSheetIndex(sheet), "발주서");
+        workbook.setSheetName(workbook.getSheetIndex(sheet), "제춤견적서");
 
         // 데이터 채우기
         Map<String, Object> header = baljuData;
@@ -381,20 +381,17 @@ public class BaljuOrderController {
         safeAddMergedRegion(sheet, 5, 6, 1, 3);  // B6:D7
         setCell(sheet, 5, 1, (String) receiverInfo.get("address"));
 
-
         // 발신자 (FROM.)
-        safeAddMergedRegion(sheet, 2, 2, 5, 6);  // F3:G3
-        setCell(sheet, 2, 5, (String) senderInfo.get("spjangnm"));
-        safeAddMergedRegion(sheet, 4, 4, 5, 6);  // F5:G5
-        setCell(sheet, 4, 5, (String) senderInfo.get("tel1"));
-        safeAddMergedRegion(sheet, 5, 6, 5, 7);  // F6:H7
-        setCell(sheet, 5, 5, (String) senderInfo.get("adresa"));
+        setCell(sheet, 4, 4, String.valueOf(baljuData.get("pernm_rspcd")));  // 직위
+        setCell(sheet, 5, 7, String.valueOf(baljuData.get("pernm")));        // 이름
+        setCell(sheet, 4, 2, String.valueOf(baljuData.get("project_no")));
+        setCell(sheet, 5, 2, String.valueOf(baljuData.get("actnm")));
 
         // 날짜 출력
         String rawDate = String.valueOf(baljuData.get("JumunDate"));
         LocalDate date = LocalDate.parse(rawDate);
-        String formattedDate = date.format(DateTimeFormatter.ofPattern("yy.MM.dd"));
-        setCell(sheet, 11, 3, formattedDate);  // D12 셀에 날짜만 넣기
+        String formattedDate = date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+        setCell(sheet, 5, 4, formattedDate);  // E6 셀에 날짜만 넣기
 
         // 자재 행 삽입
         int startRow = 14;

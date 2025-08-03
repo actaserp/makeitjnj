@@ -26,37 +26,37 @@ public class UnitPriceService {
         dicParam.addValue("mat_pk", matPk);
         
         String sql = """
-			with A as 
-            (
-            select mcu.id 
-            , mcu."Company_id"
-            , mcu."UnitPrice"
-            , mcu."FormerUnitPrice"
-            , mcu."ApplyStartDate"
-            , mcu."ApplyEndDate"
-            , mcu."ChangeDate"
-            , mcu."ChangerName"
-            , mcu."Material_id"
-            , row_number() over (partition by mcu."Company_id" order by mcu."ApplyStartDate" desc) as g_idx
-            , GETDATE() between mcu."ApplyStartDate" and mcu."ApplyEndDate" as current_check
-            , GETDATE() < mcu."ApplyStartDate" as future_check
-            from mat_comp_uprice mcu 
-            where mcu."Material_id" = :mat_pk
-            )
-            select A.id
-            , A."Company_id"
-            , c."Name" as "CompanyName"
-            , A."UnitPrice" 
-            , A."FormerUnitPrice" 
-            , A."ApplyStartDate"::date 
-            , A."ApplyEndDate"::date 
-            , A."ChangeDate"::date 
-            , A."Material_id"
-            , A."ChangerName" 
-            from A 
-            inner join company c on c.id = A."Company_id"
-            where ( A.current_check = true or A.future_check = true or A.g_idx = 1)
-            order by c."Name", A."ApplyStartDate"
+						WITH A AS (
+						    SELECT\s
+						        mcu.id,
+						        mcu.Company_id,
+						        mcu.UnitPrice,
+						        mcu.FormerUnitPrice,
+						        mcu.ApplyStartDate,
+						        mcu.ApplyEndDate,
+						        mcu.ChangeDate,
+						        mcu.Material_id,
+						        ROW_NUMBER() OVER (PARTITION BY mcu.Company_id ORDER BY mcu.ApplyStartDate DESC) AS g_idx,
+						        CASE WHEN GETDATE() BETWEEN mcu.ApplyStartDate AND mcu.ApplyEndDate THEN 1 ELSE 0 END AS current_check,
+						        CASE WHEN GETDATE() < mcu.ApplyStartDate THEN 1 ELSE 0 END AS future_check
+						    FROM mat_comp_uprice mcu
+						    WHERE mcu.Material_id = :mat_pk
+						)
+						SELECT\s
+						    A.id,
+						    A.Company_id,
+						    c.Name AS CompanyName,
+						    A.UnitPrice,
+						    A.FormerUnitPrice,
+						    CAST(A.ApplyStartDate AS DATE) AS ApplyStartDate,
+						    CAST(A.ApplyEndDate AS DATE) AS ApplyEndDate,
+						    CAST(A.ChangeDate AS DATE) AS ChangeDate,
+						    A.Material_id
+						FROM A
+						INNER JOIN company c ON c.id = A.Company_id
+						WHERE\s
+						    A.current_check = 1 OR A.future_check = 1 OR A.g_idx = 1
+						ORDER BY c.Name, A.ApplyStartDate
         """;
         	
         
