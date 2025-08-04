@@ -12,7 +12,8 @@ import java.util.Optional;
 @Repository
 public interface ModelHistoryRepository extends JpaRepository<ModelHistory, Integer> {
 
-  Optional<Integer> findMaxVersionNoByModelid(String modelid);
+  @Query("SELECT MAX(m.version_no) FROM ModelHistory m WHERE m.modelid = :modelid")
+  Optional<Integer> findMaxVersionNoByModelid(@Param("modelid") String modelid);
 
   @Modifying
   @Query("""

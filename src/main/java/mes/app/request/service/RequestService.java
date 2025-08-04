@@ -118,9 +118,10 @@ public class RequestService {
     }
   }
 
-  public List<Map<String, Object>> getTab2Read(Integer compcd , String ordflag, Timestamp start, Timestamp end, String spjangcd) {
+  public List<Map<String, Object>> getTab2Read(Integer compcd ,String company_name, String ordflag, Timestamp start, Timestamp end, String spjangcd) {
     MapSqlParameterSource param = new MapSqlParameterSource();
     param.addValue("compcd", compcd);
+    param.addValue("company_name", company_name);
     param.addValue("ordflag", ordflag);
     param.addValue("start", start);
     param.addValue("end", end);
@@ -202,17 +203,22 @@ public class RequestService {
         LEFT JOIN aggregated a
             ON h.reqdate = a.reqdate AND h.reqnum = a.reqnum
         LEFT JOIN latest_model_history mh
-            ON h.modeltxt = mh.modelid
+            ON h.pcode = mh.modelid
         WHERE h.spjangcd = :spjangcd
           AND h.reqdate BETWEEN :start AND :end
         """;
     if (ordflag != null && !ordflag.isEmpty()) {
       sql += " and h.ordflag = :ordflag ";
-      param.addValue("ordflag", "%" + ordflag + "%");
+      param.addValue("ordflag", ordflag );
     }
-    if (compcd != null && !ordflag.isEmpty()) {
-      sql += " and h.compcd like :compcd ";
+    if (compcd != null) {
+      sql += " and h.cltcd like :compcd ";
       param.addValue("compcd", "%" + compcd + "%");
+    }
+
+    if (company_name != null && !company_name.isEmpty()) {
+      sql += " and h.cltnm like :company_name ";
+      param.addValue("company_name", "%" + company_name + "%");
     }
 //    log.info("getTab2Read  SQL: {}", sql);
 //    log.info("SQL Parameters: {}", param.getValues());
@@ -304,7 +310,7 @@ public class RequestService {
           ) mh
           WHERE rn = 1
         ) mh
-          ON h.modeltxt = mh.modelid
+          ON h.pcode = mh.modelid
          AND h.custcd   = mh.custcd
          AND h.spjangcd = mh.spjangcd
         WHERE h.reqnum = :reqnum
@@ -319,4 +325,24 @@ public class RequestService {
   }
 
 
+  public Map<String, Object> getOrderMailDeta(String reqnum) {
+    MapSqlParameterSource paramMap = new MapSqlParameterSource();
+    paramMap.addValue("reqnum", reqnum);
+
+    String sql = """
+        select
+        projectno ,
+        reqdate ,
+        cltnm,
+        perid ,
+        modeltxt ,
+        setsamt,
+        setqty ,
+        amount
+        from tb_da006w
+        where reqnum = :reqnum
+        """;
+
+    return this.sqlRunner.getRow(sql, paramMap);
+  }
 }

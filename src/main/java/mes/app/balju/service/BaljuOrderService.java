@@ -38,12 +38,17 @@ public class BaljuOrderService {
                 bh.Company_id,
                 bh.JumunDate,
                 bh.JumunNumber,
+                CASE bh.SujuType
+                    WHEN 'Urgent' THEN '긴급'
+                    WHEN 'Irregular' THEN '수시'
+                    WHEN 'Regular' THEN '정기'
+                    ELSE '기타'
+                END AS BaljuTypeName,
                 bh.SujuType,
                 bh.State,
                 bh.DeliveryDate,
                 bh.ShipmentState,
                 bh.spjangcd,
-
                 b.CompanyName,
                 b.BaljuHead_id,
                 b.Material_id,
@@ -106,7 +111,7 @@ public class BaljuOrderService {
             MAX(CompanyName) AS CompanyName,
             MAX(BaljuHead_id) AS BaljuHead_id,
             MAX(JumunDate) AS JumunDate,
-            MAX(SujuType) AS BaljuTypeName,
+              MAX(BaljuTypeName) AS BaljuTypeName,
             MAX(CASE WHEN rn = 1 THEN product_code END) AS product_code,
             MAX(CASE WHEN rn = 1 THEN product_name END) AS product_name,
             MAX(CASE WHEN rn = 1 THEN unit END) AS unit,
@@ -127,8 +132,8 @@ public class BaljuOrderService {
         ORDER BY MAX(DeliveryDate) DESC, bh_id
         """;
 
-//    log.info("발주 read SQL: {}", sql);
-//    log.info("SQL Parameters: {}", dicParam.getValues());
+    log.info("발주 read SQL: {}", sql);
+    log.info("SQL Parameters: {}", dicParam.getValues());
 return this.sqlRunner.getRows(sql, dicParam);
 }
 
@@ -656,10 +661,9 @@ return this.sqlRunner.getRows(sql, dicParam);
     param.addValue("bhId", bhId);
 
     String sql = """
-        SELECT c."Email"
-        FROM balju_head bh
-        LEFT JOIN company c ON c.id = bh."Company_id"
-        WHERE bh.id = :bhId
+         SELECT c.Email
+        from company c
+        WHERE c.id = :bhId
         """;
 
     return this.sqlRunner.queryForObject(sql, param, (rs, rowNum) -> rs.getString("Email"));

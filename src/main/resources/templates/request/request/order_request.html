@@ -499,7 +499,7 @@
                   &nbsp;
                   <a class="btn btn-delete" title="구매처검색" id="btnCompanySearch2">
                     <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
-                    구매처 검색
+                    고객사 검색
                   </a>
                 </div>
               </dd>
@@ -531,7 +531,18 @@
               </dd>
             </dl>
           </div>
+          <div class="button-wrap">
+            <ul>
+              <li>
+                <a class="btn btn-excell" title="등록" id="btnMail">
+                  <img src="/images/icon/ico-mail.svg" alt="메일 아이콘">
+                  메일 전송
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
+
         <div class="container-fluid">
           <p id="selectedItem"></p>
           <div id="theGrid" style="max-height: 714px"></div>
@@ -597,6 +608,119 @@
     </div>
   </div>
 
+  <script type="text/x-tmpl" id="BalJuMailTemplate">
+    <style>
+    /* + 아이콘 버튼 (추가용) */
+    .btn.in_btn.plus img {
+      width: 15px;
+      height: 15px;
+      display: block;
+      margin-right: 2px;
+    }
+
+    /* 버튼 자체 크기와 정렬 */
+    .btn.in_btn.plus {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px 15px;
+      width: 24px;
+      height: 24px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-left: 6px;
+      background-color: #f9f9f9;
+      cursor: pointer;
+    }
+
+    .btn.in_btn.plus:hover {
+      background-color: #e0e0e0;
+    }
+    /* 삭제 아이콘 크기 및 정렬 */
+    .btn.in_btn.del img {
+      width: 15px;
+      height: 15px;
+      display: block;
+      margin-right: 2px;
+    }
+
+    /* 삭제 버튼 크기와 스타일 - plus 버튼과 동일 */
+    .btn.in_btn.del {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px 15px;
+      width: 24px;
+      height: 24px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-left: 6px;
+      background-color: #f9f9f9;
+      cursor: pointer;
+    }
+
+    .btn.in_btn.del:hover {
+      background-color: #e0e0e0;
+    }
+
+    .input-with-button {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .input-with-button input {
+      flex: 1;
+      padding: 6px;
+    }
+
+    </style>
+    <div class="content_wrap popup" id="div_excel_upload">
+       <div class="table-wrap">
+         <form id="BalJuMailForm">
+           <table class="write-table">
+             <tbody>
+             <tr>
+               <th style="text-align: center">
+                 <label for="Recipient">받는사람</label>
+               </th>
+              <td colspan="8">
+                <div id="recipient-container">
+                  <div class="input-with-button">
+                    <input name="Recipient" style="width: 100%;" />
+                    <a class="btn in_btn plus" id="addRecipient" title="추가">
+                      <img src="/images/icon/ico-plus.svg" alt="추가 아이콘" />
+                    </a>
+                  </div>
+                </div>
+              </td>
+             <tr>
+               <th style="text-align: center">
+                 <label for="MailTitle">제목</label>
+               </th>
+               <td colspan="8">
+                 <input id="MailTitle" name="MailTitle" style="width: 100%;"></input>
+               </td>
+             </tr>
+
+             <tr>
+               <th style="text-align: center">
+                 <label for="MailContent">내용</label>
+               </th>
+               <td colspan="8">
+                <textarea id="MailContent" name="MailContent" style="width: 100%; height: 120px; resize: vertical;"></textarea>
+               </td>
+             </tr>
+             </tbody>
+           </table>
+         </form>
+       </div>
+       <div class="popup-button">
+         <button type="button" class="btn-popup y_write_auth" id="btnPopBalJuMail">전송</button>
+         <button type="button" class="btn-popup" id="modal-close-button">닫기</button>
+       </div>
+     </div>
+  </script>
 
 </th:block>
 
@@ -750,6 +874,7 @@
       constructor() {
         this.itemIndex = 0;  // 🔥 클래스 수준으로 선언
         this.theGrid = null;
+        this.$btnMail = $('#btnMail');
         this.$btnEdit = $('#btnEdit');
         this.$btnSave = $('#btnSave');
         this.spjangcd = sessionStorage.getItem('spjangcd');
@@ -767,12 +892,20 @@
           clearForm();
         });
 
+        $(document).on('click', '#btnTab2Search', function (e) {
+          e.preventDefault();
+          if (page && typeof page.searchTab2Data === 'function') {
+            page.searchTab2Data();
+          }
+        });
+
         // 주문 등록
         this.$btnSave.click(function () {
           const formData = new FormData();
 
           let defaultData = {
             spjangcd: sessionStorage.getItem('spjangcd'),
+            reqnum: $('#reqnum').val(),
             cboCompany: $('#cboCompany').val(),
             cboCompanyHidden: $('#cboCompanyHidden').val(),
             CompanyName: $('#CompanyName').val(),
@@ -781,7 +914,7 @@
             telno: $('#telno').val(),
             projectno: $('#projectno').val(),
             perid: $('#perid').val(),
-            postno: $('#postno').val(),
+            postno: $('#postno').val().trim(),
             address1: $('#address1').val(),
             placeAddress: $('#placeAddress').val(),
             setsamt: $('#setsamt').val().replaceAll(',', ''),
@@ -796,10 +929,9 @@
             MaterialGroupName: $('#MaterialGroupName').val(),
             Material_id: $('#Material_id').val(),
             product_code: $('#product_code').val(),
-            reqnum: $('#reqnum').val(),
             modeltxt_history :$('#modeltxt_history').val(),
           };
-
+          console.info("더당 데이터 : ", defaultData) ;
           let detailList = [];
           $('#OrderRequestForm tbody tr').each(function () {
             let $row = $(this);
@@ -849,6 +981,48 @@
 
             _this.orderSave(formData);
           });
+        });
+
+        // 메일 팝업
+        this.$btnMail.click(function (e) {
+          let selectedItems = _this.grid.selectedItems;
+
+          if (selectedItems.length === 1) {
+            let selected = selectedItems[0];
+            let reqnum = selected.reqnum;
+            let bhId = selected.cltcd;
+
+            let result = {
+              reqnum: reqnum,
+              id: bhId,
+              mode: 'mail',
+              recipients: [],
+              // recipients: Array.isArray(response.data) ? response.data : [response.data], // 반드시 배열이어야 함
+              title: '',
+              content: ''
+            };
+
+            // 거래처 이메일 요청 (다중 수신자 가정)
+            $.ajax({
+              url: '/api/balju/balju_order/receiverEmail',
+              type: 'GET',
+              data: { bhId: bhId },
+              success: function(response) {
+                console.log('서버로부터 받은 이메일 데이터:', response);
+
+                result.recipients = Array.isArray(response.data) ? response.data : [response.data];
+                _this.showBalJuMailForm(result);
+              },
+              error: function() {
+                _this.showBalJuMailForm(result);
+                //Alert.alert('', '거래처 이메일 정보가 없습니다.');
+
+              }
+            });
+
+          } else {
+            Alert.alert('', "하나의 항목만 선택해주세요.");
+          }
         });
 
         // 삭제 버튼
@@ -980,7 +1154,7 @@
                     // ✅ 상단 완제품 정보 바인딩
                     $('#modeltxt').val(bom.mat_name || '');
                     $('#Material_id').val(bom.mat_id || '');
-                    $('#product_code').val(items.product_code || '');
+                    $('#product_code').val(bom.mat_code || '');
                     $('#MaterialGroupName').val(items.MaterialGroupName || '');
                     continue;
                   }
@@ -1013,7 +1187,7 @@
         $('#ModelCurrentList').click(function () {
           let poppage = new PopModel_history();
           let $poppage = $(poppage);
-          let modelidVal = $('#Material_id').val();
+          let modelidVal = $('#product_code').val();
           let modeltxtVal = $('#modeltxt').val();
 
           let searchcallback = function (item) {
@@ -1119,11 +1293,134 @@
 
             poppage.show(searchcallback, keyword);
           }
-        });
-
+        })
 
 
       }//init
+
+      showBalJuMailForm(data) {
+        let _this = this;
+        let content = tmpl('BalJuMailTemplate', data);
+        let $content = $(content);
+        let csrfToken = $("[name=_csrf]").val();
+
+        let modalContainer = null;
+        if (data.mode === 'mail') {
+          modalContainer = new PopupDraggable('발주서 발송');
+        }
+
+        modalContainer.open({ width: 650, height: 410, $content });
+
+        // 수신자 필드 렌더링
+        const recipientContainer = $content.find('#recipient-container');
+
+        if (Array.isArray(data.recipients)) {
+          if (data.recipients.length === 1) {
+            //템플릿 안의 첫 번째 input을 찾아서 value 세팅만!
+            recipientContainer.find('input[name="Recipient"]').val(data.recipients[0]);
+          } else {
+            //여러 개일 경우에는 기존 필드 비우고 다 만들어줌
+            recipientContainer.empty();
+            data.recipients.forEach(email => {
+              const field = $(`
+                <div class="input-with-button" style="margin-top: 6px;">
+                  <input name="Recipient" style="width: 100%; padding: 6px;" value="${email}"/>
+                  <a class="btn in_btn del" title="삭제" onclick="this.parentElement.remove()" style="margin-left: 6px;">
+                    <img src="/images/icon/ico-delete.svg" alt="삭제 아이콘" style="width: 15px; height: 15px;" />
+                  </a>
+                </div>
+              `);
+              recipientContainer.append(field);
+            });
+          }
+        }
+
+        // + 버튼으로 수신자 필드 추가 (최대 3개)
+        const addRecipientBtn = $content.find('#addRecipient');
+        addRecipientBtn.on('click', function () {
+          const currentCount = recipientContainer.find('input[name="Recipient"]').length;
+
+          if (currentCount >= 3) {
+            Alert.alert('', '받는 사람은 최대 3명까지 추가할 수 있습니다.');
+            return;
+          }
+
+          const newField = $(`
+      <div class="input-with-button" style="margin-top: 6px;">
+        <input name="Recipient" style="width: 100%; padding: 6px;" />
+        <a class="btn in_btn del" title="삭제" onclick="this.parentElement.remove()" style="margin-left: 6px;">
+          <img src="/images/icon/ico-delete.svg" alt="삭제 아이콘" style="width: 15px; height: 15px;" />
+        </a>
+      </div>
+    `);
+          recipientContainer.append(newField);
+        });
+
+        // 전송 버튼 클릭 시
+        $content.find('#btnPopBalJuMail').on('click', function () {
+          const recipientInputs = recipientContainer.find('input[name="Recipient"]');
+
+          const recipients = recipientInputs
+            .map(function () {
+              return $(this).val().trim();
+            })
+            .get()
+            .filter(email => email); // 빈 문자열 제거
+
+          const title = $content.find('#MailTitle').val().trim();
+          const mailContent = $content.find('#MailContent').val().trim();
+
+          if (recipients.length === 0) {
+            Alert.alert('', '받는 사람 이메일을 하나 이상 입력해주세요.');
+            return;
+          }
+
+          if (!title) {
+            Alert.alert('', '메일 제목을 입력해주세요.');
+            return;
+          }
+
+          if (!mailContent) {
+            Alert.alert('', '메일 내용을 입력해주세요.');
+            return;
+          }
+
+          // Ajax로 전송
+          $.ajax({
+            url: '/api/request/request/sendBalJuMail',
+            type: 'POST',
+            contentType: 'application/json',
+            headers: {
+              'X-CSRF-TOKEN': csrfToken
+            },
+            data: JSON.stringify({
+              recipients: recipients,
+              title: title,
+              content: mailContent,
+              reqnum: data.reqnum
+            }),
+            success: function (response) {
+              Alert.alert('', '메일이 성공적으로 전송되었습니다.');
+              modalContainer.close();
+            },
+            error: function () {
+              Alert.alert('', '메일 전송 중 오류가 발생했습니다.');
+            }
+          });
+          // 엑셀 다운로드 버튼 클릭 시
+          $content.find('#btnDownloadExcel').on('click', function () {
+            const url = $(this).data('url');
+            if (url) {
+              window.open(url, '_blank');
+            } else {
+              Alert.alert('', '엑셀 파일이 준비되지 않았습니다.');
+            }
+          });
+
+        });
+
+
+      }//showBalJuMailForm
 
       bindToTab1Form(item) {
         $('#reqnum').val(item.reqnum);
@@ -1249,9 +1546,11 @@
         AjaxUtil.postAsyncData(url, data, fnsuccess);
       }//deleteData
 
+
       searchTab2Data() {
         let _this = this;
-        let cboCompany = $('#cboCompany2').val();  //거래처코드
+        let CompanyName = $('#CompanyName2').val();  //거래처코드
+        let cboCompany = $('#cboCompanyHidden2').val();  //거래처코드
         let ord_flag = $('#searchOrdflag').val();  //구분
         let start = $('#startDate').val();  //시작일
         let end = $('#endDate').val();      //종료일
@@ -1259,6 +1558,7 @@
         let url = this.url + '/read';
 
         let data = {
+          'company_name': CompanyName,
           'cboCompany': cboCompany,
           'ord_flag': ord_flag,
           'start': start,
@@ -1295,6 +1595,7 @@
         }
       });
     }
+
     function bindOrderDetailToForm(data) {
       if (!data || data.length === 0) return;
       console.info("더블 클릭 데이터 : ", data);
@@ -1325,7 +1626,7 @@
       $('#modeltxt').val(header.model_name);
       $('#modeltxt_history').val(header.modeltxt_current || '');
 
-      // 금액 관련 필드 (있다면 추가로 넣기)
+      /*// 금액 관련 필드 (있다면 추가로 넣기)
       $('#setsamt').val(header.setsamt || '');
       $('#setqty').val(header.setqty || '');
       $('#amount').val(header.amount || '');
@@ -1334,7 +1635,7 @@
       $('#pereyunamt').val(header.pereyunamt || '');
       $('#eyunyul').val(header.eyunyul || '');
       $('#toteyunamt').val(header.toteyunamt || '');
-
+*/
       // 주소
       $('#postno').val(header.cltzipcd || '');
       $('#address1').val(header.cltaddr || '');
@@ -1349,10 +1650,13 @@
         $row.find('input[name="mat_code"]').val(item.item_code);
         $row.find('input[name="remark"]').val(item.detail_remark);
         $row.find('select[name="jobflag"]').val((item.jobflag || '').trim());
-        $row.find('input[name="setamt"]').val(item.setamt);
-        $row.find('input[name="saleamt"]').val(item.saleamt);
-        $row.find('input[name="QTY"]').val(item.qty);
-        $row.find('input[name="uamt"]').val(item.uamt);
+
+        // 숫자 필드 포맷 적용
+        formatNumberInput(item.setamt + '', $row.find('input[name="setamt"]'));
+        formatNumberInput(item.saleamt + '', $row.find('input[name="saleamt"]'));
+        formatNumberInput(item.qty + '', $row.find('input[name="QTY"]'));
+        formatNumberInput(item.uamt + '', $row.find('input[name="uamt"]'));
+
 
         $('#OrderRequestForm tbody').append($row);
       });
@@ -1553,11 +1857,9 @@
       $('#amount').val(amount.toLocaleString(undefined, { maximumFractionDigits: 2 }));
       $('#outamt').val(outamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
       $('#eyunamt').val(eyunamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
-      $('#pereyunamt').val((pereyunamt < 0 ? '-' : '') + Math.abs(pereyunamt).toLocaleString(undefined, { maximumFractionDigits: 2 }));
-      $('#eyunyul').val((eyunyul < 0 ? '-' : '') + Math.abs(eyunyul).toFixed(2));
+      $('#pereyunamt').val(Math.abs(pereyunamt).toLocaleString(undefined, { maximumFractionDigits: 2 }));
+      $('#eyunyul').val(Math.abs(eyunyul).toFixed(2));
 
-      // $('#pereyunamt').val(pereyunamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
-      // $('#eyunyul').val(eyunyul.toFixed(2));
       $('#toteyunamt').val(toteyunamt.toFixed(2));
     }
 
@@ -1601,7 +1903,7 @@
 
     //단가검색
     function tryShowBaljuPrice(row) {
-      const $unitPrice = row.find('input[name^="BaljuUnitPrice_"]');
+      const $unitPrice = row.find('input[name^="setamt"]');
       const $supply = row.find('input[name^="BaljuPrice_"]');
       const $vat = row.find('input[name^="BaljuVat_"]');
 

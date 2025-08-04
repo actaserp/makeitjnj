@@ -3,7 +3,7 @@ package mes.app.request;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import mes.app.definition.service.BomService;
+import mes.app.MailService;
 import mes.app.request.service.RequestService;
 import mes.config.Settings;
 import mes.domain.entity.User;
@@ -13,6 +13,11 @@ import mes.domain.repository.actasRepository.ModelHistoryRepository;
 import mes.domain.repository.actasRepository.TB_DA006WFILERepository;
 import mes.domain.repository.actasRepository.TB_DA006WRepository;
 import mes.domain.repository.actasRepository.TB_DA007WRepository;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -25,18 +30,19 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -59,12 +65,16 @@ public class RequestController {
 
   @Autowired
   ModelHistoryRepository modelHistoryRepository;
+
+  @Autowired
+  MailService mailService;
+
   @Autowired
   Settings settings;
 
   //bom 리스트 read
   @GetMapping("/bomList")
-  public AjaxResult getBomList(@RequestParam(value = "Material_id")Integer Material_id){
+  public AjaxResult getBomList(@RequestParam(value = "Material_id") Integer Material_id) {
     AjaxResult result = new AjaxResult();
     List<Map<String, Object>> bomList = requestService.getBomList(Material_id);
     if (bomList.isEmpty()) {
@@ -74,7 +84,7 @@ public class RequestController {
     }
     Integer bomId = (Integer) bomList.get(0).get("id");
 
-    List<Map<String, Object>> bomTree = requestService.getBomComponentTreeList(bomId,"ZZ");
+    List<Map<String, Object>> bomTree = requestService.getBomComponentTreeList(bomId, "ZZ");
     result.data = bomTree;
     return result;
   }
@@ -85,8 +95,8 @@ public class RequestController {
       @RequestPart("jsonData") Map<String, Object> data,
       @RequestPart(value = "filelist", required = false) MultipartFile[] files,
       @RequestPart(value = "deletedFiles2", required = false) List<MultipartFile> deletedFiles2,
-    Authentication auth
-  )throws IOException {
+      Authentication auth
+  ) throws IOException {
 
     User user = (User) auth.getPrincipal();
     AjaxResult result = new AjaxResult();
@@ -96,7 +106,7 @@ public class RequestController {
     String rawReqdate = (String) data.get("reqdate");
     String reqdate = rawReqdate != null ? rawReqdate.replace("-", "") : null;
     String reqnum = (String) data.get("reqnum");
-    String modeltxt_history =  (String) data.get("modeltxt_history");
+    String modeltxt_history = (String) data.get("modeltxt_history");
 
     boolean isNew = (reqnum == null || reqnum.isBlank());
 
@@ -127,7 +137,7 @@ public class RequestController {
     head.setDeldate(deldate); //납기 희망일
     head.setPerid(String.valueOf(data.get("perid"))); //담당자
     head.setOperid(String.valueOf(data.get("perid"))); //발주담당
-    head.setCltzipcd(String.valueOf(data.get("cltzipcd"))); //우편번호
+    head.setCltzipcd(String.valueOf(data.get("postno"))); //우편번호
     head.setCltaddr(String.valueOf(data.get("address1")));  //업체 주소
     head.setPcode(Long.parseLong((String) data.get("product_code")));//모델코드
     head.setModeltxt((String) data.get("modeltxt"));  //모델명
@@ -275,7 +285,8 @@ public class RequestController {
 
       for (MultipartFile deletedFile : deletedFiles2) {
         String content = new String(deletedFile.getBytes(), StandardCharsets.UTF_8);
-        Map<String, Object> deletedFileMap = new ObjectMapper().readValue(content, new TypeReference<>() {});
+        Map<String, Object> deletedFileMap = new ObjectMapper().readValue(content, new TypeReference<>() {
+        });
 
         Object fileidObj = deletedFileMap.get("fileid");
         if (fileidObj == null) {
@@ -323,20 +334,22 @@ public class RequestController {
 
   //tab2 read
   @GetMapping("/read")
-  public AjaxResult getTab2Read(@RequestParam(value = "cboCompany2", required = false) Integer compcd ,
+  public AjaxResult getTab2Read(@RequestParam(value = "cboCompany2", required = false) Integer compcd,
+                                @RequestParam(value = "company_name", required = false) String company_name,
                                 @RequestParam(value = "ord_flag") String ordflag,
                                 @RequestParam(value = "start") String start_date,
                                 @RequestParam(value = "end") String end_date,
-                                @RequestParam(value = "spjangcd") String spjangcd){
+                                @RequestParam(value = "spjangcd") String spjangcd) {
     AjaxResult result = new AjaxResult();
     start_date = start_date + " 00:00:00";
     end_date = end_date + " 23:59:59";
     Timestamp start = Timestamp.valueOf(start_date);
     Timestamp end = Timestamp.valueOf(end_date);
 
-    //log.info("tab2 read :cboCompany ");
+    log.info("tab2 read :cboCompany:{},company_name:{},ordflag:{}, start_date:{},end_date:{},spjangcd:{}",
+        compcd, company_name, ordflag, start_date, end_date, spjangcd);
 
-    List<Map<String, Object>> Tab2Read = requestService.getTab2Read(compcd, ordflag ,start, end, spjangcd);
+    List<Map<String, Object>> Tab2Read = requestService.getTab2Read(compcd, company_name, ordflag, start, end, spjangcd);
     for (Map<String, Object> item : Tab2Read) {
       ObjectMapper objectMapper = new ObjectMapper();
       if (item.get("hd_files") != null) {
@@ -376,7 +389,7 @@ public class RequestController {
 
   // 휴일 조회 메서드
   @GetMapping("/getHoliday")
-  public AjaxResult getHoliday(){
+  public AjaxResult getHoliday() {
     AjaxResult result = new AjaxResult();
     result.data = requestService.getHoliday();
     return result;
@@ -512,7 +525,7 @@ public class RequestController {
 
     String formattedReqdate = reqdate.replace("-", "");
 
-    log.info("getDetailList 들어옴 custcd:{},spjangcd:{}, reqdate:{}, reqnum:{}",custcd ,spjangcd,formattedReqdate,reqnum);
+    log.info("getDetailList 들어옴 custcd:{},spjangcd:{}, reqdate:{}, reqnum:{}", custcd, spjangcd, formattedReqdate, reqnum);
     List<Map<String, Object>> detailList = requestService.getOrderDetail(reqnum, formattedReqdate, custcd, spjangcd);
 
     AjaxResult result = new AjaxResult();
@@ -577,4 +590,109 @@ public class RequestController {
     }
   }
 
+  @PostMapping("/sendBalJuMail")
+  public AjaxResult getMailData(@RequestBody Map<String, Object> payload, Authentication auth) {
+    AjaxResult result = new AjaxResult();
+
+    try {
+      // 1. 요청 데이터 추출
+      List<String> recipients = (List<String>) payload.get("recipients");
+      String title = (String) payload.get("title");
+      String content = (String) payload.get("content");
+      String reqnum = (String) payload.get("reqnum");
+
+      // 2. 로그인 사용자 정보
+      User user = (User) auth.getPrincipal();
+      String userid = user.getUsername();
+
+      // 3. 발주서 데이터 조회
+      Map<String, Object> mailDeta = requestService.getOrderMailDeta(reqnum);
+
+      // 4. 엑셀 생성
+      String projectNo = String.valueOf(mailDeta.get("projectno")).replaceAll("[\\\\/:*?\"<>|]", "");
+      String fileName = String.format("_%s.xlsx", projectNo);
+      Path tempXlsx = Paths.get("C:/Temp/mes21/문서/제품견적서_" + fileName);
+      Files.createDirectories(tempXlsx.getParent());
+      Files.deleteIfExists(tempXlsx);
+
+      String templatePath = "C:/Temp/mes21/문서/JNJBaljuTemplate.xlsx";
+
+      try (FileInputStream fis = new FileInputStream(templatePath);
+           Workbook workbook = new XSSFWorkbook(fis);
+           FileOutputStream fos = new FileOutputStream(tempXlsx.toFile())) {
+
+        Sheet sheet = workbook.getSheetAt(0);
+
+        // 엑셀 바인딩
+        setCell(sheet, 6, 4, String.valueOf(mailDeta.get("cltnm")));
+        setCell(sheet, 7, 4, String.valueOf(mailDeta.get("deldate")));
+        String rawDate = String.valueOf(mailDeta.get("reqdate"));
+        String formattedDate = "";
+        if (rawDate != null && rawDate.length() == 8) {
+          String year = rawDate.substring(0, 4);
+          String month = rawDate.substring(4, 6);
+          String day = rawDate.substring(6, 8);
+          formattedDate = year + "년 " + month + "월 " + day + "일";
+        }
+
+        setCell(sheet, 9, 5, String.valueOf(mailDeta.get("projectno")));
+        setCell(sheet, 10, 4, formattedDate);
+        setCell(sheet, 11, 4, String.valueOf(mailDeta.get("cltnm")));
+        setCell(sheet, 12, 4, String.valueOf(mailDeta.get("perid")));
+
+        setCell(sheet, 16, 2, String.valueOf(mailDeta.get("modeltxt")));
+        setCell(sheet, 16, 9, String.valueOf(mailDeta.get("setqty")));
+        setCell(sheet, 16, 18, String.valueOf(mailDeta.get("setsamt")));
+
+        workbook.write(fos);
+      } catch (Exception e) {
+        log.error("❌ 엑셀 생성 중 오류 발생", e);
+        result.success = false;
+        result.message = "엑셀 생성 중 오류가 발생했습니다.";
+        return result;
+      }
+
+      // 5. 메일 전송
+      mailService.sendMailWithAttachment(
+          recipients,
+          title,
+          content,
+          tempXlsx.toFile(),
+          fileName
+      );
+
+      // 6. 엑셀 다운로드 URL 구성
+      String encodedFileName = URLEncoder.encode("제품견적서_" + projectNo + ".xlsx", StandardCharsets.UTF_8);
+      String downloadUrl = "/baljuFile/" + encodedFileName;
+
+      // 7. 파일 삭제 예약 (선택)
+      Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+        try { Files.deleteIfExists(tempXlsx); } catch (IOException e) { e.printStackTrace(); }
+      }, 5, TimeUnit.MINUTES);
+
+      // 8. 결과 응답
+      result.success = true;
+      result.message = "메일이 성공적으로 전송되었습니다.";
+      result.data = Map.of(
+          "downloadUrl", downloadUrl,
+          "fileName", fileName
+      );
+      return result;
+
+    } catch (Exception e) {
+      log.error("❌ 메일 전송 중 서버에서 예외 발생: {}", e.getMessage(), e);
+      result.success = false;
+      result.message = "메일 전송 중 문제가 발생했습니다: " + e.getMessage();
+      return result;
+    }
+  }
+
+
+  private void setCell(Sheet sheet, int rowIdx, int colIdx, String value) {
+    Row row = sheet.getRow(rowIdx);
+    if (row == null) row = sheet.createRow(rowIdx);
+    Cell cell = row.getCell(colIdx);
+    if (cell == null) cell = row.createCell(colIdx);
+    cell.setCellValue(value);
+  }
 }

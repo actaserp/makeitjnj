@@ -564,7 +564,7 @@ public class BomController {
 					comp.setAmount(amount);
 					comp.set_creater_id(userId);
 					comp.set_created(startDate);
-					comp.set_order(1);
+					//comp.set_order(1);
 					comp.setSpjangcd(spjangcd);
 					comp.setDescription(location);
 					bomCompMap.put(materialId, comp);
@@ -577,7 +577,18 @@ public class BomController {
 							comp.setDescription(comp.getDescription() + ", " + location);
 					}
 				}
+
 			}
+			List<BomComponent> componentsToSave = bomCompMap.values().stream()
+					.filter(c -> Optional.ofNullable(c.getAmount()).orElse(0f) > 0)
+					.sorted(Comparator.comparing(BomComponent::getMaterialId)) // 등록 순 기준으로 변경 가능
+					.collect(Collectors.toList());
+
+			int order = 1;
+			for (BomComponent comp : componentsToSave) {
+				comp.set_order(order++);
+			}
+
 			// 수량이 0 초과인 것만 저장
 			bomComponentRepository.saveAll(
 					bomCompMap.values().stream()
