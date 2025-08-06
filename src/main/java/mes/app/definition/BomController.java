@@ -162,18 +162,31 @@ public class BomController {
 	}
 
 	@RequestMapping("/bom_delete")
-	public AjaxResult deleteBom(
-			@RequestParam(value="id") int id
-	) {
+	public AjaxResult deleteBom(@RequestParam(value = "id") int id) {
 
-		MapSqlParameterSource paramMap = new MapSqlParameterSource();
 		AjaxResult result = new AjaxResult();
-		String sql = "delete from bom where id=:id ";
-		paramMap.addValue("id", id);
-		int iRowEffected = this.sqlRunner.execute(sql, paramMap);
-		result.data = iRowEffected;
+
+		try {
+			// 1. bom_comp 먼저 삭제
+			String deleteComponentsSql = "DELETE FROM bom_comp WHERE bom_id = :id";
+			MapSqlParameterSource paramMap = new MapSqlParameterSource();
+			paramMap.addValue("id", id);
+			sqlRunner.execute(deleteComponentsSql, paramMap);
+
+			// 2. 그 다음 bom 삭제
+			String deleteBomSql = "DELETE FROM bom WHERE id = :id";
+			int iRowEffected = sqlRunner.execute(deleteBomSql, paramMap);
+
+			result.success = true;
+			result.data = iRowEffected;
+		} catch (Exception e) {
+			result.success = false;
+			result.message = "삭제 중 오류 발생: " + e.getMessage();
+		}
+
 		return result;
 	}
+
 
 	@RequestMapping("/material_save")
 	public AjaxResult bomComponentSave(
@@ -561,13 +574,38 @@ public class BomController {
 					comp = new BomComponent();
 					comp.setBomId(bom.getId());
 					comp.setMaterialId(materialId);
-					comp.setAmount(amount);
+					comp.setAmount(amount); //수량
 					comp.set_creater_id(userId);
 					comp.set_created(startDate);
-					//comp.set_order(1);
 					comp.setSpjangcd(spjangcd);
 					comp.setDescription(location);
 					bomCompMap.put(materialId, comp);
+					// ===== 단가 저장 시도 =====
+					try {
+						String priceStr = "";
+						if (location != null) {
+							priceStr = location.toString(); // 어떤 타입이든 문자열로 변환
+							priceStr = priceStr.replaceAll(",", "").replaceAll("원", "").trim();
+
+							if (priceStr.matches("\\d+(\\.\\d+)?")) { // 숫자(정수 or 실수) 형식만 허용
+								float price = Float.parseFloat(priceStr);
+
+								Map<String, Object> priceData = new HashMap<>();
+								priceData.put("PCODE", materialId.toString()); // 자재 ID는 문자열로 저장
+								priceData.put("PNAME", materialName);
+								priceData.put("PSIZE", "");                    // 규격 없음
+								priceData.put("PUAMT", price);
+								priceData.put("INPUTDATE", startDate.toLocalDateTime()
+										.toLocalDate()
+										.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+
+								bomUploadService.SaveUnitPrice(priceData);
+							}
+						}
+					} catch (Exception e) {
+						log.warn("단가 저장 실패 (materialName={}, location={}): {}", materialName, location, e.getMessage());
+					}
+
 				} else {
 					comp.setAmount(comp.getAmount() + amount);
 					if (amount > 0 && location != null && !location.trim().isEmpty()) {
@@ -586,7 +624,7 @@ public class BomController {
 
 			int order = 1;
 			for (BomComponent comp : componentsToSave) {
-				comp.set_order(order++);
+				comp.set_order(order++); //순서
 			}
 
 			// 수량이 0 초과인 것만 저장

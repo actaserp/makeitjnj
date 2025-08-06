@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
@@ -345,4 +346,48 @@ public class RequestService {
 
     return this.sqlRunner.getRow(sql, paramMap);
   }
+
+  public int SaveUnitPrice(Integer pcode, String pname, String puamt, String cltcd, String inputDate) {
+    MapSqlParameterSource param = new MapSqlParameterSource();
+    param.addValue("pcode", pcode);
+    param.addValue("pname", pname);
+    param.addValue("psize", null); // 빈 문자열 대신 null
+    param.addValue("puamt", new BigDecimal(puamt.replaceAll(",", ""))); // 숫자로 변환
+    param.addValue("inputdate", inputDate);
+    param.addValue("cltcd", cltcd); // 무조건 바인딩
+
+    StringBuilder sql = new StringBuilder();
+    sql.append("""
+        MERGE INTO mat_uamt AS target
+        USING (
+            SELECT :pcode AS PCODE,
+                   :pname AS PNAME,
+                   :psize AS PSIZE,
+                   :puamt AS PUAMT,
+                   :inputdate AS INPUTDATE,
+                   :cltcd AS CLTCD
+        ) AS source
+        ON target.PCODE = source.PCODE
+           AND target.PNAME = source.PNAME
+           AND target.CLTCD = source.CLTCD
+        WHEN MATCHED AND (
+            (target.PUAMT IS NULL AND source.PUAMT IS NOT NULL) OR
+            (target.PUAMT IS NOT NULL AND source.PUAMT IS NULL) OR
+            (target.PUAMT <> source.PUAMT)
+        )
+        THEN UPDATE SET
+            PUAMT = source.PUAMT,
+            INPUTDATE = source.INPUTDATE,
+            CLTCD = source.CLTCD
+        WHEN NOT MATCHED THEN
+        INSERT (PCODE, PNAME, PSIZE, PUAMT, INPUTDATE, CLTCD)
+        VALUES (source.PCODE, source.PNAME, source.PSIZE, source.PUAMT, source.INPUTDATE, source.CLTCD);
+    """);
+
+//    log.info("주문등록 단가 저장 SQL: {}", sql);
+//    log.info("SQL Parameters: {}", param.getValues());
+
+    return sqlRunner.execute(sql.toString(), param);
+  }
+
 }

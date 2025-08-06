@@ -1,5 +1,6 @@
 package mes.app.definition.service;
 
+import lombok.extern.slf4j.Slf4j;
 import mes.domain.repository.BomRepository;
 import mes.domain.services.CommonUtil;
 import mes.domain.services.SqlRunner;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class BomUploadService {
 
@@ -31,7 +33,7 @@ public class BomUploadService {
 
 
 	
-	
+
 	// 수주 업로드 내역 조회 
 	public List<Map<String, Object>> getSujuUploadList(String date_kind, String start, String end, String spjangcd) {
 		
@@ -117,5 +119,77 @@ public class BomUploadService {
 		wb.close();
 		return all_rows;
 	}
+
+	public int SaveUnitPrice(Map<String, Object> data) {
+		MapSqlParameterSource param = new MapSqlParameterSource();
+
+		String pname = (String) data.get("PNAME");
+		String psize = (String) data.get("PSIZE"); // null일 수 있음
+		Object puamt = data.get("PUAMT");
+		String inputDate = (String) data.get("INPUTDATE");
+		String pcode = (String) data.get("PCODE"); // 무조건 있음
+		String cltcd = (String) data.get("CLTCD"); // null일 수 있음
+
+		param.addValue("pname", pname);
+		param.addValue("psize", psize);
+		param.addValue("puamt", puamt);
+		param.addValue("inputdate", inputDate);
+		param.addValue("pcode", pcode);
+
+		if (cltcd != null && !cltcd.isBlank()) {
+			param.addValue("cltcd", cltcd);
+		}
+
+		StringBuilder sql = new StringBuilder();
+		sql.append("""
+    MERGE INTO mat_uamt AS target
+    USING (
+        SELECT :pcode AS PCODE,
+               :pname AS PNAME,
+               :psize AS PSIZE,
+               :puamt AS PUAMT,
+               :inputdate AS INPUTDATE
+""");
+		if (cltcd != null && !cltcd.isBlank()) {
+			sql.append(", :cltcd AS CLTCD\n");
+		}
+		sql.append("""
+    ) AS source
+    ON target.PCODE = source.PCODE AND target.PNAME = source.PNAME
+    WHEN MATCHED AND (
+        (target.PUAMT IS NULL AND source.PUAMT IS NOT NULL) OR
+        (target.PUAMT IS NOT NULL AND source.PUAMT IS NULL) OR
+        (target.PUAMT <> source.PUAMT)
+    )
+    THEN UPDATE SET
+        PUAMT = source.PUAMT,
+        INPUTDATE = source.INPUTDATE
+""");
+		if (cltcd != null && !cltcd.isBlank()) {
+			sql.append(", CLTCD = source.CLTCD\n");
+		}
+		sql.append("""
+    WHEN NOT MATCHED THEN
+    INSERT (PCODE, PNAME, PSIZE, PUAMT, INPUTDATE
+""");
+		if (cltcd != null && !cltcd.isBlank()) {
+			sql.append(", CLTCD");
+		}
+		sql.append("""
+    )
+    VALUES (source.PCODE, source.PNAME, source.PSIZE, source.PUAMT, source.INPUTDATE
+""");
+		if (cltcd != null && !cltcd.isBlank()) {
+			sql.append(", source.CLTCD");
+		}
+		sql.append(");\n");
+
+
+//		log.info("단가 저장 SQL: {}", sql);
+//		log.info("SQL Parameters: {}", param.getValues());
+
+		return sqlRunner.execute(sql.toString(), param);
+	}
+
 
 }

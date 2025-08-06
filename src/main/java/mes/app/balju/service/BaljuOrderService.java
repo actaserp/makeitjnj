@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -327,35 +328,31 @@ return this.sqlRunner.getRows(sql, dicParam);
     return jumunNumber;
   }
 
-  public List<Map<String, Object>> getBaljuPrice(int materialId, String jumunDate, int companyId) {
+  public List<Map<String, Object>> getBaljuPrice(int pcode,  String pname, String cltcd) {
     MapSqlParameterSource dicParam = new MapSqlParameterSource();
-    dicParam.addValue("mat_pk", materialId);
-    dicParam.addValue("company_id", companyId);
-    dicParam.addValue("ApplyStartDate", jumunDate);
+    dicParam.addValue("pcode", pcode);
+    dicParam.addValue("pname", pname);
+    dicParam.addValue("cltcd", cltcd);
 
     String sql = """
-        SELECT\s
-             mcu.id,
-             mcu.Company_id,
-             c.Name AS CompanyName,
-             mcu.UnitPrice,
-             mcu.FormerUnitPrice,
-             mcu.ApplyStartDate,
-             mcu.ApplyEndDate,
-             mcu.ChangeDate,
-             mcu.ChangerName
-         FROM mat_comp_uprice mcu
-         INNER JOIN company c ON c.id = mcu.Company_id
-         WHERE 1 = 1
-           AND mcu.Material_id = :mat_pk
-           AND mcu.Company_id = :company_id
-           AND CAST(:ApplyStartDate AS DATE) BETWEEN mcu.ApplyStartDate AND mcu.ApplyEndDate
-           AND mcu.Type = '01'
-         ORDER BY c.Name, mcu.ApplyStartDate DESC
+        SELECT TOP 1 PUAMT
+              FROM mat_uamt 
+              WHERE PNAME = :pname
+                AND PCODE = :pcode
+        """;
+    if (cltcd != null && !cltcd.isEmpty()) {
+      sql+= """ 
+          AND cltcd = :cltcd 
+          """;
+      dicParam.addValue("cltcd", cltcd);
+    }
+
+    sql+= """
+         ORDER BY INPUTDATE DESC
         """;
 
-//    log.info("발주 단가 데이터 SQL: {}", sql);
-//    log.info("SQL Parameters: {}", dicParam.getValues());
+    log.info("발주 단가 데이터 SQL: {}", sql);
+    log.info("SQL Parameters: {}", dicParam.getValues());
     List<Map<String, Object>> items = this.sqlRunner.getRows(sql, dicParam);
     return items;
   }
@@ -457,93 +454,50 @@ return this.sqlRunner.getRows(sql, dicParam);
   public int saveCompanyUnitPrice(Map<String, Object> data) {
     Integer materialId = CommonUtil.tryIntNull(data.get("Material_id"));
     Integer companyId = CommonUtil.tryIntNull(data.get("Company_id"));
+    String product_name = CommonUtil.tryString(data.get("Product_name"));
+    String supply_price = CommonUtil.tryString(data.get("Supply_price"));
+    String inputDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-    // smalldatetime 대응: 초, 나노초 제거
-    String applyStartDateStr = CommonUtil.tryString(data.get("ApplyStartDate"));
-    LocalDateTime applyStartDateLocal = LocalDateTime
-        .parse(applyStartDateStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-        .withSecond(0).withNano(0);
+    MapSqlParameterSource param = new MapSqlParameterSource();
+    param.addValue("pcode", materialId);
+    param.addValue("pname", product_name);
+    param.addValue("psize", null); // 빈 문자열 대신 null
+    param.addValue("puamt", new BigDecimal(supply_price.replaceAll(",", ""))); // 숫자로 변환
+    param.addValue("inputdate", inputDate);
+    param.addValue("cltcd", companyId); // 무조건 바인딩
 
-    Timestamp applyStartDate = Timestamp.valueOf(applyStartDateLocal);
-
-    // ApplyEndDate: 시작일이 오늘이면 동일 날짜, 아니면 하루 전날
-    LocalDate applyStartDateDate = applyStartDateLocal.toLocalDate();
-    LocalDate today = LocalDate.now();
-    Timestamp applyEndDate = applyStartDateDate.equals(today)
-        ? applyStartDate
-        : Timestamp.valueOf(applyStartDateDate.minusDays(1).atStartOfDay());
-
-    // smalldatetime 최대값인 2079-06-06 23:59:00으로 설정
-    Timestamp applyEndDate2 = Timestamp.valueOf("2079-06-06 23:59:00");
-
-    Float unitPrice = CommonUtil.tryFloatNull(data.get("UnitPrice"));
-    String changerName = CommonUtil.tryString(data.get("ChangerName"));
-    String type = CommonUtil.tryString(data.get("type"));
-    Integer userId = CommonUtil.tryIntNull(data.get("user_id"));
-
-    // 파라미터 구성
-    MapSqlParameterSource dicParam = new MapSqlParameterSource();
-    dicParam.addValue("materialId", materialId);
-    dicParam.addValue("companyId", companyId);
-    dicParam.addValue("applyStartDate", applyStartDate, java.sql.Types.TIMESTAMP);
-    dicParam.addValue("applyEndDate", applyEndDate, java.sql.Types.TIMESTAMP);
-    dicParam.addValue("applyEndDate2", applyEndDate2, java.sql.Types.TIMESTAMP);
-    dicParam.addValue("unitPrice", unitPrice);
-    dicParam.addValue("changerName", changerName);
-    dicParam.addValue("userId", userId);
-    dicParam.addValue("type", type);
-    dicParam.addValue("formerUnitPrice", null);
-
-    // 1. 기존 단가 이력 조회
-    String sql = """
-        SELECT id, UnitPrice
-        FROM mat_comp_uprice
-        WHERE Material_id = :materialId
-          AND Company_id = :companyId
-          AND :applyStartDate BETWEEN ApplyStartDate AND ApplyEndDate
-    """;
-
-    Map<String, Object> item = this.sqlRunner.getRow(sql, dicParam);
-    //System.out.println("[기존 단가 이력] 조회결과: " + item);
-
-    if (!MapUtils.isEmpty(item)) {
-      Float formerPrice = CommonUtil.tryFloatNull(item.get("UnitPrice"));
-      dicParam.addValue("formerUnitPrice", formerPrice);
-    }
-
-    // 2. 기존 유효 단가 종료일 수정
-    sql = """
-        UPDATE mat_comp_uprice
-        SET ApplyEndDate = :applyEndDate
-        WHERE Material_id = :materialId
-          AND Company_id = :companyId
-          AND :applyStartDate BETWEEN ApplyStartDate AND ApplyEndDate
-    """;
-
-    int updated = this.sqlRunner.execute(sql, dicParam);
-    //System.out.println("[기존 종료일 UPDATE] 처리 건수: " + updated);
-
-    //System.out.println("★ 최종 INSERT 파라미터: " + dicParam.getValues());
-
-    // 3. 신규 단가 INSERT
-    sql = """
-        INSERT INTO mat_comp_uprice
-        (_created, _creater_id, Material_id, Company_id, ApplyStartDate,
-         ApplyEndDate, UnitPrice, FormerUnitPrice, ChangeDate, ChangerName, Type)
-        VALUES (
-         GETDATE(), :userId, :materialId, :companyId, :applyStartDate,
-         :applyEndDate2, :unitPrice, :formerUnitPrice, GETDATE(), :changerName, :type
+    StringBuilder sql = new StringBuilder();
+    sql.append("""
+        MERGE INTO mat_uamt AS target
+        USING (
+            SELECT :pcode AS PCODE,
+                   :pname AS PNAME,
+                   :psize AS PSIZE,
+                   :puamt AS PUAMT,
+                   :inputdate AS INPUTDATE,
+                   :cltcd AS CLTCD
+        ) AS source
+        ON target.PCODE = source.PCODE
+           AND target.PNAME = source.PNAME
+           AND target.CLTCD = source.CLTCD
+        WHEN MATCHED AND (
+            (target.PUAMT IS NULL AND source.PUAMT IS NOT NULL) OR
+            (target.PUAMT IS NOT NULL AND source.PUAMT IS NULL) OR
+            (target.PUAMT <> source.PUAMT)
         )
-    """;
+        THEN UPDATE SET
+            PUAMT = source.PUAMT,
+            INPUTDATE = source.INPUTDATE,
+            CLTCD = source.CLTCD
+        WHEN NOT MATCHED THEN
+        INSERT (PCODE, PNAME, PSIZE, PUAMT, INPUTDATE, CLTCD)
+        VALUES (source.PCODE, source.PNAME, source.PSIZE, source.PUAMT, source.INPUTDATE, source.CLTCD);
+    """);
 
-    int inserted = this.sqlRunner.execute(sql, dicParam);
-   // System.out.println("[INSERT 단가] 처리 건수: " + inserted);
+//    log.info("주문등록 단가 저장 SQL: {}", sql);
+//    log.info("SQL Parameters: {}", param.getValues());
 
-    if (inserted <= 0) {
-      throw new RuntimeException("저장 실패: INSERT 실패 또는 필수값 누락 (예: ApplyEndDate2 null 등)");
-    }
-
-    return inserted;
+    return sqlRunner.execute(sql.toString(), param);
   }
 
 

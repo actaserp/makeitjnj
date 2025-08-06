@@ -282,11 +282,11 @@ public class BaljuOrderController {
 
   //단가 찾기
   @GetMapping("/price")
-  public AjaxResult BaljuPrice(@RequestParam("mat_pk") int materialId,
-                               @RequestParam("JumunDate") String jumunDate,
-                               @RequestParam("company_id") int companyId) {
-    //log.info("발주단가 찾기 --- matPk:{}, ApplyStartDate:{},company_id:{} ",materialId,jumunDate , companyId);
-    List<Map<String, Object>> items = this.baljuOrderService.getBaljuPrice(materialId, jumunDate, companyId);
+  public AjaxResult BaljuPrice(@RequestParam(value = "pcode")  Integer pcode ,
+                               @RequestParam(value = "pname") String pname,
+                               @RequestParam(value = "cltcd" ,required = false)String cltcd) {
+//    log.info("발주단가 찾기 --- pcode:{}, pname:{} ,cltcd:{}",pcode, pname,cltcd);
+    List<Map<String, Object>> items = this.baljuOrderService.getBaljuPrice(pcode,pname ,cltcd);
     AjaxResult result = new AjaxResult();
     result.data = items;
     return result;

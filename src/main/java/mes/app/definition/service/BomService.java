@@ -291,7 +291,7 @@ public class BomService {
 	public int deleteBomComponent(int bc_id) {
 		int iRowEffected = 0;
 		String sql ="""
-		delete from bom_comp where id=:bc_id				
+		DELETE FROM bom_comp WHERE id=:bc_id				
 		""";
 		MapSqlParameterSource paramMap = new MapSqlParameterSource();
 		paramMap.addValue("bc_id", bc_id);

@@ -21,24 +21,15 @@ public class BomComponent extends AbstractAuditModel {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	int id;
-
-	//@ManyToOne
-	//@JoinColumn(name="\"BOM_id\"", nullable=false)	
-	//Bom bom;
 	
 	@Column(name = "\"BOM_id\"")
 	int bomId;
-	
-	
-	//@ManyToOne
-	//@JoinColumn(name="\"Material_id\"", nullable=false)	
-	//Material material;
 	
 	@Column(name = "\"Material_id\"")
 	int materialId;
 
 
-	@Column(name = "\"Amount\"")
+	@Column(name = "\"Amount\"")  //수량
 	float amount;
 	
 	

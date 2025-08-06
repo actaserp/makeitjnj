@@ -408,10 +408,13 @@
                 </thead>
                 <tbody>
                 <tr class="item-template-row" style="display: none;">
-                  <td><input type="text" id="mat_code" name="mat_code" placeholder="부품코드" readonly
-                             style="width: 100%; text-align: left;" /></td>
+                  <td>
+                    <input type="text" id="mat_code" name="mat_code" placeholder="부품코드" readonly
+                             style="width: 100%; text-align: left;" />
+                  </td>
                   <td>
                     <div class="input-with-button" style="display: flex; gap: 4px;">
+                      <input type="hidden" id="dMaterial_id" name="dMaterial_id" />
                       <input type="text" name="pname" placeholder="입력 후 엔터" style="flex: 1; width: 320px" autocomplete="off"/>
                       <a class="btn in_btn" title="부품 검색" id="btnpartSearch" style="width: 28px; height: 32px;">
                         <img src="/images/icon/btn-srch-black.svg" alt="검색 아이콘"/>
@@ -810,15 +813,17 @@
       $container.on('click', 'a[title="부품 검색"]', function () {
         const $row = $(this).closest('tr');
 
-        const $productId = $row.find('input[name^="Material_id"]');
+        const $productId = $row.find('input[name^="dMaterial_id"]');
         const $productCode = $row.find('input[name^="product_code"]');
         const $mat_code = $row.find('input[name^="mat_code"]');
         const $materialGroup = $row.find('input[name^="MaterialGroupName"]');
-        const $pname = $row.find('input[name^="pname_"]');
+        const $pname = $row.find('input[name^="pname"]');
 
         const pop = new PopMatComponent();
         pop.material_group  = 21;
         pop.show(function (item) {
+          console.log('[팝업 선택된 부품 데이터]', item);  // ✅ 콘솔 출력
+
           $pname.val(item.Name);
           $productId.val(item.id);
           $productCode.val(item.Code);
@@ -834,8 +839,8 @@
           e.preventDefault();
 
           const $row = $(this).closest('tr');
-          const $pname = $row.find('input[name^="pname_"]');
-          const $productId = $row.find('input[name^="Material_id_"]');
+          const $pname = $row.find('input[name^="pname"]');
+          const $productId = $row.find('input[name^="dMaterial_id"]');
           const $productCode = $row.find('input[name^="product_code_"]');
           const $materialGroup = $row.find('input[name^="MaterialGroupName_"]');
 
@@ -931,7 +936,7 @@
             product_code: $('#product_code').val(),
             modeltxt_history :$('#modeltxt_history').val(),
           };
-          console.info("더당 데이터 : ", defaultData) ;
+          console.info("저장 데이터 : ", defaultData) ;
           let detailList = [];
           $('#OrderRequestForm tbody tr').each(function () {
             let $row = $(this);
@@ -939,6 +944,7 @@
               const rowData = {
                 txtModelNm: $row.find('input[name^="txtModelNm"]').val() || '',
                 mat_code: $row.find('input[name^="mat_code"]').val() || '',
+                dMaterial_id: $row.find('input[name^="dMaterial_id"]').val() || '',
                 pname: $row.find('input[name^="pname"]').val() || '',
                 remark: $row.find('input[name^="remark"]').val() || '',
                 jobflag: $row.find('select[name="jobflag"]').val() || '',
@@ -949,7 +955,9 @@
               };
 
               // ✅ 모든 값이 비어있는지 체크
-              const isEmptyRow = Object.values(rowData).every(val => !val || val === '0');
+              const isEmptyRow = Object.entries(rowData)  // ⬅️ key, val 쌍으로 가져와야 함
+                .filter(([key]) => key !== 'jobflag')     // ⬅️ jobflag는 제외
+                .every(([_, val]) => !val || val === '0'); // ⬅️ 값이 없거나 0이면 비어있다고 판단
 
               if (!isEmptyRow) {
                 detailList.push(rowData);
@@ -978,8 +986,16 @@
             });
           }
           Alert.confirm('', '저장하시겠습니까?', function () {
-
-            _this.orderSave(formData);
+            // ✅ 먼저 단가 저장
+            _this.saveAllUnitPrices(defaultData.detailList, defaultData.cboCompanyHidden)
+              .then(() => {
+                // ✅ 단가 저장 성공 후 주문 저장 진행
+                _this.orderSave(formData);
+              })
+              .catch(err => {
+                console.error('❌ 단가 저장 중 에러 발생', err);
+                Alert.alert('단가 저장 실패', '단가 저장 중 오류가 발생했습니다. 주문 저장을 중단합니다.');
+              });
           });
         });
 
@@ -1170,7 +1186,7 @@
                   $row.find('input[name="QTY"]').val(bom.quantity || '');
                   $row.find('input[name="uamt"]').val('');
                   $row.find('input[name="balju_StateName"]').val('');
-                  $row.find('input[name="Material_id"]').val(bom.mat_id || '');
+                  $row.find('input[name="dMaterial_id"]').val(bom.mat_id || '');
                   $row.find('select[name="jobflag"]').val('j01');
 
                   $template.before($row);
@@ -1481,6 +1497,39 @@
         this.itemIndex++;
       }
 
+      saveAllUnitPrices(detailList, cltcd) {
+        const promises = [];
+
+        console.log('[단가 저장 대상 전체]', detailList);
+
+        detailList.forEach(item => {
+          const pcode = item.dMaterial_id || '';  // ✅ 수정
+          const pname = item.pname || '';
+          const puamt = item.setamt || '';
+
+          if (!pcode || puamt === '') return; // ✅ 수정
+
+          const data = { pcode, pname, puamt, cltcd };
+          console.log('🔸 단가 저장 요청:', data);
+          const promise = new Promise((resolve, reject) => {
+            AjaxUtil.postAsyncData('/api/request/request/SaveUnitPrice', data, function (res) {
+              if (res.success) {
+                console.log('✅ 단가 저장 완료:', data);
+                resolve();
+              } else {
+                console.warn('❌ 단가 저장 실패:', data, res);
+                reject(res);
+              }
+            });
+          });
+
+          promises.push(promise);
+        });
+
+        return Promise.all(promises);
+      }
+
+
       orderSave(formData) {
         const jsonDataBlob = formData.get('jsonData');
 
@@ -1653,6 +1702,7 @@
 
         // 숫자 필드 포맷 적용
         formatNumberInput(item.setamt + '', $row.find('input[name="setamt"]'));
+        formatNumberInput(item.setamt + '', $row.find('input[name="SetAmtUnitPrice"]'));
         formatNumberInput(item.saleamt + '', $row.find('input[name="saleamt"]'));
         formatNumberInput(item.qty + '', $row.find('input[name="QTY"]'));
         formatNumberInput(item.uamt + '', $row.find('input[name="uamt"]'));
@@ -1904,39 +1954,36 @@
     //단가검색
     function tryShowBaljuPrice(row) {
       const $unitPrice = row.find('input[name^="setamt"]');
-      const $supply = row.find('input[name^="BaljuPrice_"]');
-      const $vat = row.find('input[name^="BaljuVat_"]');
+      const $originalPrice = row.find('input[name="SetAmtUnitPrice"]');
 
-      const mat_pk = row.find('input[name^="Material_id_"]').val();
-      const company_id = $('#cboCompany').val();
-      const JumunDate = $('#JumunDate').val();
 
-      console.log('[단가 조회] 호출됨', { mat_pk, company_id, JumunDate });
+      const pcode = row.find('input[name^="dMaterial_id"]').val();
+      const pname = row.find('input[name^="pname"]').val();
+      const cltcd = $('#cboCompanyHidden').val();
 
-      if (!mat_pk || !company_id || !JumunDate) {
+      console.log('[단가 조회] 호출됨', { pcode, pname ,cltcd});
+
+      if (!pcode || !pname ) {
         console.warn('[단가 조회] 필수값 누락으로 요청 취소');
         return;
       }
 
       AjaxUtil.getAsyncData('/api/balju/balju_order/price', {
-        mat_pk, company_id, JumunDate
+        pcode, pname, cltcd
       }, function (result) {
         console.log('[단가 조회 결과]', result);
 
         if (result?.data?.length) {
           const item = result.data[0];
-          const unitPrice = item.UnitPrice || 0;
-          $unitPrice.val(unitPrice);
-          $supply.val(unitPrice);
-          $vat.val('');
+          const unitPrice = item.PUAMT || 0;
+          const unitPriceFormatted = unitPrice.toLocaleString();
+          console.log('[단가 입력 대상]', $unitPrice.length, $unitPrice);
 
-          row.find('input[name^="originalUnitPrice_"]').val(unitPrice);
-
+          $unitPrice.val(unitPriceFormatted);            // 사용자 표시용 (콤마 포함)
+          $originalPrice.val(unitPrice);                 // 원시값 저장용 (hidden)
         } else {
           $unitPrice.val('');
-          $supply.val('');
-          $vat.val('');
-          row.find('input[name^="originalUnitPrice_"]').val('');
+          $originalPrice.val('');
         }
       });
     }
