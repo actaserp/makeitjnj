@@ -1,5 +1,6 @@
 package mes.app.definition.service.material;
 
+import lombok.extern.slf4j.Slf4j;
 import mes.domain.services.CommonUtil;
 import mes.domain.services.SqlRunner;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class UnitPriceService {
 
@@ -61,35 +63,29 @@ public class UnitPriceService {
         	
         
         List<Map<String, Object>> items = this.sqlRunner.getRows(sql, dicParam);
+		log.info("품목정보-단가정보 read SQL: {}", sql);
+		log.info("SQL Parameters: {}", dicParam.getValues());
         return items;
 	}
 	
-	public List<Map<String, Object>> getPriceHistoryByMat(int matPk, int comPk){
+	public List<Map<String, Object>> getPriceHistoryByMat(int matPk){
 		MapSqlParameterSource dicParam = new MapSqlParameterSource();        
         dicParam.addValue("mat_pk", matPk);
-		dicParam.addValue("com_pk", comPk);
+				//dicParam.addValue("com_pk", comPk);
         
         String sql = """
-			select mcu.id 
-            , mcu."Company_id"
-            , c."Name" as "CompanyName"
-            , mcu."UnitPrice" 
-            , mcu."FormerUnitPrice" 
-            , mcu."ApplyStartDate"::date 
-            , mcu."ApplyEndDate"::date 
-            , mcu."ChangeDate"::date 
-            , mcu."ChangerName"
-            , mcu."Type" as type
-            from mat_comp_uprice mcu 
-            inner join company c on c.id = mcu."Company_id"
-            where 1=1
-            and mcu."Material_id" = :mat_pk
-            and mcu."Company_id" = :com_pk
-            order by c."Name", mcu."ApplyStartDate" desc
+						select 
+						mu.idxkey  as price_id,
+						 c.Name as company_name,
+						 mu.PUAMT as unit_price,
+						 mu.cltcd,
+						CONVERT(VARCHAR(10), CONVERT(DATE, CONVERT(VARCHAR, mu.INPUTDATE)), 120) AS input_date
+						 from mat_uamt mu
+						 left join company c on c.id =mu.CLTCD
+						 where mu.PCODE =:mat_pk
         """;
-        	
-        
         List<Map<String, Object>> items = this.sqlRunner.getRows(sql, dicParam);
+
         return items;
 	}
 	

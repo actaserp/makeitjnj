@@ -98,7 +98,7 @@ public class MaterialController {
         Authentication auth = sc.getAuthentication();         
         User user = (User)auth.getPrincipal();
         data.set("user_id", user.getId());
-        
+        log.info("품모목기본정보 저장 data :{}", data);
         AjaxResult result = new AjaxResult();
 		
         if (this.materialService.saveMaterial(data) > 0) {
@@ -154,10 +154,9 @@ public class MaterialController {
 	 * @return
 	 */
 	@GetMapping("/readPriceHistory")
-	public AjaxResult getPriceHistory(@RequestParam("mat_pk") int matPk,
-									  @RequestParam("com_pk") int comPk) {
+	public AjaxResult getPriceHistory(@RequestParam("mat_pk") int matPk) {
 
-        List<Map<String, Object>> items = this.unitPriceService.getPriceHistoryByMat(matPk,comPk);
+        List<Map<String, Object>> items = this.unitPriceService.getPriceHistoryByMat(matPk);
                		
         AjaxResult result = new AjaxResult();
         result.data = items;        				

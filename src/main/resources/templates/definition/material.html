@@ -196,10 +196,13 @@
                                         <th>
                                             <label for="Name"><span class="eq">*</span>품목명</label>
                                         </th>
-                                        <td>
+                                        <td colspan="5">
                                             <input type="text" style="width: 100%;" id="Name"
                                                    name="Name" required>
                                         </td>
+                                    </tr>
+
+                                    <tr>
 
                                         <th>
                                             <label for="Unit_id"><span class="eq">*</span>단위</label>
@@ -208,35 +211,36 @@
                                             <select style="width: 100%;" id="Unit_id"
                                                     name="Unit_id" required></select>
                                         </td>
-                                    </tr>
 
-                                    <tr>
                                         <th>
                                             <label for="Factory_id"><span class="eq">*</span>공장</label>
                                         </th>
                                         <td>
-                                            <select type="text" id="Factory_id" name="Factory_id"
-                                                    style="width: 100%;"></select>
+                                            <select type="text" id="Factory_id" name="Factory_id" style="width: 100%;">
+                                                <option value="1">1공장</option>
+                                                <option value="3">2공장</option>
+                                                <option value="2">3공장</option>
+                                            </select>
                                         </td>
 
                                         <th>
                                             <label for="mtyn">재고관리여부</label>
                                         </th>
-                                        <td>
+                                        <td colspan="2">
                                             <input type="checkbox" id="mtyn" name="mtyn" value="1" style="display: block; margin: auto; height: 26px; width: 26px;" checked>
                                         </td>
                                         <th>
                                             <label for="useyn">사용중지여부</label>
                                         </th>
-                                        <td>
+                                        <td >
                                             <input type="checkbox" id="useyn" name="useyn" value="1" style="display: block; margin: auto; height: 26px; width: 26px;">
                                         </td>
-                                        <th>
+                                        <!--<th>
                                             <label for="Class1">작업방식</label>
                                         </th>
                                         <td>
                                             <select style="width: 100%;" id="Class1" name="Class1"></select>
-                                        </td>
+                                        </td>-->
                                     </tr>
 
                                     <!-- <tr>
@@ -315,7 +319,7 @@
                                         <th>
                                             <label for="Usage">용도</label>
                                         </th>
-                                        <td>
+                                        <td colspan="5">
                                             <input type="text" id="Usage" name="Usage"
                                                    style="width: 100%;">
                                         </td>
@@ -645,7 +649,7 @@
                     <!--section6-->
                     <section class="tab-item" id="tab_unitcost" style="border-top-left-radius: 0;">
                         <div class="section-top">
-                            <div class="search-wrap">
+                            <!--<div class="search-wrap">
                                 <form id="priceForm">
                                     <dl>
                                         <dt>
@@ -658,18 +662,18 @@
                                 </form>
                                 <div id="unitcostSaveButtonContainer" style="display: none; margin-top: 10px;">
                                 </div>
-                            </div>
+                            </div>-->
                             <div class="button-wrap">
                                 <!--<small2>단가정보는 왼쪽 버튼을 통해 별도로 저장됩니다. 기존 이력을 남기려면 단가등록/변경 버튼을 누르시고 이력을 남기지 않으시려면 단가 수정 버튼을
                                     누르십시오.
                                 </small2>-->
                                 <ul class="button-list">
-                                    <li>
+                                    <!--<li>
                                         <button type="button" class="btn-excellt btn-default" id="btnPriceHistory"
                                                 style="width: 115px; height: 36px;"><span
                                                 data-labelCd="히스토리조회">히스토리조회</span></button>
                                     </li>
-
+-->
                                     <li>
                                         <button type="button" class="btn-excellt btn-default" id="btnPriceNew"
                                                 style="width: 115px; height: 36px;"><span
@@ -682,18 +686,18 @@
                                                 data-labelCd="단가등록/변경">단가등록/변경</span></button>
                                     </li>
 
-                                    <li>
+                                    <!--<li>
                                         <button type="button" class="btn-delete btn-danger" id="btnPriceDelete"
                                                 style="width: 115px; height: 36px;"><span
                                                 data-labelCd="단가삭제">단가삭제</span>
                                         </button>
-                                    </li>
-                                    <li>
+                                    </li>-->
+                                    <!--<li>
                                         <button type="button" class="btn-edit btn-default" id="btnPriceUpdate"
                                                 style="width: 115px; height: 36px;"><span
                                                 data-labelCd="단가수정">단가수정</span>
                                         </button>
-                                    </li>
+                                    </li>-->
                                 </ul>
                             </div>
                         </div>
@@ -715,7 +719,7 @@
                                             <caption style="text-align: left; margin-bottom: 8px;">상세테이블</caption>
                                             <input type="text" id="price_id" name="price_id" hidden/>
                                             <tbody>
-                                            <tr>
+                                            <!--<tr>
                                                 <th>
                                                     <label for="name">구분</label>
                                                 </th>
@@ -725,7 +729,7 @@
                                                         <option value="02">매출</option>
                                                     </select>
                                                 </td>
-                                            </tr>
+                                            </tr>-->
                                             <tr>
                                                 <th>
                                                     <label for="Company_id">업체</label>
@@ -744,7 +748,7 @@
                                                            style="width: 100%;">
                                                 </td>
                                             </tr>
-                                            <tr>
+                                            <!--<tr>
                                                 <th>
                                                     <label for="ApplyStartDate">적용시작일</label>
                                                 </th>
@@ -752,7 +756,7 @@
                                                     <input type="date" style="width: 100%;" id="ApplyStartDate"
                                                            name="ApplyStartDate">
                                                 </td>
-                                            </tr>
+                                            </tr>-->
 
                                             </tbody>
                                         </table>
@@ -903,54 +907,25 @@
                     },
                     columns: [
                         {binding: 'id', header: '품목번호', width: 100, align: 'center'},
-                        {binding: 'material_group_id', header: 'material_group_id', width: 100, visible: false },
+                        {binding: 'material_group_id', header: 'material_group_id', visible: false },
+                        {binding: 'mat_type', header: '품목구분', width: 100, align: 'center'},
                         {binding: 'mat_type_name', header: '품목구분', width: 100, align: 'center'},
                         {binding: 'mat_grp_name', header: '품목그룹', width: 150, align: 'left'},
                         {binding: 'mat_code', header: '품목코드', width: 150, align: 'left'},
                         {binding: 'mat_name', header: '품목명', width: 200, align: 'left'},
+                        {binding: 'unit_id', header: '단위id', width: 100, visible: false },
                         {binding: 'unit_name', header: '단위', width: 100, align: 'center'},
-                        {binding: 'class1', header: '작업방식', width: 100, align: 'left'},
-                        {binding: 'class2', header: '분류', width: 100, align: 'left'},
+                        // {binding: 'class1', header: '분류1', width: 100, align: 'left'},
+                        // {binding: 'class2', header: '분류2', width: 100, align: 'left'},
                         {binding: 'starndard1', header: '규격1', width: 150, align: 'right'},
                         {binding: 'standard2', header: '규격2', width: 150, align: 'right'},
-                        {binding: 'unit_price', header: '평균단가', width: 100, align: 'right',},
+                        {binding: 'unit_price', header: '마지막단가', width: 100, align: 'right',},
                         {binding: '_created', header: '등록일', width: 150, align: 'center'},
                         {binding: 'description', header: '설명', width: 200, align: 'left'},
+                        {binding: 'factory_id', header: '공장', visible: false},
                         {binding: 'factory_name', header: '공장', width: 100, align: 'center'},
                         {binding: 'mtyn', header: '재고관리유무', width: 100, align: 'center'},
                         {binding: 'useyn', header: '사용중지여부', width: 100, align: 'center'},
-                        // {binding: 'thickness', header: '두께', width: 100, align: 'right'},
-                        // {binding: 'width', header: '폭', width: 100, align: 'right',},
-                        // {binding: 'length', header: '길이', width: 100, align: 'right',},
-                        // {binding: 'height', header: '높이', width: 100, align: 'right',},
-                        // {binding: 'color', header: 'Color', width: 100, align: 'center'},
-                        // {binding: 'usage', header: '용도', width: 100, align: 'left'},
-                        // {binding: 'class3', header: '분류3', width: 100, align: 'left'},
-                        // {binding: 'lotUseYn', header: 'LOT관리 유무', width: 150, align: 'center'},
-                        // {binding: 'lot_size', header: '로트사이즈', width: 100, align: 'right',},
-                        // {binding: 'customer_barcode', header: '고객바코드', width: 100, align: 'left'},
-                        // {binding: 'workcenter_name', header: '기본워크센터', width: 150, align: 'left'},
-                        // {binding: 'standard_time', header: '표준생산시간', width: 150, align: 'right'},
-                        // {binding: 'input_man_count', header: '기본작업자수', width: 150, align: 'right'},
-                        // {binding: 'input_man_hour', header: '기본ManHour', width: 150, align: 'right'},
-                        // {binding: 'vat_exempt_yn', header: '부가세면제', width: 150, align: 'center'},
-                        // {binding: 'purchase_order_standard', header: '발주기준', width: 100, align: 'center'},
-                        // {binding: 'leadtime', header: '리드타임(일)', width: 150, align: 'right'},
-                        // {binding: 'min_order', header: '최소발주량', width: 100, align: 'right',},
-                        // {binding: 'avrqty', header: '적정재고수량', width: 100, align: 'center'},
-                        // {binding: 'max_order', header: '최대발주량', width: 100, align: 'right',},
-                        // {binding: 'storehouse_name', header: '기본재고창고', width: 150, align: 'left'},
-                        // {binding: 'storehouse_loc', header: '창고내위치', width: 120, align: 'left'},
-                        // {binding: 'manage_level', header: '자재관리등급', width: 150, align: 'left'},
-                        // {binding: 'packing_unit_qty', header: '포장수량', width: 100, align: 'right',},
-                        // {binding: 'packing_unit_name', header: '포장단위', width: 100, align: 'right'},
-                        // {binding: 'safety_stock', header: '안전재고', width: 100, align: 'right',},
-                        // {binding: 'max_stock', header: '최대재고', width: 100, align: 'right',},
-                        // {binding: 'process_safety_stock', header: '공정안전재고', width: 150, align: 'right',},
-                        // {binding: 'valid_days', header: '사용기한(일)', width: 100, align: 'right',},
-                        // {binding: 'intest_yn', header: '수입검사필수', width: 150, align: 'center'},
-                        // {binding: 'outtest_yn', header: '출하검사필수', width: 150, align: 'center'},
-                        // {binding: 'routing_name', header: '라우팅', width: 100, align: 'left'},
                     ],
                     itemsSource: this.viewData, // 데이터를 설정할 배열
                 });
@@ -966,52 +941,12 @@
                 });
                 let isInitialLoad = true; // 초기 상태 플래그
 
-                /*this.grid.selectionChanged.addHandler((s, e) => {
-                    if (isInitialLoad) {
-                        isInitialLoad = false; // 초기 로드 이후 플래그 해제
-                        return;
-                    }
-
-                    let selectedRowIndex = s.selection.row; // 선택된 행의 인덱스
-                    if (selectedRowIndex >= 0) { // 유효한 행이 선택되었는지 확인
-                        let selectedRowData = s.rows[selectedRowIndex].dataItem; // 선택된 행의 데이터
-                        let mat_pk = selectedRowData.id; // 품목 ID 가져오기
-                        /!*console.log(selectedRowData);*!/
-
-                        // 상세 정보 표시
-                        _this.showDetail(mat_pk);
-
-                        /!* // 기존 데이터 초기화
-                         _this.price_grid.setData([]);
-                         $('#companyPriceForm')[0].reset();
-                         _this.test_grid.setData([]);
-                         _this.setPriceButtonState();*!/
-
-                        // 현재 활성화된 탭에 따라 추가 기능 실행
-                        if (_this.current_tab == 'tab_unitcost') {
-                            _this.showPriceList(mat_pk);
-                        } else if (_this.current_tab == 'tab_bom') {
-                            if (mat_pk) page.showBomList(mat_pk);
-                        } else if (_this.current_tab == 'tab_bom_reverse') {
-                            if (mat_pk) page.showBomReverseList(mat_pk);
-                        } else if (_this.current_tab == 'tab_routing') {
-                            let routing_pk = $('#Routing_id').val();
-                            if (routing_pk) page.showRoutingProcessList(routing_pk);
-                        } else if (_this.current_tab == 'tab_test_master') {
-                            if (mat_pk) page.showTestList(mat_pk);
-                        }
-
-                        /!*console.log(`선택된 행 인덱스: ${selectedRowIndex}`);
-                        console.log('선택된 행 데이터:', selectedRowData);*!/
-                    }
-                });*/
-
                 this.grid.hostElement.addEventListener('dblclick', (e) => {
                     let hitTest = this.grid.hitTest(e);
                     if (hitTest.cellType === wijmo.grid.CellType.Cell) {
                         let row = hitTest.row;
                         let selectedItem = this.grid.rows[row].dataItem;
-                        _this.showBomList(selectedItem.id)
+                        //_this.showBomList(selectedItem.id)
 
                         _this.bindMatBasicForm(selectedItem);
                         // _this.showBomReverseList(selectedItem.id)
@@ -1063,14 +998,12 @@
                         }
                     },
                     columns: [
-                        {binding: 'CompanyName', header: '업체명', width: '*', align: 'left',},
-                        {binding: 'type', header: '구분', width: 120, align: 'center',},
-                        {binding: 'UnitPrice', header: '단가', width: 120, align: 'right',},
-                        {binding: 'FormerUnitPrice', header: '이전단가', width: 120, align: 'right',},
-                        {binding: 'ApplyStartDate', header: '적용시작일', width: 120, align: 'center',},
-                        {binding: 'ApplyEndDate', header: '적용종료일', width: 120, align: 'center',},
-                        {binding: 'ChangerName', header: '변경자', width: 120, align: 'left',},
-                        {binding: 'ChangeDate', header: '변경일', width: 120, align: 'center',},
+                        {binding: 'cltcd', header: '업체명',visible: false},
+                        {binding: 'price_id', header: 'price_id',visible: false},
+                        {binding: 'company_name', header: '업체명', width: 300, align: 'left',},
+                        {binding: 'unit_price', header: '마지막단가', width: 250, align: 'right',},
+                        {binding: 'input_date', header: '변경일', width: 200, align: 'right',},
+
                     ],
                     itemsSource: this.viewData2, // 데이터를 설정할 배열
 
@@ -1081,20 +1014,24 @@
                     if (hitTest.cellType === wijmo.grid.CellType.Cell) {
                         let row = hitTest.row;
                         let selectedItem = this.price_grid.rows[row].dataItem;
-                        _this.showPriceDetail(selectedItem.id);
-                    }
-                });
 
-                this.price_grid.formatItem.addHandler((s, e) => {
-                    if (e.panel.cellType === wijmo.grid.CellType.Cell) {
-                        let col = s.columns[e.col];
-                        let item = s.rows[e.row].dataItem;
+                        if (selectedItem) {
+                            // 👉 disabled 해제 먼저!
+                            $('#price_id').prop('disabled', false);
+                            $('#Company_id').prop('disabled', false);
+                            $('#UnitPrices').prop('disabled', false);
 
-                        if (col.binding === "type") {
-                            e.cell.textContent = (item.type === '01') ? '매입' : '매출';
+                            // 👉 값 설정
+                            $('#price_id').val(selectedItem.id);
+                            $('#Company_id').val(selectedItem.cltcd).trigger('change');
+                            $('#UnitPrices').val(selectedItem.unit_price);
+
+                            // 👉 버튼 상태 갱신 (선택사항)
+                            //_this.setPriceButtonState();
                         }
                     }
                 });
+
 
                 new FlexGridContextMenu(this.price_grid);
                 this.grid.downloadFileName = '단가 정보';
@@ -1286,7 +1223,7 @@
                     AjaxUtil.fillSelectOptions($('#Equipment_id'), 'equipment_code', 'choose', '',group_pk);
                 });
 
-                AjaxUtil.fillSelectOptions($('#Factory_id'), 'factory', "", false); // 공장
+                //AjaxUtil.fillSelectOptions($('#Factory_id'), 'factory','choose', false); // 공장
                 AjaxUtil.fillSelectOptions($('#ManagementLevel'), 'user_code', 'choose', false, 'mat_manage_level');
                 AjaxUtil.fillSelectOptions($('#EquipmentGroup_id'), 'equipment_group', 'choose', false); // 설비그룹
                 AjaxUtil.fillSelectOptions($('#Routing_id'), 'routing', 'choose', false); // 라우팅
@@ -1338,8 +1275,10 @@
             }
 
             setPriceButtonState() {
+                console.log('✅ setPriceButtonState 호출됨');
                 let pk = $('#matBasicForm').find('#id').val();
                 let price_pk = $('#companyPriceForm').find('#price_id').val();
+                console.log('🔍 mat_id:', pk, 'price_id:', price_pk);
                 $('#btnPriceNew').prop('disabled', false);
                 $('#btnPriceSave').prop('disabled', false);
                 if (pk && price_pk) {
@@ -1349,7 +1288,6 @@
                     $('#btnPriceUpdate').prop('disabled', true);
                     $('#btnPriceDelete').prop('disabled', true);
                 }
-
             }
 
             // 품목 리스트 조회
@@ -1482,13 +1420,13 @@
 
                 let url = this.url+'/save';
                 let basicData = FormUtil.extractForm($('#matBasicForm'));
-                let productionData = FormUtil.extractForm($('#matProductionForm'));
-                let stockData = FormUtil.extractForm($('#matStockForm'));
+                // let productionData = FormUtil.extractForm($('#matProductionForm'));
+                // let stockData = FormUtil.extractForm($('#matStockForm'));
                 //let testData = FormUtil.extractForm($('#matTestForm'));
-                let routingData = FormUtil.extractForm($('#matRoutingForm'));
-                let priceData = FormUtil.extractForm($('#priceForm'));
+                // let routingData = FormUtil.extractForm($('#matRoutingForm'));
+                // let priceData = FormUtil.extractForm($('#priceForm'));
                 //let data = $.extend({}, basicData, productionData, stockData, testData, routingData);
-                let data = $.extend({}, basicData, productionData, stockData, routingData, priceData);
+                let data = $.extend({}, basicData);
 
                 let fnSuccess = function (res) {
                     if (!res.success) {
@@ -1641,27 +1579,33 @@
                 let _this = this;
                 let validate = true;
                 let $target = null;
-                let mat_id = $('#matBasicForm').find('#id').val();
-                let url = this.url + '/savePrice';
-                let data = FormUtil.extractForm($('#companyPriceForm'));
 
-                // ApplyStartDate 가공해서 다시 설정
-                let applyDate = data.ApplyStartDate; // YYYY-MM-DD
-                if (applyDate) {
-                    let now = new Date();
-                    let hh = String(now.getHours()).padStart(2, '0');
-                    let mm = String(now.getMinutes()).padStart(2, '0');
-                    let ss = String(now.getSeconds()).padStart(2, '0');
-                    data.ApplyStartDate = `${applyDate}T${hh}:${mm}:${ss}`;
+                let mat_id = $('#matBasicForm').find('#id').val(); // material id
+                let url = '/api/request/request/savePrice';
+                let data = FormUtil.extractForm($('#companyPriceForm')); // 업체, 단가 추출
+
+                // 👉 이름 바꾸기
+                data['cltcd'] = data['Company_id'];
+                delete data['Company_id'];
+
+                data['puamt'] = data['UnitPrice'];
+                delete data['UnitPrice'];
+
+                let selectedItem = this.grid.collectionView.currentItem;
+
+                // 👉 선택된 행이 있다면 추가 정보 담기
+                if (selectedItem) {
+                    data['mat_id'] = selectedItem.id;
+                    data['pname'] = selectedItem.mat_name;
                 }
 
-                data['Material_id'] = mat_id;
-                data['ChangerName'] = userinfo.username;
+                // 👉 혹시 폼에 추가 입력이 필요한 경우 여기서도 수동 추가 가능
+                // data['ApplyStartDate'] = $('#ApplyStartDate').val();
 
                 let fnSuccess = function (res) {
-                    console.log("서버 응답:", res);  // 서버 응답을 콘솔에 출력
+                    console.log("서버 응답:", res);
                     if (!res.success) {
-                        console.error("서버 오류 메시지:", res.message);  // 오류 메시지 확인
+                        console.error("서버 오류 메시지:", res.message);
                         Alert.alert('', '저장실패: ' + res.message);
                     } else {
                         Alert.alert('', '저장되었습니다');
@@ -1669,13 +1613,12 @@
                     }
                 };
 
+                // 👉 필수 입력값 검증
                 $('#companyPriceForm').find('input, select').each(function () {
-                    if ($(this).is(':required')) {
-                        if (!$(this).val()) {
-                            validate = false;
-                            $target = $(this);
-                            return false;
-                        }
+                    if ($(this).is(':required') && !$(this).val()) {
+                        validate = false;
+                        $target = $(this);
+                        return false;
                     }
                 });
 
@@ -1687,6 +1630,7 @@
                     });
                 }
             }
+
 
             // 단가 정보 수정
             updatePriceData() {
@@ -1956,14 +1900,9 @@
                                 }
                             },
                         columns: [
-                            {binding: 'CompanyName', header: '업체명', width: '*', align: 'left',},
-                            {binding: 'type', header: '구분', width: 120, align: 'center',},
-                            {binding: 'UnitPrice', header: '단가', width: 120, align: 'right',},
-                            {binding: 'FormerUnitPrice', header: '이전단가', width: 120, align: 'right',},
-                            {binding: 'ApplyStartDate', header: '적용시작일', width: 120, align: 'center',},
-                            {binding: 'ApplyEndDate', header: '적용종료일', width: 120, align: 'center',},
-                            {binding: 'ChangerName', header: '변경자', width: 120, align: 'left',},
-                            {binding: 'ChangeDate', header: '변경일', width: 120, align: 'center',},
+                            {binding: 'company_name', header: '업체명', width: '*', align: 'left',},
+                            {binding: 'unit_price', header: '단가', width: 120, align: 'right',},
+                            {binding: 'input_date', header: '등록일', width: 120, align: 'right',},
                         ],
                         itemsSource: _this.viewData8
                     });
@@ -1972,10 +1911,6 @@
                         if (e.panel.cellType === wijmo.grid.CellType.Cell) {
                             let col = s.columns[e.col];
                             let item = s.rows[e.row].dataItem;
-
-                            if (col.binding === "type") {
-                                e.cell.textContent = (item.type === '01') ? '매입' : '매출';
-                            }
                         }
                     });
 
@@ -2107,18 +2042,13 @@
             // 기본정보 저장버튼
             $(document).on('click', '#btnSave', function (e) {
                 let basicData = FormUtil.extractForm($('#matBasicForm'));
-                let stockData = FormUtil.extractForm($('#matStockForm'));
-                let data = $.extend({}, basicData, stockData);
+                //let stockData = FormUtil.extractForm($('#matStockForm'));
+                let data = $.extend({}, basicData);
                 console.log("버튼눌림");
 
                 if (!data.MaterialGroup_id) {
                     Alert.alert('', '품목 그룹을 선택해 주세요');
                     $('#matBasicForm #MaterialGroup_id').focus();  // 해당 input으로 포커스 이동
-                    return;
-                }
-                if (!data.Code) {
-                    Alert.alert('', '품목코드(바코드)를 입력해 주세요');
-                    $('#matBasicForm #Code').focus();  // 해당 input으로 포커스 이동
                     return;
                 }
                 if (!data.Name) {
@@ -2134,45 +2064,6 @@
                 if (!data.Factory_id) {
                     Alert.alert('', '공장을 선택해 주세요');
                     $('#matBasicForm #Factory_id').focus();  // 해당 input으로 포커스 이동
-                    return;
-                }
-                if (!data.StoreHouse_id) {
-                    Alert.alert('', '기본 재고 창고를 선택해 주세요');
-                    $('#matStockForm #StoreHouse_id').focus();  // 해당 input으로 포커스 이동
-                    // 탭 이동 및 내용 표시
-                    $('a[href="#tab_inventory"]').tab('show');  // 탭 전환
-                    $('#tab_basic').hide();
-                    $('#tab_inventory').show();  // 해당 탭 내용 표시
-                    return;
-                }
-
-                if (!data.MinOrder) {
-                    Alert.alert('', '최소 발주량을 입력해 주세요');
-                    $('#matStockForm #MinOrder').focus();  // 해당 input으로 포커스 이동
-                    // 탭 이동 및 내용 표시
-                    $('a[href="#tab_inventory"]').tab('show');  // 탭 전환
-                    $('#tab_basic').hide();
-                    $('#tab_inventory').show();  // 해당 탭 내용 표시
-                    return;
-                }
-
-                if (!data.MaxOrder) {
-                    Alert.alert('', '최대 발주량을 입력해 주세요');
-                    $('#matStockForm #MaxOrder').focus();  // 해당 input으로 포커스 이동
-                    // 탭 이동 및 내용 표시
-                    $('a[href="#tab_inventory"]').tab('show');  // 탭 전환
-                    $('#tab_basic').hide();
-                    $('#tab_inventory').show();  // 해당 탭 내용 표시
-                    return;
-                }
-
-                if (!data.ValidDays) {
-                    Alert.alert('', '사용기한(일)를 입력해 주세요');
-                    $('#matStockForm #ValidDays').focus();  // 해당 input으로 포커스 이동
-                    // 탭 이동 및 내용 표시
-                    $('a[href="#tab_inventory"]').tab('show');  // 탭 전환
-                    $('#tab_basic').hide();
-                    $('#tab_inventory').show();  // 해당 탭 내용 표시
                     return;
                 }
 
@@ -2200,13 +2091,13 @@
             });
 
             // 단가 히스토리버튼
-            $('#btnPriceHistory').click(function (e) {
+            /*$('#btnPriceHistory').click(function (e) {
                 let price_grid = wijmo.Control.getControl('#price-grid');
                 let selectedRow = price_grid.selection.row;
 
                 // 선택한 행의 데이터 가져오기 (단일 객체)
                 let selectedItem = price_grid.rows[selectedRow].dataItem;
-                /*console.log(selectedItem);*/
+                /!*console.log(selectedItem);*!/
                 let id = selectedItem.Material_id; // ID 값 가져오기
                 let id2 = selectedItem.Company_id;
                 let data = {
@@ -2222,7 +2113,7 @@
                     Alert.alert('', "오류가 발생했습니다.");
                 }
             });
-
+*/
 
             $('#cboTestMasterGroup').change(function (e) {
                 let group_pk = $('#cboTestMasterGroup').val();

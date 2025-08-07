@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,9 @@ public class MaterialService {
 						mg.Name AS mat_grp_name,
 						m.Code AS mat_code,
 						m.Name AS mat_name,
+						m.Unit_id as unit_id,
 						u.Name AS unit_name,
+						m.Factory_id as factory_id,
 						f.Name AS factory_name,
 						m.LotSize AS lot_size,
 						m.CustomerBarcode AS customer_barcode,
@@ -75,7 +78,7 @@ public class MaterialService {
 						m.InTestYN AS intest_yn,
 						m.OutTestYN AS outtest_yn,
 						r.Name AS routing_name,
-						m.UnitPrice AS unit_price,
+						mu.PUAMT AS unit_price,
 						ISNULL(m.LotUseYN, 'N') AS lotUseYn,
 						FORMAT(m._created, 'yyyy-MM-dd') AS _created,
 						m.Mtyn AS mtyn,
@@ -87,10 +90,11 @@ public class MaterialService {
 				LEFT JOIN factory f ON f.id = m.Factory_id
 				LEFT JOIN store_house sh ON sh.id = m.StoreHouse_id
 				LEFT JOIN work_center wc ON wc.id = m.WorkCenter_id
+				LEFT JOIN mat_uamt mu on m.id = mu.PCODE
 				LEFT JOIN equ e ON e.id = m.Equipment_id
 				LEFT JOIN routing r ON r.id = m.Routing_id
 				LEFT JOIN sys_code sc on sc.Code = mg.MaterialType and sc.CodeType = 'mat_type'
-				WHERE 1=1
+				WHERE 1=1 and mu.CLTCD IS NULL
         """;
 		if (!StringUtils.isEmpty(matType)) {
 			sql += " AND mg.MaterialType = :mat_type ";
@@ -166,14 +170,79 @@ public class MaterialService {
             left join unit u on u.id = m."Unit_id"
             where m.id = :mat_pk
         """;
-        	
-        
+
+//			log.info("품목정보 상세 read SQL: {}", sql);
+//			log.info("SQL Parameters: {}", paramMap.getValues());
         Map<String, Object> item = this.sqlRunner.getRow(sql, paramMap);
         return item;
 		
 	}
-
 	public int saveMaterial(MultiValueMap<String, Object> data) {
+		Integer id = CommonUtil.tryIntNull(data.getFirst("id"));
+		MapSqlParameterSource param = new MapSqlParameterSource();
+
+		param.addValue("id", id);
+		param.addValue("MaterialGroup_id", data.getFirst("MaterialGroup_id"));
+		param.addValue("Code", data.getFirst("Code"));
+		param.addValue("Name", data.getFirst("Name"));
+		param.addValue("Unit_id", data.getFirst("Unit_id"));
+		param.addValue("Factory_id", data.getFirst("Factory_id"));
+		param.addValue("mtyn", data.getFirst("mtyn"));
+		param.addValue("useyn", data.getFirst("useyn"));
+		param.addValue("Standard1", data.getFirst("Standard1"));
+		param.addValue("Standard2", data.getFirst("Standard2"));
+		param.addValue("Usage", data.getFirst("Usage"));
+		param.addValue("Class2", data.getFirst("Class2"));
+		param.addValue("LotSize", data.getFirst("LotSize"));
+		param.addValue("Description", data.getFirst("Description"));
+		param.addValue("invatyn", data.getFirst("invatyn"));
+		param.addValue("spjangcd", data.getFirst("spjangcd"));
+		param.addValue("_created", LocalDateTime.now()); // 신규
+		param.addValue("_modified", LocalDateTime.now()); // 수정일
+
+		String sql;
+
+		if (id == null) {
+			sql = """
+            INSERT INTO material (
+                _created, Code, Name, Unit_id, Factory_id, MaterialGroup_id,
+                mtyn, useyn, Standard1, Standard2, Usage,
+                Class2, LotSize, Description, VatExemptionYN, spjangcd
+            ) VALUES (
+                :_created, :Code, :Name, :Unit_id, :Factory_id, :MaterialGroup_id,
+                :mtyn, :useyn, :Standard1, :Standard2, :Usage,
+                :Class2, :LotSize, :Description, :invatyn, :spjangcd
+            )
+        """;
+		} else {
+			sql = """
+            UPDATE material SET
+                _modified = :_modified,
+                Code = :Code,
+                Name = :Name,
+                Unit_id = :Unit_id,
+                Factory_id = :Factory_id,
+                MaterialGroup_id = :MaterialGroup_id,
+                mtyn = :mtyn,
+                useyn = :useyn,
+                Standard1 = :Standard1,
+                Standard2 = :Standard2,
+                Usage = :Usage,
+                Class2 = :Class2,
+                LotSize = :LotSize,
+                Description = :Description,
+                VatExemptionYN = :invatyn,
+                spjangcd = :spjangcd
+            WHERE id = :id
+        """;
+		}
+
+		return this.sqlRunner.execute(sql, param);
+	}
+
+
+
+	/*public int saveMaterial(MultiValueMap<String, Object> data) {
 		Integer id = CommonUtil.tryIntNull(data.getFirst("id"));
 		
 		MapSqlParameterSource dicParam = new MapSqlParameterSource();
@@ -408,7 +477,7 @@ public class MaterialService {
 		
 		
 		return this.sqlRunner.execute(sql, dicParam);
-	}
+	}*/
 	
 	public int deleteMaterial(int matPK){
 		MapSqlParameterSource dicParam = new MapSqlParameterSource();        
@@ -416,7 +485,7 @@ public class MaterialService {
         String sql = "";
         
         //품목에 연결된 단가삭제
-        sql = " delete from mat_comp_uprice where \"Material_id\" = :mat_pk";
+        sql = " delete from mat_uamt where pcocd = :mat_pk";
         this.sqlRunner.execute(sql, dicParam);
         
         //품목 삭제

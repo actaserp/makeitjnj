@@ -720,4 +720,29 @@ public class RequestController {
     }
     return result;
   }
+
+  @PostMapping("/savePrice")
+  public AjaxResult mat_savePrice(@RequestParam(value = "mat_id")Integer pcode,
+                                  @RequestParam(value = "pname")String pname,
+                                  @RequestParam(value = "puamt") String puamt,
+                                  @RequestParam(value = "cltcd") String cltcd){
+    AjaxResult result = new AjaxResult();
+    log.info("단가 저장 들어옴 pcode:{},pname:{}, puamt:{}, cltcd:{} ", pcode, pname, puamt, cltcd);
+    try {
+      String inputDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+      int affectedRows = requestService.SaveUnitPrice(pcode, pname, puamt, cltcd, inputDate);
+
+      if (affectedRows > 0) {
+        result.success = true;
+        result.message = "단가 저장 완료";
+      } else {
+        result.success = false;
+        result.message = "저장할 데이터가 없습니다.";
+      }
+    } catch (Exception e) {
+      result.success = false;
+      result.message = "서버 오류: " + e.getMessage();
+    }
+    return result;
+  }
 }

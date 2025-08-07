@@ -384,8 +384,8 @@ public class RequestService {
         VALUES (source.PCODE, source.PNAME, source.PSIZE, source.PUAMT, source.INPUTDATE, source.CLTCD);
     """);
 
-//    log.info("주문등록 단가 저장 SQL: {}", sql);
-//    log.info("SQL Parameters: {}", param.getValues());
+    log.info("주문등록 단가 저장 SQL: {}", sql);
+    log.info("SQL Parameters: {}", param.getValues());
 
     return sqlRunner.execute(sql.toString(), param);
   }

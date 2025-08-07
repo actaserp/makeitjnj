@@ -1032,25 +1032,25 @@
           const $supply = row.find('input[name^="BaljuPrice_"]');
           const $vat = row.find('input[name^="BaljuVat_"]');
 
-          const mat_pk = row.find('input[name^="Material_id_"]').val();
-          const company_id = $('#cboCompany').val();
-          const JumunDate = $('#JumunDate').val();
+          const pcode = row.find('input[name^="Material_id_"]').val();
+          const pname = row.find('input[name^="txtProductName_"]').val();
+          const cltcd = $('#cboCompany').val();
 
-          console.log('[단가 조회] 호출됨', { mat_pk, company_id, JumunDate });
+          console.log('[단가 조회] 호출됨', { pcode, pname ,cltcd});
 
-          if (!mat_pk || !company_id || !JumunDate) {
+          if (!pcode || !pname|| !cltcd) {
             console.warn('[단가 조회] 필수값 누락으로 요청 취소');
             return;
           }
 
           AjaxUtil.getAsyncData('/api/balju/balju_order/price', {
-            mat_pk, company_id, JumunDate
+            pcode, pname, cltcd
           }, function (result) {
             console.log('[단가 조회 결과]', result);
 
             if (result?.data?.length) {
               const item = result.data[0];
-              const unitPrice = item.UnitPrice || 0;
+              const unitPrice = item.PUAMT || 0;
               $unitPrice.val(unitPrice);
               $supply.val(unitPrice);
               $vat.val('');
