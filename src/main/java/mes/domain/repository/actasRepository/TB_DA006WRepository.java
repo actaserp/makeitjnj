@@ -17,8 +17,7 @@ public interface TB_DA006WRepository extends JpaRepository<TB_DA006W, TB_DA006W_
     @Query("""
         SELECT COALESCE(MAX(CAST(t.id.reqnum AS int)), 1000) + 1
         FROM TB_DA006W t
-        WHERE t.id.spjangcd = :spjangcd
-        
+        WHERE t.id.spjangcd = :spjangcd    
     """)
   String getNextReqnum(@Param("spjangcd") String spjangcd);
 

@@ -59,7 +59,7 @@ public class OrderStatusService {
           ) AS hd_files
       FROM
           TB_DA006W tb006 
-      left join user_code uc on uc.Code = tb006.ordflag
+      left join sys_code uc on uc.Code = tb006.ordflag
       WHERE
           tb006.spjangcd = :spjangcd
     """);
@@ -78,10 +78,10 @@ public class OrderStatusService {
         // 검색 조건 추가 (TB_DA006W 기준)
         if (searchCltnm != null && !searchCltnm.isEmpty()) {
             sql.append(" AND tb006.cltnm LIKE :searchCltnm ");
-            params.addValue("searchCltnm", "%" + searchCltnm + "%"); //`%` 추가하여 LIKE 검색 가능하도록 변경
+            params.addValue("searchCltnm", "%" + searchCltnm + "%");
         }
         if (searchtketnm != null && !searchtketnm.isEmpty()) {
-            sql.append(" AND tb006.remark LIKE :searchtketnm ");
+            sql.append(" AND tb006.modeltxt LIKE :searchtketnm ");
             params.addValue("searchtketnm", "%" + searchtketnm + "%");
         }
 
@@ -94,8 +94,8 @@ public class OrderStatusService {
         // 정렬 조건 추가
         sql.append(" ORDER BY tb006.reqdate DESC");
 
-        //log.info(" 실행될 SQL: {}", sql);
-        //log.info("바인딩된 파라미터: {}", params.getValues());
+        log.info("샌산 스케줄 그리드read SQL: {}", sql);
+        log.info("바인딩된 파라미터: {}", params.getValues());
 
         return sqlRunner.getRows(sql.toString(), params);
     }
@@ -303,7 +303,7 @@ public class OrderStatusService {
                     TB_DA006W hd
                 WHERE
                     hd.spjangcd = :spjangcd
-                    AND hd.reqdate BETWEEN :searchStartDate AND :searchEndDate
+                    AND hd.deldate BETWEEN :searchStartDate AND :searchEndDate
                 GROUP BY
                     hd.ordflag;
                 """);
@@ -333,12 +333,15 @@ public class OrderStatusService {
                     perid,
                     cltzipcd,
                     cltaddr,
+                    projectno ,
+                    amount,
+                    modeltxt,
                     remark
                 FROM
                     TB_DA006W hd
                 WHERE
                     hd.spjangcd = :spjangcd
-                    AND hd.reqdate BETWEEN
+                    AND hd.deldate BETWEEN
                         CAST(CAST(YEAR(GETDATE()) - 1 AS VARCHAR(4)) + '0101' AS INT)
                         AND CAST(CAST(YEAR(GETDATE()) AS VARCHAR(4)) + '1231' AS INT)
                 """);

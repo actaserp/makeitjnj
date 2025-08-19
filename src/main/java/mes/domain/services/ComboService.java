@@ -1,6 +1,7 @@
 package mes.domain.services;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,21 +129,37 @@ public class ComboService {
         dicParam.addValue("cond3", cond3);
         return this.sqlRunner.getRows(sql, dicParam);
 	};
-	
-	ComboDataFunction company=(String cond1, String cond2, String cond3)-> { 
-		String sql = "select id as value, \"Name\" as text from company where 1=1 ";
-		if (StringUtils.hasText(cond1)) { 
-			//sql +="and \"CompanyType\" = :cond1 ";
-			sql += " and \"CompanyType\" in (select unnest(string_to_array(:cond1, ',')))";
+
+	ComboDataFunction company = (String cond1, String cond2, String cond3) -> {
+		StringBuilder sql = new StringBuilder(
+				"SELECT id AS value, [Name] AS text FROM company WHERE 1=1 "
+		);
+
+		MapSqlParameterSource params = new MapSqlParameterSource();
+
+		if (StringUtils.hasText(cond1)) {
+			List<String> types = Arrays.stream(cond1.split(","))
+					.map(String::trim)
+					.filter(s -> !s.isEmpty())
+					.collect(Collectors.toList());
+
+			if (types.size() == 1) {
+				sql.append(" AND [CompanyType] = :type ");
+				params.addValue("type", types.get(0));
+			} else {
+				sql.append(" AND [CompanyType] IN (:types) ");
+				params.addValue("types", types); // <- 리스트 바인딩
+			}
 		}
-		sql += " order by \"Name\" ";
-		MapSqlParameterSource dicParam = new MapSqlParameterSource();
-        dicParam.addValue("cond1", cond1);
-        dicParam.addValue("cond2", cond2);
-        dicParam.addValue("cond3", cond3);
-        return this.sqlRunner.getRows(sql, dicParam);		
+
+		sql.append(" ORDER BY [Name]");
+		params.addValue("cond2", cond2);
+		params.addValue("cond3", cond3);
+
+		return this.sqlRunner.getRows(sql.toString(), params);
 	};
-	
+
+
 	ComboDataFunction consu_mat_type=(String cond1, String cond2, String cond3)-> { 
 		String sql = "select \"Code\" as Value , \"Value\" as text from sys_code where \"CodeType\" = 'mat_type' and \"Code\" != 'product' order by \"_ordering\" ";
 		MapSqlParameterSource dicParam = new MapSqlParameterSource();
@@ -591,11 +608,50 @@ public class ComboService {
         dicParam.addValue("cond3", cond3);
         return this.sqlRunner.getRows(sql, dicParam);
 	};
-	
-	ComboDataFunction system_code = (String cond1, String cond2, String cond3)-> { 
-		
+
+	ComboDataFunction system_code = (String cond1, String cond2, String cond3) -> {
+
+		StringBuilder sql = new StringBuilder(
+				"SELECT [Code] AS value, [Value] AS text FROM sys_code WHERE 1=1 "
+		);
+
+		MapSqlParameterSource params = new MapSqlParameterSource();
+
+		// CodeType (= cond1)
+		if (StringUtils.hasText(cond1)) {
+			sql.append(" AND [CodeType] = :codeType ");
+			params.addValue("codeType", cond1.trim());
+		}
+
+		// Code (= cond2) : 단일/CSV 모두 지원
+		if (StringUtils.hasText(cond2)) {
+			List<String> codes = Arrays.stream(cond2.split(","))
+					.map(String::trim)
+					.filter(s -> !s.isEmpty())
+					.distinct()
+					.collect(Collectors.toList());
+
+			if (codes.size() == 1) {
+				sql.append(" AND [Code] = :code ");
+				params.addValue("code", codes.get(0));
+			} else if (!codes.isEmpty()) {
+				sql.append(" AND [Code] IN (:codes) ");
+				params.addValue("codes", codes);
+			}
+		}
+
+		sql.append(" ORDER BY [_ordering] ");
+
+		// 필요 시 cond3 사용
+		params.addValue("cond3", cond3);
+
+		return this.sqlRunner.getRows(sql.toString(), params);
+	};
+
+	/*ComboDataFunction system_code = (String cond1, String cond2, String cond3)-> {
+
 		String sql = """
-		select "Code" as value ,"Value" as text from sys_code where 1=1 
+		select "Code" as value ,"Value" as text from sys_code where 1=1
         """;
 		if (StringUtils.hasText(cond1)) {
 			sql +=" and \"CodeType\" = :cond1 ";
@@ -606,19 +662,19 @@ public class ComboService {
 				sql +=" and \"Code\" in (select unnest(string_to_array(:cond2::text, ','))::text) ";
 			}
 			else {
-				sql +="and \"Code\" = :cond2 ";	
+				sql +="and \"Code\" = :cond2 ";
 			}
 		}
-		
+
 		sql += " order by \"_ordering\" ";
-		
+
 		MapSqlParameterSource dicParam = new MapSqlParameterSource();
 		dicParam.addValue("cond1", cond1);
 		dicParam.addValue("cond2", cond2);
 		dicParam.addValue("cond3", cond3);
-		return this.sqlRunner.getRows(sql, dicParam);	
-	};
-	
+		return this.sqlRunner.getRows(sql, dicParam);
+	};*/
+
 	ComboDataFunction system_codetype=(String cond1, String cond2, String cond3)-> { 
 		String sql ="select distinct  \"CodeType\" as Value, \"CodeType\" as text from sys_code order by \"CodeType\" ";
 		MapSqlParameterSource dicParam = new MapSqlParameterSource();

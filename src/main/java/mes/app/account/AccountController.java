@@ -1,58 +1,52 @@
 package mes.app.account;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
+import mes.app.MailService;
+import mes.app.account.service.TB_XClientService;
+import mes.app.system.service.UserService;
+import mes.domain.DTO.UserCodeDto;
+import mes.domain.entity.User;
+import mes.domain.entity.UserCode;
+import mes.domain.entity.UserGroup;
+import mes.domain.entity.actasEntity.TB_XA012;
+import mes.domain.entity.actasEntity.TB_XCLIENT;
+import mes.domain.entity.actasEntity.TB_XCLIENTId;
+import mes.domain.model.AjaxResult;
+import mes.domain.repository.UserCodeRepository;
+import mes.domain.repository.UserGroupRepository;
+import mes.domain.repository.UserRepository;
+import mes.domain.repository.actasRepository.TB_XA012Repository;
+import mes.domain.repository.actasRepository.TB_XClientRepository;
+import mes.domain.security.CustomAuthenticationToken;
+import mes.domain.security.Pbkdf2Sha256;
+import mes.domain.services.AccountService;
+import mes.domain.services.SqlRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
-
-import lombok.extern.slf4j.Slf4j;
-import mes.app.MailService;
-import mes.app.account.service.TB_RP940_Service;
-import mes.app.account.service.TB_RP945_Service;
-import mes.app.account.service.TB_XClientService;
-import mes.app.account.service.UserProfileService;
-import mes.app.system.service.AuthListService;
-import mes.app.system.service.UserService;
-import mes.domain.DTO.UserCodeDto;
-import mes.domain.entity.*;
-import mes.domain.entity.actasEntity.TB_XA012;
-import mes.domain.entity.actasEntity.TB_XCLIENT;
-import mes.domain.entity.actasEntity.TB_XCLIENTId;
-import mes.domain.repository.*;
-import mes.domain.repository.actasRepository.TB_XA012Repository;
-import mes.domain.repository.actasRepository.TB_XClientRepository;
-import org.hibernate.Hibernate;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.util.StringUtils;
-
-import org.springframework.web.servlet.ModelAndView;
-
-import mes.domain.model.AjaxResult;
-import mes.domain.security.CustomAuthenticationToken;
-import mes.domain.security.Pbkdf2Sha256;
-import mes.domain.services.AccountService;
-import mes.domain.services.SqlRunner;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController

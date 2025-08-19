@@ -177,10 +177,10 @@ public class OrderStatusController {
         for (Map<String, Object> item : items) {
             if (item.get("ordflag").equals("0")) {
                 item.remove("ordflag");
-                item.put("ordflag", "주문등록");
+                item.put("ordflag", "주문접수");
             } else if (item.get("ordflag").equals("1")) {
                 item.remove("ordflag");
-                item.put("ordflag", "주문확인");
+                item.put("ordflag", "출하확인");
             } else if (item.get("ordflag").equals("2")) {
                 item.remove("ordflag");
                 item.put("ordflag", "주문확정");
@@ -262,10 +262,10 @@ public class OrderStatusController {
         for (Map<String, Object> item : items) {
             if (item.get("ordflag").equals("0")) {
                 item.remove("ordflag");
-                item.put("ordflag", "주문등록");
+                item.put("ordflag", "주문접수");    //주문 접수
             } else if (item.get("ordflag").equals("1")) {
                 item.remove("ordflag");
-                item.put("ordflag", "주문확인");
+                item.put("ordflag", "출하완료");    //출하 완료
             } else if (item.get("ordflag").equals("2")) {
                 item.remove("ordflag");
                 item.put("ordflag", "주문확정");
@@ -306,7 +306,7 @@ public class OrderStatusController {
     public ResponseEntity<Map<String, Object>> UpdateOrdflag(@RequestBody Map<String, Object> formData) {
         Map<String, Object> response = new HashMap<>();
         try {
-            log.info("받은 데이터: {}", formData);
+            //log.info("출하 확인 데이터: {}", formData);
 
             Object ordersObj = formData.get("orders");
 
@@ -324,29 +324,16 @@ public class OrderStatusController {
             List<Map<String, Object>> validOrders = orders.stream()
                 .map(order -> {
                     Object ordflagObj = order.get("ordflag");
-                    if (ordflagObj instanceof String) {
-                        String ordflag = (String) ordflagObj;
-                        // 한글 상태를 숫자 문자열로 변환 (변환만 수행, 토글 X)
-                        String ordflagNum = switch (ordflag) {
-                            case "주문등록" -> "0";
-                            case "주문확인" -> "1";
-                            default -> null; // 그 외 값은 필터링
-                        };
-
-                        if (ordflagNum != null) {
-                            order.put("ordflag", ordflagNum); // 변환된 값만 저장
-                        }
+                    if (ordflagObj != null && "0".equals(ordflagObj.toString())) {
+                        order.put("ordflag", "1");   // ✅ 0 → 1 변환
                     }
                     return order;
                 })
-                .filter(order -> {
-                    Object ordflagObj = order.get("ordflag");
-                    return ordflagObj instanceof String && ("0".equals(ordflagObj) || "1".equals(ordflagObj));
-                })
+                .filter(order -> "1".equals(order.get("ordflag"))) // 변환된 것만 유지
                 .collect(Collectors.toList());
 
             if (validOrders.isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("message", "'주문 등록' 과 '주문 확인' 이 외는 수정이 불가능합니다."));
+                return ResponseEntity.badRequest().body(Map.of("message", "'주문 접수' 상태일 때만 수정이 가능합니다."));
             }
 
             // 서비스 호출 (서비스에서 상태 변환 수행)
@@ -371,7 +358,7 @@ public class OrderStatusController {
     public ResponseEntity<Map<String, Object>> CancelOrderUpdateOrdflag(@RequestBody Map<String, Object> formData) {
         Map<String, Object> response = new HashMap<>();
         try {
-            log.info("📌 주문 확인 취소 요청 데이터: {}", formData);
+            //log.info("📌 주문 취소 요청 데이터: {}", formData);
 
             Object ordersObj = formData.get("orders");
 
@@ -387,24 +374,25 @@ public class OrderStatusController {
                 return ResponseEntity.badRequest().body(Map.of("message", "수정할 주문이 없습니다."));
             }
 
-            // "주문등록"(0)과 "주문확인"(1) → "5"로 변환
+            // "주문접수"(0) → "5"로 변환
             List<Map<String, Object>> validOrders = orders.stream()
                 .map(order -> {
                     Object ordflagObj = order.get("ordflag");
-                    if (ordflagObj instanceof String) {
-                        String ordflag = (String) ordflagObj;
-                        if ("주문등록".equals(ordflag) || "주문확인".equals(ordflag)) {
-                            order.put("ordflag", "5");  // 바로 "5"로 변환
+                    if (ordflagObj != null) {
+                        String ordflag = ordflagObj.toString();
+                        // 0(주문등록) → 5(주문취소)
+                        if ("0".equals(ordflag)) {
+                            order.put("ordflag", "5");
                         }
                     }
                     return order;
                 })
-                .filter(order -> "5".equals(order.get("ordflag"))) // 변환된 값만 유지
+                .filter(order -> "5".equals(order.get("ordflag"))) // 변환된 것만 유지
                 .collect(Collectors.toList());
 
             // 변환된 주문이 없는 경우 예외 처리
             if (validOrders.isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("message", "'주문 등록'과 '주문 확인' 상태만 수정이 가능합니다."));
+                return ResponseEntity.badRequest().body(Map.of("message", "'주문 접수 상태만 수정이 가능합니다."));
             }
 
             // 서비스 호출 (상태 업데이트 실행)

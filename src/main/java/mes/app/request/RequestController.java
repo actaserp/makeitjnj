@@ -9,6 +9,7 @@ import mes.config.Settings;
 import mes.domain.entity.User;
 import mes.domain.entity.actasEntity.*;
 import mes.domain.model.AjaxResult;
+import mes.domain.model.CopyResult;
 import mes.domain.repository.actasRepository.ModelHistoryRepository;
 import mes.domain.repository.actasRepository.TB_DA006WFILERepository;
 import mes.domain.repository.actasRepository.TB_DA006WRepository;
@@ -88,6 +89,83 @@ public class RequestController {
     result.data = bomTree;
     return result;
   }
+
+  @PostMapping("/copyData")
+  public AjaxResult copyData(@RequestBody Map<String, Object> payload, Authentication auth) {
+    AjaxResult res = new AjaxResult();
+    User user = (User) auth.getPrincipal();
+
+    try {
+      // 1) reqnums 배열 파싱
+      Object obj = payload.get("reqnums");
+      List<String> oldReqnums = (obj instanceof List<?> list)
+          ? list.stream().map(String::valueOf).toList()
+          : List.of();
+
+      if (oldReqnums.isEmpty()) {
+        res.success = false;
+        res.code = "VALIDATION_ERROR";
+        res.StateName = "FAIL";
+        res.message = "reqnums가 비어 있습니다.";
+        res.data = null;
+        return res;
+      }
+
+      // 2) 선택적 reqdate (없으면 서비스에서 원본 reqdate 사용)
+      String overrideReqdate = (String) payload.get("reqdate");
+
+      String spjangcd = user.getSpjangcd();
+      String actor    = user.getUsername(); // 또는 사용자 ID
+
+      // 3) 순차 복제 실행(입력 순서대로 처리)
+      CopyResult r = requestService.copyOrdersSequential(oldReqnums, spjangcd, overrideReqdate, actor);
+
+      // 4) 응답 바디(data) 구성
+      Map<String, Object> data = new HashMap<>();
+      data.put("copied", r.copied());
+      data.put("skipped", r.skipped());
+      data.put("newReqnums", r.newReqnums());
+      data.put("failures", r.failures()); // 부분성공 시 실패 사유 리스트
+
+      // 5) AjaxResult 필드 세팅
+      res.success = (r.skipped() == 0);
+      res.code = (r.skipped() == 0) ? "OK" : "PARTIAL_SUCCESS";
+      res.StateName = (r.skipped() == 0) ? "SUCCESS" : "PARTIAL";
+      res.message = (r.skipped() == 0)
+          ? "복사 완료"
+          : String.format("일부만 복사되었습니다. 성공 %d건, 실패 %d건", r.copied(), r.skipped());
+      res.data = data;
+
+      return res;
+    } catch (Exception e) {
+      // 예외 처리
+      res.success = false;
+      res.code = "SERVER_ERROR";
+      res.StateName = "FAIL";
+      res.message = "복사 처리 중 오류가 발생했습니다: " + e.getMessage();
+      res.data = null;
+      return res;
+    }
+  }
+
+
+  /*@PostMapping("/copyData")
+  public AjaxResult copyData(@RequestBody Map<String, Object> payload,
+                             Authentication auth){
+    AjaxResult result = new AjaxResult();
+    User user = (User) auth.getPrincipal();
+
+    log.info("주문 복제 들어옴 :{}", payload);
+    String reqdate = (String) payload.get("reqdate");
+    String reqnums = (String) payload.get("reqnums");
+    String spjangcd = user.getSpjangcd();
+
+    reqnums = tbDa006WRepository.getNextReqnum(spjangcd);
+
+    List<Map<String, Object>> item = requestService.getCopyList(reqnums);
+
+    return result;
+  }*/
 
   @PostMapping("/saveWithFiles")
   @Transactional
@@ -212,6 +290,7 @@ public class RequestController {
       detail.setSaleamt(parseBigDecimalSafe(row.get("saleamt")));
       detail.setUamt(parseDoubleSafe(row.get("uamt")));
       detail.setRemark((String) row.get("remark"));
+      detail.setClttype((String) row.get("clttype"));
       detail.setJobflag((String) row.get("jobflag"));
       detail.setInperid(user.getUsername());
       detail.setIndate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
@@ -346,8 +425,8 @@ public class RequestController {
     Timestamp start = Timestamp.valueOf(start_date);
     Timestamp end = Timestamp.valueOf(end_date);
 
-    log.info("tab2 read :cboCompany:{},company_name:{},ordflag:{}, start_date:{},end_date:{},spjangcd:{}",
-        compcd, company_name, ordflag, start_date, end_date, spjangcd);
+    /*log.info("tab2 read :cboCompany:{},company_name:{},ordflag:{}, start_date:{},end_date:{},spjangcd:{}",
+        compcd, company_name, ordflag, start_date, end_date, spjangcd);*/
 
     List<Map<String, Object>> Tab2Read = requestService.getTab2Read(compcd, company_name, ordflag, start, end, spjangcd);
     for (Map<String, Object> item : Tab2Read) {
@@ -394,7 +473,6 @@ public class RequestController {
     result.data = requestService.getHoliday();
     return result;
   }
-
 
   @PostMapping("/downloader")
   public ResponseEntity<?> downloadFile(@RequestBody List<Map<String, Object>> reqnums) throws IOException {
@@ -525,7 +603,7 @@ public class RequestController {
 
     String formattedReqdate = reqdate.replace("-", "");
 
-    log.info("getDetailList 들어옴 custcd:{},spjangcd:{}, reqdate:{}, reqnum:{}", custcd, spjangcd, formattedReqdate, reqnum);
+//    log.info("getDetailList 들어옴 custcd:{},spjangcd:{}, reqdate:{}, reqnum:{}", custcd, spjangcd, formattedReqdate, reqnum);
     List<Map<String, Object>> detailList = requestService.getOrderDetail(reqnum, formattedReqdate, custcd, spjangcd);
 
     AjaxResult result = new AjaxResult();
@@ -611,7 +689,7 @@ public class RequestController {
       // 4. 엑셀 생성
       String projectNo = String.valueOf(mailDeta.get("projectno")).replaceAll("[\\\\/:*?\"<>|]", "");
       String fileName = String.format("_%s.xlsx", projectNo);
-      Path tempXlsx = Paths.get("C:/Temp/mes21/문서/제품견적서_" + fileName);
+      Path tempXlsx = Paths.get("C:/Temp/mes21/문서/제품견적서" + fileName);
       Files.createDirectories(tempXlsx.getParent());
       Files.deleteIfExists(tempXlsx);
 
@@ -653,17 +731,18 @@ public class RequestController {
       }
 
       // 5. 메일 전송
-      mailService.sendMailWithAttachment(
+      /*mailService.sendMailWithAttachment(
           recipients,
           title,
           content,
           tempXlsx.toFile(),
           fileName
-      );
+      );*/
 
       // 6. 엑셀 다운로드 URL 구성
-      String encodedFileName = URLEncoder.encode("제품견적서_" + projectNo + ".xlsx", StandardCharsets.UTF_8);
+      String encodedFileName = org.springframework.web.util.UriUtils.encodePathSegment("제품견적서_" + projectNo + ".xlsx", StandardCharsets.UTF_8);
       String downloadUrl = "/baljuFile/" + encodedFileName;
+
 
       // 7. 파일 삭제 예약 (선택)
       Executors.newSingleThreadScheduledExecutor().schedule(() -> {

@@ -78,4 +78,8 @@ public class TB_DA007W {
     @Column(name = "stexplydv")
     private String stexplydv;
 
+    //
+    @Column(name="clttype")
+    private String clttype;
+
 }

@@ -99,7 +99,7 @@
                     <a href="#tab1" title="주문 캘린더" class="tab-button">주문 현황</a>
                 </li>
                 <li>
-                    <a href="#tab2" title="주문 확인" class="tab-button">주문 확인</a>
+                    <a href="#tab2" title="생산 스케줄" class="tab-button">생산 스케줄</a>
                 </li>
             </ul>
             <div class="tab-contents">
@@ -140,7 +140,7 @@
 
                                             <section class="fetchCard" data-search-type="0"
                                                      style="background-color: #031B4B; color: #fff; flex: 0.5; padding: 5px; cursor: pointer;">
-                                                <div class="title"><h3>주문등록</h3></div>
+                                                <div class="title"><h3>주문접수</h3></div>
                                                 <div class="requestCnt" style="font-size: 32px; text-align: right;">
                                                     -<span class="small-unit" style="font-size: 0.5em; opacity: 0.5;"> 건</span>
                                                 </div>
@@ -148,13 +148,13 @@
 
                                             <section class="fetchCard" data-search-type="1"
                                                      style="background-color: #03428E; color: #fff; flex: 0.5; padding: 5px; cursor: pointer;">
-                                                <div class="title"><h3>주문확인</h3></div>
+                                                <div class="title"><h3>출하 완료</h3></div>
                                                 <div class="checkCnt" style="font-size: 32px; text-align: right;">
                                                     -<span class="small-unit" style="font-size: 0.5em; opacity: 0.5;"> 건</span>
                                                 </div>
                                             </section>
 
-                                            <section class="fetchCard" data-search-type="2"
+                                           <!-- <section class="fetchCard" data-search-type="2"
                                                      style="background-color: #3069B3; color: #fff; flex: 0.5; padding: 5px; cursor: pointer;">
                                                 <div class="title"><h3>주문확정</h3></div>
                                                 <div class="estimateCnt" style="font-size: 32px; text-align: right;">
@@ -176,7 +176,7 @@
                                                 <div class="deliveryCnt" style="font-size: 32px; text-align: right;">
                                                     -<span class="small-unit" style="font-size: 0.5em; opacity: 0.5;"> 건</span>
                                                 </div>
-                                            </section>
+                                            </section>-->
 
                                         </div>
                                     </div>
@@ -216,129 +216,7 @@
                         </div>
                     </div>
                 </section>
-                <!-- <section class="tab-item" id="tab1" style="height: 880px; margin-bottom: 10px">
-                    &lt;!&ndash;<div class="row" style="display: flex;">
-                        &lt;!&ndash; 왼쪽 섹션: 50% 차지 &ndash;&gt;
-                        <section
-                                style="width:60%; box-sizing: border-box; height: 800px; margin-right: 20px; border-radius:10px;">&ndash;&gt;
-                    <div class="row" style="display: flex; gap: 20px; width: 100%;">
-                        <section style="width: calc(60% - 10px); height: 800px; box-sizing: border-box; border-radius: 10px;">
-                            <div class="title-wrap">
-                                <h3>주문 현황</h3>
-                                <div class="btn-wrap">
-                                </div>
-                            </div>
-                            <div class="calendar-wrapper">
-                                <div id="calendar"></div>
-                            </div>
 
-                        </section>
-                        &lt;!&ndash; 오른쪽 섹션을 감싸는 div &ndash;&gt;
-                        &lt;!&ndash;<div style="display: flex; flex-direction: column; width: 40%;">&ndash;&gt;
-                        <div style="width: calc(40% - 10px); display: flex; flex-direction: column;">
-                            &lt;!&ndash; 위쪽 섹션 &ndash;&gt;
-                            <section style=" box-sizing: border-box;">
-                                <div style="margin-bottom: 15px">
-                                    <h3 id="year-status">2024년 주문 현황</h3>
-                                </div>
-                                <div class="tab-contents">
-                                    <div class="row">
-                                        <div class="section-card-wrap" style="gap: 5px">
-                                            <section style="background-color: gray; color: #fff; flex: 0.5; margin-right: 5px; cursor: pointer; padding: 10px 10px;" class="fetchCard" data-search-type="5">
-                                                <div class="title">
-                                                    <h3>주문취소</h3>
-                                                </div>
-                                                <div class="cancelCnt" style="font-size: 32px; font-weight: 700; text-align: right; margin: 9px 0;">
-                                                    -<span class="small-unit" style=" font-size: 0.5em; opacity: 0.5;"> 건</span>
-                                                </div>
-                                            </section>
-                                            <section style="background-color: #031B4B; color: #fff; flex: 0.5; margin-right: 5px; cursor: pointer; padding: 10px 10px;" class="fetchCard" data-search-type="0">
-                                                <div class="title">
-                                                    <h3>주문등록</h3>
-                                                </div>
-                                                <div class="requestCnt" style="font-size: 32px; font-weight: 700; text-align: right; margin: 9px 0;">
-                                                    -<span class="small-unit" style=" font-size: 0.5em; opacity: 0.5;"> 건</span>
-                                                </div>
-                                            </section>
-                                            <section style="background-color: #03428E; color: #fff; flex: 0.5; margin-right: 5px; cursor: pointer; padding: 10px 10px;" class="fetchCard" data-search-type="1">
-                                                <div class="title">
-                                                    <h3>주문확인</h3>
-                                                </div>
-                                                <div class="checkCnt" style="font-size: 32px; font-weight: 700; text-align: right; margin: 9px 0;">
-                                                    -<span class="small-unit" style=" font-size: 0.5em; opacity: 0.5;"> 건</span>
-                                                </div>
-                                            </section>
-                                            <section style="background-color: #3069B3; color: #fff; flex: 0.5; margin-right: 5px; cursor: pointer; padding: 10px 10px;" class="fetchCard" data-search-type="2">
-                                                <div class="title">
-                                                    <h3>주문확정</h3>
-                                                </div>
-                                                <div class="estimateCnt" style="font-size: 32px; font-weight: 700; text-align: right; margin: 9px 0;">
-                                                    -<span class="small-unit" style=" font-size: 0.5em; opacity: 0.5;"> 건</span>
-                                                </div>
-                                            </section>
-                                            <section style="background-color: #C7DFF4; color: #031B4B; flex: 0.5; margin-right: 5px; cursor: pointer; padding: 10px 10px;" class="fetchCard" data-search-type="3">
-                                                <div class="title">
-                                                    <h3>제작진행</h3>
-                                                </div>
-                                                <div class="produceCnt" style="font-size: 32px; font-weight: 700; text-align: right; margin: 9px 0;">
-                                                    -<span class="small-unit" style=" font-size: 0.5em; opacity: 0.5;"> 건</span>
-                                                </div>
-                                            </section>
-                                            <section style="flex: 0.5; margin-right: 5px; cursor: pointer; padding: 10px 10px;" class="fetchCard" data-search-type="4">
-                                                <div class="title">
-                                                    <h3>출고</h3>
-                                                </div>
-                                                <div class="deliveryCnt" style="font-size: 32px; font-weight: 700; text-align: right; margin: 9px 0;">
-                                                    -<span class="small-unit" style=" font-size: 0.5em; opacity: 0.5;"> 건</span>
-                                                </div>
-                                            </section>
-                                        </div> &lt;!&ndash;//main-card-wrap end &ndash;&gt;
-                                    </div>
-                                </div>
-                            </section>
-
-                            &lt;!&ndash; 아래쪽 섹션 (넓게 설정) &ndash;&gt;
-                            <section style="flex: 1; box-sizing: border-box; margin-top: 20px;">
-                                <div class="tab-item-sub" id="tab1_2">
-                                    <div class="section-top" style="margin-top: 10px;">
-                                        <div class="search-wrap">
-                                            <dl>
-                                                <dt>
-                                                    조회일자<span class="eq">*</span>
-                                                </dt>
-                                                <dd>
-                                                    <ul class="date-box">
-                                                        <li>
-                                                            <input type="date" id="startDate2" name="startDate">
-                                                            <label for="startDate" class="hide">시작일</label>
-                                                        </li>
-                                                        <li>
-                                                            <input type="date" id="endDate2" name="endDate">
-                                                            <label for="endDate" class="hide">종료일</label>
-                                                        </li>
-                                                        <li>
-                                                            <a class="btn btn-delete" title="검색" id="btn-srch" onclick="fetchListData();initDatas();">
-                                                                <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
-                                                                검색
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </dd>
-                                            </dl>
-                                        </div>
-                                    </div> &lt;!&ndash;//section-top end &ndash;&gt;
-                                    <div class="container-fluid" style="padding-left: 0; padding-right: 0;">
-                                        &lt;!&ndash; 그리드 영역 &ndash;&gt;
-                                        <div class="col-12" style="margin-bottom: 10px;">
-                                            <div id="theGrid" style="width: 100%; height: 400px;"></div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </section>
-                        </div>
-                    </div>
-                </section>-->
                 <section class="tab-item" id="tab2" style="height: 750px; overflow: hidden;">
                     <div class="section-top">
                         <div class="search-wrap">
@@ -375,13 +253,13 @@
                             <dl>
                                 <dt>
                                     <label for="searchtketnm">
-                                        제목<span class="eq">*</span>
+                                        모델명<span class="eq">*</span>
                                     </label>
                                 </dt>
                                 <dd>
                                     <div class="srch-box">
                                         <input type="text" id="searchtketnm" name="searchtketnm" class="input-srch"
-                                               placeholder="제목" style="border-radius: 5px;">
+                                               placeholder="모델명" style="border-radius: 5px;">
                                     </div>
                                 </dd>
                             </dl>
@@ -417,7 +295,7 @@
                                     <li>
                                         <a class="btn btn-delete" title="주문 확인" id="CheckOK" onclick="CheckOK()">
                                             <img src="/images/icon/bag-check.svg" alt="주문 확인수정 아이콘">
-                                            주문 확인
+                                            출하
                                         </a>
                                     </li>
                                 </dd>
@@ -685,10 +563,10 @@
                     showMarquee: true,
                     isReadOnly: true,
                     columns: [
-                        { binding: 'ordflag', header: '진행구분', align: 'center', width: 100 },
+                        { binding: 'ordflag', header: '진행구분', align: 'center', width: 120 },
                         { binding: 'reqdate', header: '의뢰일자', align: 'center', width: 120 },
                         { binding: 'cltnm', header: '업체명', align: 'left', width: 150 },
-                        { binding: 'remark', header: '제목', align: 'left', width: 160 },
+                        { binding: 'modeltxt', header: '모델명', align: 'left', width: 160 },
                         { binding: 'deldate', header: '납품희망일', align: 'center', width: 120 },
                         { binding: 'amount', header: '금액', align: 'center', width: 200 }
                     ],
@@ -790,9 +668,31 @@
                }).catch(error => {
                    console.error('공휴일 데이터를 가져오는 데 실패했습니다:', error);
                });
-               // 주문현황 데이터 가져오기
                // 주문현황 데이터 가져와서 날짜별 그룹화 후 캘린더에 추가
+               // 기존 이벤트 제거(재호출 시 중복 방지, 선택)
+               calendar.getEvents().forEach(e => e.remove());
+
+                // 주문현황 데이터 가져와서 바로 이벤트 추가
                fetchOrderDates().then(orderDates => {
+                   orderDates.forEach(order => {
+                       const color = getEventColor(order.name);
+                       const proj  = order.projectno ? `(${order.projectno})` : '';
+                       calendar.addEvent({
+                           title: `${order.name}${proj}`,  // ✅ "주문접수(PROJ-001)" 형태
+                           start: order.date,
+                           backgroundColor: color.bg,
+                           borderColor: color.border,
+                           textColor: color.text
+                       });
+                   });
+
+                   // 이미 공휴일 추가 후 render를 한 번 했다면 이 부분은 생략 가능
+                   setTimeout(() => calendar.render(), 500);
+               }).catch(err => {
+                   console.error('❌ 주문현황 에러:', err);
+               });
+
+               /*fetchOrderDates().then(orderDates => {
                    //console.log("📢 원본 orderDates 데이터:", orderDates);
 
                    // 1️⃣ 날짜별 그룹화 ( { "YYYY-MM-DD": { "주문확인": 3, "출고": 2 } } 형태로 저장 )
@@ -841,7 +741,7 @@
                    }, 500);
                }).catch(error => {
                    console.error("❌ 주문현황 데이터를 가져오는 데 실패했습니다:", error);
-               });
+               });*/
            }
        }
        // 공휴일 데이터를 가져오는 함수
@@ -888,7 +788,8 @@
                 var item = data2[i];
                 orderDates.push({
                     name: item.ordflag,
-                    date: item.reqdate
+                    date: item.reqdate,
+                    projectno: item.projectno
                 });
             }
             //console.log("orderDates : ", orderDates)
@@ -898,9 +799,9 @@
         // 주문 상태에 따른 색상 설정
         function getEventColor(name) {
             switch (name) {
-                case "주문등록":
+                case "주문접수":
                     return { bg: "#031B4B", border: "#031B4B", text: "white" };
-                case "주문확인":
+                case "출하완료":
                     return { bg: "#03428E", border: "#03428E", text: "white" };
                 case "주문확정":
                     return { bg: "#3069B3", border: "#3069B3", text: "white" };
@@ -1030,18 +931,15 @@
                     selectionMode: 'ListBox',
                     virtualizationThreshold: 1,
                     columns: [
-                        {binding: 'ordflag', header: '진행구분', width: '*', minWidth: 100, align: 'center',visible: false},
-                        {binding: 'ordflag_display', header: '진행구분', width: '*', minWidth: 100, align: 'center'},
-                        {binding: 'reqdate', header: '주문일자', width: '*', minWidth: 150, align: 'center'},
-                        {binding: 'cltnm', header: '업체명', width: '*', minWidth: 200, align: 'left'},
-                        {binding: 'remark', header: '제목', width: '*', minWidth: 550, align: 'left'},
-                        {binding: 'deldate', header: '납품희망일', width: '*', minWidth: 150, align: 'center'},
-                        {binding: 'perid', header: '담당자', width: '*',minWidth: 150, align: 'center'},
-                        {binding: 'panel_ht', header: 'T(두께)', width: 80, align: 'right'},
-                        {binding: 'panel_hw', header: 'W(폭)', width: 80, align: 'right'},
-                        {binding: 'panel_hh', header: 'H(높이)', width: 80, align: 'right'},
-                        {binding: 'panel_hl', header: 'L(길이)', width: 80, align: 'right'},
-                        {binding: 'downloads', header: '첨부파일', width: '*', minWidth: 105, align: 'center'},
+                        {binding: 'ordflag', header: '진행구분',visible: false},
+                        {binding: 'ordflag_display', header: '진행구분', width: 110, align: 'center'},
+                        {binding: 'reqdate', header: '주문일자', width: 110, align: 'center'},
+                        {binding: 'cltnm', header: '업체명', width: 200, align: 'left'},
+                        {binding: 'projectno', header: 'projectNo', width: 150, align: 'center'},
+                        {binding: 'modeltxt', header: '모델명', width: 550, align: 'left'},
+                        {binding: 'deldate', header: '납품희망일', width: 110, align: 'center'},
+                        {binding: 'amount', header: '금액', width: 130, align: 'center'},
+                        {binding: 'downloads', header: '첨부파일', width: 105, align: 'center'},
                         {binding: 'reqnum', visible: false},  // 숨길 컬럼
                         {binding: 'isdownload', visible: false}
                     ],
@@ -1384,9 +1282,9 @@
         function initDatas(){
             $('.requestCnt').html(0 + '<span class="small-unit" style="font-size: 0.5em; opacity: 0.5;"> 건</span>');
             $('.checkCnt').html(0 + '<span class="small-unit" style="font-size: 0.5em; opacity: 0.5;"> 건</span>');
-            $('.estimateCnt').html(0 + '<span class="small-unit" style="font-size: 0.5em; opacity: 0.5;"> 건</span>');
+            /*$('.estimateCnt').html(0 + '<span class="small-unit" style="font-size: 0.5em; opacity: 0.5;"> 건</span>');
             $('.produceCnt').html(0 + '<span class="small-unit" style="font-size: 0.5em; opacity: 0.5;"> 건</span>');
-            $('.deliveryCnt').html(0 + '<span class="small-unit" style="font-size: 0.5em; opacity: 0.5;"> 건</span>');
+            $('.deliveryCnt').html(0 + '<span class="small-unit" style="font-size: 0.5em; opacity: 0.5;"> 건</span>');*/
             $('.cancelCnt').html(0 + '<span class="small-unit" style="font-size: 0.5em; opacity: 0.5;"> 건</span>');
             $.ajax({
                 url: '/api/order_status/initDatas',
@@ -1407,7 +1305,7 @@
                             case "1":
                                 $('.checkCnt').html(item.ordflag_count + '<span class="small-unit" style="font-size: 0.5em; opacity: 0.5;"> 건</span>');
                                 break;
-                            case "2":
+                            /*case "2":
                                 $('.estimateCnt').html(item.ordflag_count + '<span class="small-unit" style="font-size: 0.5em; opacity: 0.5;"> 건</span>');
                                 break;
                             case "3":
@@ -1415,7 +1313,7 @@
                                 break;
                             case "4":
                                 $('.deliveryCnt').html(item.ordflag_count + '<span class="small-unit" style="font-size: 0.5em; opacity: 0.5;"> 건</span>');
-                                break;
+                                break;*/
                             case "5":
                                 $('.cancelCnt').html(item.ordflag_count + '<span class="small-unit" style="font-size: 0.5em; opacity: 0.5;"> 건</span>');
                                 break;
@@ -1447,7 +1345,7 @@
                 'width=1040,height=1000,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes');
         }
 
-        //주문 확인[주문 등록->주문 확인으로 상태 변경]
+        //주문 확인[주문 접수->출하 완료로 상태 변경]
         function CheckOK() {
             let selectedRows = [];
 
@@ -1488,11 +1386,11 @@
                 },
                 success: function(response) {
                     console.log("✅ 서버 응답:", response);
-                    Alert.alert('' ,"주문 확인 처리가 완료되었습니다.");
+                    Alert.alert('' ,"출하 완료 처리가 완료되었습니다.");
                     fetchListData2();
                 },
                 error: function(xhr, status, error) {
-                    console.error("❌ 주문 확인 처리 중 오류 발생:", xhr.responseText);
+                    console.error("❌ 출하 완료 처리 중 오류 발생:", xhr.responseText);
 
                     try {
                         let response = JSON.parse(xhr.responseText);
@@ -1546,11 +1444,11 @@
                 },
                 success: function(response) {
                     console.log("✅ 서버 응답:", response);
-                    Alert.alert('' ,"주문 확인 처리가 완료되었습니다.");
+                    Alert.alert('' ,"주문 취소 처리가 완료되었습니다.");
                     fetchListData2();
                 },
                 error: function(xhr, status, error) {
-                    console.error("❌ 주문 확인 처리 중 오류 발생:", xhr.responseText);
+                    console.error("❌ 주문 취소 처리 중 오류 발생:", xhr.responseText);
 
                     try {
                         let response = JSON.parse(xhr.responseText);
@@ -1564,21 +1462,9 @@
         }
 
         //공통 코드
-        const selectConfigs = [
-            {parentCode: 'ordflag', elementId: 'searchstate'},
-        ];
 
-        selectConfigs.forEach(config => {
-            initializeSelect3({
-                url: '/api/order_status/ordFlagType',
-                params: {parentCode: config.parentCode},
-                elementId: config.elementId,
-                valueField: "code",
-                textField: "value",
-                includeAllOption: true, // "전체" 옵션 사용
-                defaultValue: "0" // 기본 선택값 추가 ("주문등록")
-            });
-        });
+        AjaxUtil.fillSelectOptions($('#searchstate'), 'system_code', 'all', null, 'ordflag','0,1,5');
+
         // 관리자 Dashboard 카드 클릭이동
         function applySavedSettings() {
             var activeSection = sessionStorage.getItem("activeSection");

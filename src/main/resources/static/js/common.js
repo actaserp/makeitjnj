@@ -1061,6 +1061,9 @@ let AjaxUtil = {
         else if (null_option === 'all') {
             text = i18n.getCommonText('전체'); //'전체(All
         }
+        else if (null_option === 'none') {
+            text = i18n.getCommonText('없음'); // '없음(None)';
+        }
         else {
             return ret;
         }

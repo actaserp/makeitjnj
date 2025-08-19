@@ -59,15 +59,15 @@
         </div>
         <div class="search-wrap" id="searchWrap" style="display: none; padding-top:10px">
             <ul>
-                <li>
+                <!--<li>
                     <select title="사업장" id="search_spjangcd" name="search_spjangcd"
                             onchange="init()">
                         <option value="" hidden selected disabled>선택</option>
                         <option value="ZZ">성우에스피(주)</option>
                         <option value="PP">성우피앤비(주)</option>
-                        <!-- 지역 옵션을 JavaScript에서 동적으로 채움 -->
+                        &lt;!&ndash; 지역 옵션을 JavaScript에서 동적으로 채움 &ndash;&gt;
                     </select>
-                </li>
+                </li>-->
             </ul>
         </div>
         <!-- Select -->
@@ -78,9 +78,6 @@
                         <dl>
                             <dt>
                                 조회기간<span class="eq">*</span>
-                                <img src="/images/icon/exclamation/exclamation-circle.svg"
-                                     class="zoom-img" style="margin-left: 5px"
-                                     onclick="openPopup('https://foms.atlassian.net/wiki/external/Yjk4ODJlMzgxYWI5NDcwMjhlYWRhYzkwMzgxNTcyNjc')" alt="도움말">
                             </dt>
                             <dd>
                                 <ul class="date-box">
@@ -104,7 +101,6 @@
                             <dd>
                                 <div class="srch-box">
                                         <select id="searchtketnm" name="searchtketnm">
-                                            <option value="all"></option>
                                         </select>
                                 </div>
                             </dd>
@@ -125,13 +121,13 @@
                         <dl>
                             <dt>
                                 <label for="searchTitle">
-                                    제목<span class="eq">*</span>
+                                    모델명<span class="eq">*</span>
                                 </label>
                             </dt>
                             <dd>
                                 <div class="srch-box">
                                     <input type="text" id="searchTitle" name="searchTitle" class="input-srch"
-                                           placeholder="제목" style="border-radius: 5px;">
+                                           placeholder="모델명" style="border-radius: 5px;">
                                 </div>
                             </dd>
                         </dl>
@@ -234,7 +230,7 @@
 
         function fetchListData() {
             let data2 = [];
-            const spjangcd = document.getElementById('search_spjangcd').value;
+            const spjangcd = sessionStorage.getItem('spjangcd');
             const startDate = document.getElementById('startDate').value || "";
             const endDate = document.getElementById('endDate').value || "";
             const searchCltnm = document.getElementById('searchCltnm').value.trim() || "";
@@ -285,7 +281,7 @@
                     telnum: '',
                     orderprice: '',
                     deldate: '',
-                    remark: ''
+                    modeltxt: ''
                 });
             }
 
@@ -298,15 +294,15 @@
                     showMarquee: true,
                     isReadOnly: true, // 전체 읽기 전용
                     columns: [
-                        {binding: 'rownum', header: '순번', width: 80, align: 'center'},
-                        {binding: 'reqdate', header: '주문일자', width: '*', minWidth: 100, align: 'center'},
-                        {binding: 'cltnm', header: '업체명', width: '*', minWidth: 100, align: 'left'},
-                        {binding: 'ordflag_display', header: '진행구분', width: '*', minWidth: 100, align: 'center'},
-                        {binding: 'remark', header: '제목(메모)', width: '*', minWidth: 400, align: 'left'},
-                        {binding: 'perid', header: '담당자', width: '*', minWidth: 100, align: 'center'},
-                        {binding: 'telno', header: '연락처', width: '*', minWidth: 100, align: 'center'},
-                        {binding: 'orderprice', header: '금액', width: '*', minWidth: 100, align: 'center'},
-                        {binding: 'deldate', header: '출고일자', width: '*', minWidth: 100, align: 'center'},
+                        {binding: 'rownum', header: '순번', width: 70, align: 'center'},
+                        {binding: 'reqdate', header: '주문일자', width: 110, align: 'center'},
+                        {binding: 'cltnm', header: '업체명', width: 150, align: 'left'},
+                        {binding: 'ordflag_display', header: '진행구분', width: 110, align: 'center'},
+                        {binding: 'modeltxt', header: '모델명', width: 400, align: 'left'},
+                        {binding: 'perid', header: '담당자',width: 120, align: 'left'},
+                       // {binding: 'telno', header: '연락처', width: '*', minWidth: 100, align: 'center'},
+                        {binding: 'amount', header: '금액', width: 120, align: 'right'},
+                        {binding: 'deldate', header: '출고일자', width: 110, align: 'center'},
                     ],
                     itemsSource: viewdata
                 });
@@ -320,7 +316,7 @@
         }
 
         function loadChartData() {
-            const spjangcd = document.getElementById('search_spjangcd').value;
+            const spjangcd = sessionStorage.getItem('spjangcd');
             const startDate = document.getElementById('startDate').value || "";
             const endDate = document.getElementById('endDate').value || "";
             const searchCltnm = document.getElementById('searchCltnm').value.trim() || "";
@@ -346,11 +342,11 @@
                         // 📌 데이터 가공: 주문 상태별 개수 계산
                         const orderCounts = {
                             "주문취소": 0,
-                            "주문등록": 0,
-                            "주문확인": 0,
-                            "주문확정": 0,
+                            "주문접수": 0,
+                            "출하완료": 0,
+                           /* "주문확정": 0,
                             "제작진행": 0,
-                            "출고": 0
+                            "출고": 0*/
                         };
 
                         response.data.forEach(item => {
@@ -379,11 +375,11 @@
         // 숫자 → 값 매핑 객체
         const stageMapping = {
             5: "주문취소",
-            0: "주문등록",
-            1: "주문확인",
-            2: "주문확정",
+            0: "주문접수",
+            1: "출하완료",
+           /* 2: "주문확정",
             3: "제작진행",
-            4: "출고",
+            4: "출고",*/
 
         };
         //차트
@@ -456,7 +452,7 @@
             }
 
             // X축 라벨
-            const labels = ["주문취소", "주문등록", "주문확인", "주문확정", "제작진행", "출고"];
+            const labels = ["주문취소", "주문접수", "출하완료"];
 
             // 실제 데이터
             const coloredData = labels.map(label => orderCounts[label] || 0);
@@ -474,9 +470,9 @@
                             'rgba(255, 99, 132, 0.3)',
                             'rgba(255, 159, 64, 0.4)',
                             'rgba(255, 215, 0, 0.4)',
-                            'rgba(75, 192, 192, 0.5)',
+                        /*    'rgba(75, 192, 192, 0.5)',
                             'rgba(54, 162, 235, 0.4)',
-                            'rgba(153, 102, 255, 0.2)'
+                            'rgba(153, 102, 255, 0.2)'*/
                         ]
                     },
                     {
@@ -526,7 +522,7 @@
         //검색
         function searchButton() {
             // 입력된 값 가져오기
-            const search_spjangcd = document.getElementById('search_spjangcd').value || "";
+            const search_spjangcd = sessionStorage.getItem('spjangcd');
             const startDate = document.getElementById('startDate').value || "";
             const endDate = document.getElementById('endDate').value || "";
             const searchCltnm = document.getElementById('searchCltnm').value.trim() || "";
@@ -571,20 +567,7 @@
         }
 
         //공통코드
-        const selectConfigs = [
-            { parentCode: 'ordflag', elementId: 'searchtketnm' },
-        ];
-        selectConfigs.forEach(config => {
-            initializeSelect3({
-                url: '/api/order_status/ordFlagType',
-                params: { parentCode: config.parentCode },
-                elementId: config.elementId,
-                valueField: "code",
-                textField: "value",
-                includeAllOption: true, // "전체" 옵션 사용
-            });
-        });
-
+        AjaxUtil.fillSelectOptions($('#searchtketnm'), 'system_code', 'all', null, 'ordflag','0,1,5');
 
         //업체명 모달
         document.getElementById('searchCltnm').addEventListener('keydown', function(event) {

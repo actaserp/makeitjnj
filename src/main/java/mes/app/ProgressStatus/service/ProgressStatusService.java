@@ -29,11 +29,11 @@ public class ProgressStatusService {
             uc.Value AS ordflag_display
         FROM
             TB_DA006W tb006
-        left join user_code uc on uc.Code = tb006.ordflag
+        left join sys_code uc on uc.Code = tb006.ordflag
         WHERE 1=1
         """);
         if (startDate != null && !startDate.isEmpty()) {
-            startDate = startDate.replace("-", "");
+            startDate = startDate.replace("-", ""); 
             sql.append(" AND reqdate >= :startDate ");
             params.addValue("startDate", startDate);
         }
@@ -57,7 +57,7 @@ public class ProgressStatusService {
         }
 
         if (searchTitle != null && !searchTitle.isEmpty()) {
-            sql.append(" AND remark LIKE :searchTitle");
+            sql.append(" AND modeltxt LIKE :searchTitle");
             params.addValue("searchTitle", "%" + searchTitle + "%");
         }
         // ORDER BY를 항상 맨 마지막에 추가
