@@ -148,25 +148,6 @@ public class RequestController {
     }
   }
 
-
-  /*@PostMapping("/copyData")
-  public AjaxResult copyData(@RequestBody Map<String, Object> payload,
-                             Authentication auth){
-    AjaxResult result = new AjaxResult();
-    User user = (User) auth.getPrincipal();
-
-    log.info("주문 복제 들어옴 :{}", payload);
-    String reqdate = (String) payload.get("reqdate");
-    String reqnums = (String) payload.get("reqnums");
-    String spjangcd = user.getSpjangcd();
-
-    reqnums = tbDa006WRepository.getNextReqnum(spjangcd);
-
-    List<Map<String, Object>> item = requestService.getCopyList(reqnums);
-
-    return result;
-  }*/
-
   @PostMapping("/saveWithFiles")
   @Transactional
   public ResponseEntity<?> saveOrderWithFiles(
@@ -295,7 +276,7 @@ public class RequestController {
       detail.setInperid(user.getUsername());
       detail.setIndate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
       tbDa007WRepository.save(detail);
-      log.info("상세 저장 완료: {}", detail);
+//      log.info("상세 저장 완료: {}", detail);
     }
 
     // ✅ 3. 파일 저장

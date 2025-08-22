@@ -378,7 +378,7 @@
         let csrfToken = $("[name=_csrf]").val();
 
         var swiper = new Swiper(".card-swiper", {
-            slidesPerView: 5,
+            slidesPerView: 3,
             spaceBetween: 20,
             loop: true,  // 무한 반복 유지
             speed: 600,
@@ -1012,7 +1012,7 @@
                     });
 
                     // 카드 작업
-                    // 작년 상태값별 데이터
+                    /*// 작년 상태값별 데이터
                     let LastYearCnt = data2.LastYearCnt;
                     // 올해 상태값별 데이터
                     let ThisYearCnt = data2.ThisYearCnt;
@@ -1057,10 +1057,66 @@
                     const thisYearCountOf5 = ThisYearCnt.find(item => item.ordflag === '5')?.TotalCount || 0;
                     const difference5 = thisYearCountOf5 - lastYearCountOf5;
                     const cancelSection = document.querySelector('.cancel dl dd');
-                    cancelSection.innerHTML = `${thisYearCountOf5} <span class="unit">건</span>`;
+                    cancelSection.innerHTML = `${thisYearCountOf5} <span class="unit">건</span>`;*/
+
+                  // ── 카드 작업 ──
+                  const LastYearCnt  = data2.LastYearCnt || [];
+                  const ThisYearCnt  = data2.ThisYearCnt || [];
+
+// request (ordflag=0): 전년 대비 증감
+                  {
+                    const last0 = getTotalByFlag(LastYearCnt, 0);
+                    const curr0 = getTotalByFlag(ThisYearCnt, 0);
+                    const diff0 = curr0 - last0;
+                    const arrow = diff0 >= 0 ? '<span class="up"></span>' : '<span class="down"></span>';
+                    setCardCount('request', `${arrow} ${diff0.toLocaleString()} <span class="unit">건</span>`);
+                  }
+
+// check (ordflag=1): 올해 건수
+                  {
+                    const curr1 = getTotalByFlag(ThisYearCnt, 1);
+                    setCardCount('check', `${curr1.toLocaleString()} <span class="unit">건</span>`);
+                  }
+
+// order/product/delivery는 주석 상태 → 존재할 때만 갱신
+                  const exists = sel => document.querySelector(sel);
+
+                  if (exists('.order dl dd')) {
+                    const curr2 = getTotalByFlag(ThisYearCnt, 2);
+                    setCardCount('order', `${curr2.toLocaleString()} <span class="unit">건</span>`);
+                  }
+                  if (exists('.product dl dd')) {
+                    const curr3 = getTotalByFlag(ThisYearCnt, 3);
+                    setCardCount('product', `${curr3.toLocaleString()} <span class="unit">건</span>`);
+                  }
+                  if (exists('.delivery dl dd')) {
+                    const curr4 = getTotalByFlag(ThisYearCnt, 4);
+                    setCardCount('delivery', `${curr4.toLocaleString()} <span class="unit">건</span>`);
+                  }
+
+                  // cancel (ordflag=5): 올해 건수
+                  {
+                    const curr5 = getTotalByFlag(ThisYearCnt, 5);
+                    setCardCount('cancel', `${curr5.toLocaleString()} <span class="unit">건</span>`);
+                  }
+
                 }
             })
         }
+
+        // ordflag가 '5' 또는 5 등 혼용되어도 안전하게 찾기
+        function getTotalByFlag(arr, flag) {
+          return arr?.find(i => String(i.ordflag) === String(flag))?.TotalCount ?? 0;
+        }
+
+        // 원본 + 복제 슬라이드까지 같은 클래스의 카드 모두 갱신
+        function setCardCount(cls, html) {
+          document.querySelectorAll(`.${cls} dl dd`).forEach(dd => {
+            dd.innerHTML = html;
+          });
+        }
+
+
         function bindSpjangcd() {
             $.ajax({
                 url: '/api/dashboard2/bindSpjangcd',

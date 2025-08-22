@@ -30,7 +30,7 @@ public class OrderDashboardController {
         String username = user.getUsername();
         Map<String, Object> userInfo = orderDashboardService.getUserInfo(username);
         TB_DA006W_PK tbDa006WPk = new TB_DA006W_PK();
-        tbDa006WPk.setSpjangcd((String) userInfo.get("spjangcd"));
+        tbDa006WPk.setSpjangcd(user.getSpjangcd());
         tbDa006WPk.setCustcd((String) userInfo.get("custcd"));
         String saupnum = (String) userInfo.get("saupnum");
         String cltcd = (String) userInfo.get("cltcd");
@@ -41,10 +41,10 @@ public class OrderDashboardController {
         for (Map<String, Object> item : items) {
             if (item.get("ordflag").equals("0")) {
                 item.remove("ordflag");
-                item.put("ordflag", "주문의뢰");
+                item.put("ordflag", "주문접수");
             } else if (item.get("ordflag").equals("1")) {
                 item.remove("ordflag");
-                item.put("ordflag", "주문확인");
+                item.put("ordflag", "출하확인");
             } else if (item.get("ordflag").equals("2")) {
                 item.remove("ordflag");
                 item.put("ordflag", "주문확정");
@@ -86,9 +86,9 @@ public class OrderDashboardController {
         String username = user.getUsername();
         Map<String, Object> userInfo = orderDashboardService.getUserInfo(username);
         TB_DA006W_PK tbDa006WPk = new TB_DA006W_PK();
-        tbDa006WPk.setSpjangcd((String) userInfo.get("spjangcd"));
-        tbDa006WPk.setCustcd((String) userInfo.get("custcd"));
-        String cltcd = (String) userInfo.get("cltcd");
+        tbDa006WPk.setSpjangcd(user.getSpjangcd());
+        tbDa006WPk.setCustcd("JNJ");
+        String cltcd = (String) userInfo.get("comp_id");
         List<Map<String, Object>> items = this.orderDashboardService.initDatas(tbDa006WPk, cltcd);
         AjaxResult result = new AjaxResult();
         result.data = items;
@@ -104,10 +104,10 @@ public class OrderDashboardController {
         for (Map<String, Object> item : items) {
             if (item.get("ordflag").equals("0")) {
                 item.remove("ordflag");
-                item.put("ordflag", "주문등록");
+                item.put("ordflag", "주문접수");
             } else if (item.get("ordflag").equals("1")) {
                 item.remove("ordflag");
-                item.put("ordflag", "주문확인");
+                item.put("ordflag", "출하확인");
             } else if (item.get("ordflag").equals("2")) {
                 item.remove("ordflag");
                 item.put("ordflag", "주문확정");

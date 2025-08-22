@@ -1,6 +1,18 @@
 <html layout:decorate="~{layout_page}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <style>
+    section-card-wrap {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 10px;
+    }
 
+    .fetchCard {
+        flex: 0 0 calc(16.66% - 10px); /* 카드 너비를 반응형으로 조절 */
+        padding: 10px;
+        box-sizing: border-box;
+        width: auto;
+    }
 </style>
 <th:block layout:fragment="content">
 
@@ -10,9 +22,6 @@
         <div class="page-title-wrap">
             <div class="left">
                 <h2>Dashboard</h2>
-                <img src="/images/icon/exclamation/exclamation-circle.svg"
-                     class="zoom-img"
-                     onclick="openPopup('https://foms.atlassian.net/wiki/external/MDlmNjZmZmQwN2MyNDNjMmI5NGQxOWY1YWVhNmMxNDI')" alt="도움말">
                 <!--                <a href="#" title="북마크" class="bookmark toggle">-->
                 <!--                    내메뉴-->
                 <!--                </a>-->
@@ -31,11 +40,10 @@
             </ul>
             <div class="tab-contents">
                 <!-- Section -->
-                <section class="tab-item" id="tab1" style="height: 900px; margin-bottom: 10px">
-                    <div class="row" style="display: flex;">
-                        <!-- 왼쪽 섹션: 50% 차지 -->
-                        <section
-                                style="width: 60%; box-sizing: border-box; height: 830px; margin-right: 20px; border-radius: 10px; ">
+                <section class="tab-item" id="tab1" style="height: 880px; margin-bottom: 10px;">
+                    <div class="row" style="display: flex; gap: 20px; width: 100%;">
+                    <!-- 왼쪽 섹션: 50% 차지 -->
+                        <section style="flex: 6; height: 800px; box-sizing: border-box; border-radius: 10px;">
                             <div class="title-wrap">
                                 <h3>주문 캘린더</h3>
                                 <div class="btn-wrap">
@@ -46,8 +54,8 @@
                             </div>
                         </section>
                         <!-- 오른쪽 섹션을 감싸는 div -->
-                        <div style="display: flex; flex-direction: column; width: 40%;">
-                            <!-- 위쪽 섹션 -->
+                        <div style="flex: 4; display: grid; flex-direction: column;">
+                        <!-- 위쪽 섹션 -->
                             <section style=" box-sizing: border-box;">
                                 <div style="margin-bottom: 15px">
                                     <h3 id="year-status"></h3>
@@ -57,7 +65,7 @@
                                         <div class="section-card-wrap" style="gap: 5px">
                                             <section style="flex: 0.5; margin-right: 5px; cursor: pointer; padding: 10px 10px;" class="fetchCard" data-search-type="0">
                                                 <div class="title">
-                                                    <h3>주문의뢰</h3>
+                                                    <h3>주문접수</h3>
                                                 </div>
                                                 <div class="requestCnt" style="font-size: 32px; font-weight: 700; text-align: right; margin: 9px 0;">
                                                     -<span class="small-unit" style=" font-size: 0.5em; opacity: 0.5;"> 건</span>
@@ -65,33 +73,9 @@
                                             </section>
                                             <section style="flex: 0.5; margin-right: 5px; cursor: pointer; padding: 10px 10px;" class="fetchCard" data-search-type="1">
                                                 <div class="title">
-                                                    <h3>주문확인</h3>
+                                                    <h3>출하완료</h3>
                                                 </div>
                                                 <div class="checkCnt" style="font-size: 32px; font-weight: 700; text-align: right; margin: 9px 0;">
-                                                    -<span class="small-unit" style=" font-size: 0.5em; opacity: 0.5;"> 건</span>
-                                                </div>
-                                            </section>
-                                            <section style="flex: 0.5; margin-right: 5px; cursor: pointer; padding: 10px 10px;" class="fetchCard" data-search-type="2">
-                                                <div class="title">
-                                                    <h3>주문확정</h3>
-                                                </div>
-                                                <div class="estimateCnt" style="font-size: 32px; font-weight: 700; text-align: right; margin: 9px 0;">
-                                                    -<span class="small-unit" style=" font-size: 0.5em; opacity: 0.5;"> 건</span>
-                                                </div>
-                                            </section>
-                                            <section style="flex: 0.5; margin-right: 5px; cursor: pointer; padding: 10px 10px;" class="fetchCard" data-search-type="3">
-                                                <div class="title">
-                                                    <h3>제작진행</h3>
-                                                </div>
-                                                <div class="produceCnt" style="font-size: 32px; font-weight: 700; text-align: right; margin: 9px 0;">
-                                                    -<span class="small-unit" style=" font-size: 0.5em; opacity: 0.5;"> 건</span>
-                                                </div>
-                                            </section>
-                                            <section style="flex: 0.5; margin-right: 5px; cursor: pointer; padding: 10px 10px;" class="fetchCard" data-search-type="4">
-                                                <div class="title">
-                                                    <h3>출고</h3>
-                                                </div>
-                                                <div class="deliveryCnt" style="font-size: 32px; font-weight: 700; text-align: right; margin: 9px 0;">
                                                     -<span class="small-unit" style=" font-size: 0.5em; opacity: 0.5;"> 건</span>
                                                 </div>
                                             </section>
@@ -111,7 +95,7 @@
                             <!-- 아래쪽 섹션 (넓게 설정) -->
                             <section style="flex: 1; box-sizing: border-box; margin-top: 20px;">
                                 <div class="tab-item-sub" id="tab1_2">
-                                    <div class="section-top" style="margin-top: 10px;">
+                                    <div class="section-top">
                                         <div class="search-wrap">
                                             <dl>
                                                 <dt>
@@ -140,12 +124,10 @@
                                         </div>
                                     </div> <!--//section-top end -->
                                     <div class="container-fluid" style="padding-left: 0; padding-right: 0;">
-                                        <!-- 그리드 영역 -->
                                         <div class="col-12" style="margin-bottom: 10px;">
                                             <div id="theGrid" style="width: 100%; height: 400px;"></div>
                                         </div>
                                     </div>
-
                                 </div>
                             </section>
                         </div>
@@ -280,7 +262,10 @@
                         document.getElementById("endDate").value = info.dateStr;
                         fetchListData();
                     },
-                    events: [] // 기본 이벤트는 빈 배열로 설정
+                    events: [], // 기본 이벤트는 빈 배열로 설정
+                    datesSet: function () {
+                        fixCalendarHeaderStyle();
+                    }
                 });
 
                 // 공휴일 데이터 가져오기
@@ -308,12 +293,12 @@
                 fetchOrderDates().then(orderDates => {
                     //console.log("📢 원본 orderDates 데이터:", orderDates);
 
-                    // 1️⃣ 날짜별 그룹화 ( { "YYYY-MM-DD": { "주문확인": 3, "출고": 2 } } 형태로 저장 )
+                    // 1️⃣ 날짜별 그룹화 ( { "YYYY-MM-DD": { "출하완료": 3, "출고": 2 } } 형태로 저장 )
                     let groupedEvents = {};
 
                     orderDates.forEach(order => {
                         let date = order.date;  // 주문 날짜
-                        let name = order.name;  // 주문 상태 (주문등록, 주문확인 등)
+                        let name = order.name;  // 주문 상태 (주문등록, 출하완료 등)
 
                         // 해당 날짜가 이미 존재하는지 확인
                         if (!groupedEvents[date]) {
@@ -356,6 +341,31 @@
                     console.error("❌ 주문현황 데이터를 가져오는 데 실패했습니다:", error);
                 });
             }
+        }
+
+        function fixCalendarHeaderStyle() {
+            // style 속성 제거 (자동 지정된 너비 제거)
+            document.querySelectorAll('.fc-col-header').forEach(el => {
+                el.removeAttribute('style');
+            });
+
+            // 요일 셀 강제 스타일 적용
+            document.querySelectorAll('.fc-col-header-cell').forEach(cell => {
+                cell.style.width = 'calc(100% / 7)';
+                cell.style.maxWidth = 'calc(100% / 7)';
+                cell.style.overflow = 'hidden';
+                cell.style.textAlign = 'center';
+                cell.style.whiteSpace = 'nowrap';
+            });
+
+            // 요일 텍스트(a 태그)도 block으로 꽉 차게
+            document.querySelectorAll('.fc-col-header-cell-cushion').forEach(el => {
+                el.style.display = 'block';
+                el.style.width = '100%';
+                el.style.whiteSpace = 'nowrap';
+                el.style.overflow = 'hidden';
+                el.style.textAlign = 'center';
+            });
         }
 
         // 공휴일 데이터를 가져오는 함수
@@ -410,9 +420,9 @@
         // 주문 상태에 따른 색상 설정
         function getEventColor(name) {
             switch (name) {
-                case "주문등록":
+                case "주문접수":
                     return { bg: "#031B4B", border: "#031B4B", text: "white" };
-                case "주문확인":
+                case "출하완료":
                     return { bg: "#03428E", border: "#03428E", text: "white" };
                 case "주문확정":
                     return { bg: "#3069B3", border: "#3069B3", text: "white" };
@@ -527,7 +537,7 @@
                         window.parent.postMessage({
                             action: "addTab",
                             id: "order_request",
-                            title: "주문등록",
+                            title: "주문접수",
                             url: '/gui/' + "order_request" + '/default',
                             active: true,
                             allowClose: true,

@@ -168,7 +168,7 @@ public class BomController {
 
 		try {
 			// 1. bom_comp 먼저 삭제
-			String deleteComponentsSql = "DELETE FROM bom_comp WHERE bom_id = :id";
+			String deleteComponentsSql = "DELETE FROM bom_comp WHERE BOM_id = :id";
 			MapSqlParameterSource paramMap = new MapSqlParameterSource();
 			paramMap.addValue("id", id);
 			sqlRunner.execute(deleteComponentsSql, paramMap);

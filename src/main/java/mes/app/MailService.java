@@ -35,7 +35,7 @@ public class MailService {
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);
-        message.setFrom("replusshare@naver.com");
+        message.setFrom("kimyouli0330@naver.com");
 
         mailSender.send(message);
     }
@@ -55,7 +55,7 @@ public class MailService {
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);
-        message.setFrom("replusshare@naver.com");
+        message.setFrom("kimyouli0330@naver.com");
 
         mailSender.send(message);
     }

@@ -178,12 +178,7 @@ public class RequestService {
         SELECT
             h.reqnum,
             STUFF(STUFF(h.reqdate, 5, 0, '-'), 8, 0, '-') AS reqdate,
-            CASE h.ordflag
-                WHEN 0 THEN '주문의뢰'
-                WHEN 1 THEN '견적작성'
-                WHEN 2 THEN '제작'
-                WHEN 3 THEN '출고'
-            END AS ordflag,
+             sc.Value as ordflag,
             h.cltcd,
             h.cltnm,
             h.indate,
@@ -209,12 +204,10 @@ public class RequestService {
                FOR JSON PATH
             ) AS hd_files
         FROM TB_DA006W h
-        LEFT JOIN summary s
-            ON h.reqdate = s.reqdate AND h.reqnum = s.reqnum
-        LEFT JOIN aggregated a
-            ON h.reqdate = a.reqdate AND h.reqnum = a.reqnum
-        LEFT JOIN latest_model_history mh
-            ON h.pcode = mh.modelid
+        LEFT JOIN summary s ON h.reqdate = s.reqdate AND h.reqnum = s.reqnum
+        LEFT JOIN aggregated a ON h.reqdate = a.reqdate AND h.reqnum = a.reqnum
+        LEFT JOIN latest_model_history mh ON h.pcode = mh.modelid
+        left join sys_code sc on sc.Code = ordflag and CodeType ='ordflag'
         WHERE h.spjangcd = :spjangcd
           AND h.reqdate BETWEEN :start AND :end
         """;
@@ -300,6 +293,7 @@ public class RequestService {
           d.saleamt,
           d.uamt,
           d.remark AS detail_remark,
+          d.clttype, 
           mh.version_no,
           mh.prev_modeltxt,
           mh.modeltxt_current,
@@ -330,8 +324,8 @@ public class RequestService {
           AND h.spjangcd = :spjangcd
     """;
 
-//    log.info("getOrderDetail  SQL: {}", sql);
-//    log.info("SQL Parameters: {}", paramMap.getValues());
+    log.info("getOrderDetail  SQL: {}", sql);
+    log.info("SQL Parameters: {}", paramMap.getValues());
     return this.sqlRunner.getRows(sql, paramMap);
   }
 

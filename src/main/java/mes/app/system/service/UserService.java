@@ -440,4 +440,20 @@ public class UserService {
         return items;
     }
 
+    public Map<String, Object> getActiveClientBySaupnumAndPrenm(String userid, String prenm) {
+
+        MapSqlParameterSource dicParam = new MapSqlParameterSource();
+        dicParam.addValue("userid", userid);
+        dicParam.addValue("prenm", prenm);
+
+        String sql = """
+        		SELECT * from TB_XCLIENT 
+        		where saupnum = :userid
+        		and prenm= :prenm
+        		and relyn='X'
+        		""";
+        log.info("업체 여부 검색TB_XCLIENT SQL: {}", sql);
+        log.info("SQL Parameters: {}", dicParam.getValues());
+        return sqlRunner.getRow(sql, dicParam);
+    }
 }

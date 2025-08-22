@@ -1,137 +1,85 @@
-<html layout:decorate="~{layout_page}" xmlns:layout="http://www.w3.org/1999/xhtml">
-<style>
-    .container-fluid {
-        padding: 20px;
-    }
-    .modal-content {
-        position: absolute; /* absolute로 설정하여 화면 중앙에 배치 */
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%); /* 화면 중앙 정렬 */
-        background-color: #fff;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-        max-width: 700px;
-        border-radius: 8px;
-    }
-
-    .chart-container {
-        position: relative; /* 부모 요소에 위치 고정 */
-        width: 100%; /* 원하는 너비 */
-        height: 250px; /* 고정된 높이 */
-        overflow-y: auto; /* 세로 스크롤 활성화 */
-        overflow-x: hidden; /* 가로 스크롤 비활성화 */
-        border: 1px solid #ccc; /* 테두리 추가 (선택 사항) */
-        padding: 10px; /* 여백 추가 (선택 사항) */
-    }
-
-    #modalGrid {
-        height: auto;        /* 높이를 자동으로 조정 */
-        max-height: 500px;   /* 필요에 따라 최대 높이를 지정 */
-        overflow-y: auto;    /* 스크롤 활성화 */
-    }
-</style>
+<html layout:decorate="~{layout_page}">
 <th:block layout:fragment="content">
   <div class="layout-contents">
-    <!-- Page Title -->
     <div class="page-title-wrap">
       <div class="left">
-        <h2>업체별 주문통계</h2><a id="toggleButton" onclick="toggleSearchWrap()"><img src="/images/icon/ico-down.png"
-                                                                             alt="알람 아이콘"></a>
-        <!--<a title="북마크" class="bookmark toggle">
-            내메뉴
-        </a>-->
+        <h2>월간 매입 매출 현황</h2>
+        <a title="북마크" class="bookmark toggle">
+          내 메뉴
+        </a>
       </div>
       <ul class="page-navi">
         <li><img src="/images/icon/ico-nav-home.svg" alt="홈아이콘"></li>
         <li>주문관리</li>
-        <li>업체별 주문통계</li>
+        <li>월간 매입 매출 현황</li>
       </ul>
     </div>
-    <div class="search-wrap" id="searchWrap" style="display: none; padding-top:10px">
-      <ul>
-        <li>
-          <select title="사업장" id="search_spjangcd" name="search_spjangcd"
-                  onchange="init()">
-            <option value="" hidden selected disabled>선택</option>
-            <option value="ZZ">성우에스피(주)</option>
-            <option value="PP">성우피앤비(주)</option>
-            <!-- 지역 옵션을 JavaScript에서 동적으로 채움 -->
-          </select>
-        </li>
-      </ul>
-    </div>
-    <!-- Select -->
-    <div class="tab-contents">
-      <section class="tab-item" style="height: 840px; overflow: hidden;">
-        <div class="section-top">
-          <div class="search-wrap">
-            <dl>
-              <dt>
-                조회기간<span class="eq">*</span>
-                <img src="/images/icon/exclamation/exclamation-circle.svg"
-                     class="zoom-img" style="margin-left: 5px"
-                     onclick="openPopup('https://foms.atlassian.net/wiki/external/Yjk4ODJlMzgxYWI5NDcwMjhlYWRhYzkwMzgxNTcyNjc')" alt="도움말">
-              </dt>
-              <dd>
-                <ul class="date-box">
-                  <li>
-                    <input type="date" id="startDate" name="startDate">
-                    <label for="startDate" class="hide">시작일</label>
-                  </li>
-                  <li>
-                    <input type="date" id="endDate" name="endDate">
-                    <label for="endDate" class="hide">종료일</label>
-                  </li>
-                </ul>
-              </dd>
-            </dl>
-            <dl>
-              <dt>
-                <label for="searchCltnm">
-                  업체명
-                </label>
-              </dt>
-              <dd>
-                <div class="srch-box">
-                  <input type="text" id="searchCltnm" name="searchCltnm" class="input-srch"
-                         placeholder="업체명" style="border-radius: 5px;">
-                </div>
-              </dd>
-            </dl>
-            <dl>
-              <dt>&nbsp;</dt>
-              <dd>
-                <li>
-                  <a class="btn btn-delete" title="검색" id="searchButton" onclick="searchButton()">
-                    <!--                                        class 쓰이는 곳 찾고 없으면 클래스명 수정하기-->
-                    <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
-                    검색
-                  </a>
-                </li>
-              </dd>
-            </dl>
-          </div>
-        </div>
-        <div class="container-fluid" style="display: flex;">
-          <div class="chart-container wp50">
-            <canvas id="myChart" width="500" height="500"></canvas>
-            <span id="noDataMessage" style="margin-top: 150px; display: none; text-align: center; color: gray;">조회 된 데이터가 없습니다.</span>
-          </div>
-          <span class="material-symbols-outlined"  onclick="openModal()">zoom_out_map</span>
-          <div class="wp50">
-            <div >
-              <p id="selectedItem"></p>
-              <div id="theGrid" style="max-height:730px"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div> <!--//tab-wrap end-->
-  </div> <!--//layout-contents end -->
 
-  <!--업체 모달-->
+    <section class="section">
+      <div class="section-top">
+        <div class="search-wrap">
+          <dl>
+            <dt>
+              <label>
+                연도
+              </label>
+            </dt>
+            <dd>
+              <select class="" id="cboYear" name="cboYear" >
+              </select>
+            </dd>
+          </dl>
+          <dl id="searchComArea">
+            <dt>
+              거래처
+            </dt>
+            <dd>
+              <input type="text" id="btnCompanySearch" name="btnCompanySearch" placeholder="해당 칸을 클릭해서 검색하세요.">
+              <input type="hidden" id="cboCompanyHidden">
+            </dd>
+          </dl>
+          <dl>
+            <dt>&nbsp;</dt>
+            <dd>
+              <li>
+                <a class="btn btn-delete" title="검색" id="btnSearch">
+                  <!--                                        class 쓰이는 곳 찾고 없으면 클래스명 수정하기-->
+                  <img src="/images/icon/btn-srch.svg" alt="검색 아이콘">
+                  검색
+                </a>
+              </li>
+            </dd>
+          </dl>
+        </div>
+      </div>
+      <div class="tab-wrap">
+        <ul class="tab-links">
+          <li><a href="#tabs_sales" style="border-radius: 6px 0 0 0;">매출</a></li>
+          <li><a href="#tabs_deposit">매입</a></li>
+        </ul>
+        <div>
+          <section class="tab-item" id="tabs_sales" style="border-top-left-radius: 0;">
+            <div class="chart-container" style="height: 300px;">
+              <canvas id="yoySalesChart" height="300"></canvas>
+              <span id="noDataMessage" style="margin-top: 150px; display: none; text-align: center; color: gray;">조회 된 데이터가 없습니다.</span>
+            </div>
+            <div class="container-fluid">
+              <div id="theGrid" style="height: 300px;"></div>
+            </div>
+          </section>
+          <section class="tab-item" id="tabs_deposit" style="border-top-left-radius: 0;">
+              <div class="chart-container" style="height: 300px;">
+                <canvas id="myChart2" height="300"></canvas>
+                <span id="noDataMessage2" style="margin-top: 150px; display: none; text-align: center; color: gray;">조회 된 데이터가 없습니다.</span>
+              </div>
+              <div class="container-fluid">
+                <div id="deposit-grid" style="height: 300px;"></div>
+              </div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </div>
   <div class="modal">
     <div id="CltnmModal" style="display: none;">
       <div class="modal-content">
@@ -145,45 +93,328 @@
       </div>
     </div>
   </div>
-
-  <footer>
-    <p>Copyrightⓒ 0000 corp. All rights reserved.</p>
-  </footer>
-
 </th:block>
 
-<div id="chartModal" class="modal" style="opacity:100">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <canvas id="modalChartHolder" style="width: 1250px; height: 490px; display: block; box-sizing: border-box;"
-            width="1250" height="520"></canvas>
-  </div>
-</div>
-
-
-
 <th:block layout:fragment="scripts">
-  <th:block th:replace="/common/columns_setting :: columns_setting"></th:block>
+  <!--<th:block th:replace="/common/columns_setting :: columns_setting"></th:block>-->
+  <th:block th:replace="/common/multiform_material :: multiform_material"></th:block>
+  <th:block th:replace="/common/popup_company :: popup_company"></th:block>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script type="text/javascript">
-    var theGrid;
-    let modalGrid;
-
-    document.readyState === 'complete' ? init() : window.onload = init;
-    let isBindSpjangcdCalled = false;
-
-    <!-- 초반 페이지 진입시 그리드 바인딩 끝-->
-    function init() {
-      fetchListData();
-      loadChartData();
-      if (!isBindSpjangcdCalled) {
-        bindSpjangcd();
-        isBindSpjangcdCalled = true; // 플래그 업데이트
+    class MonthlySalesListPage {
+      constructor() {
+        this.grid = null;
+        this.grid3 = null;
+        this.spjangcd = $('#spjangcdHidden');
+        this.viewData = new wijmo.collections.CollectionView();
+        this.init();
       }
-      document.getElementById('search_spjangcd').addEventListener('change', searchButton);
+
+      init() {
+        let _this = this;
+        const monthColumns = Array.from({length: 12}, (_, i) => {
+          const month = i + 1;
+          return {
+            binding: `mon_${month}`,
+            header: `${month}월`,
+            width: 120,
+            align: 'right',
+            allowSorting: false,
+            format: 'n0',
+          };
+        });
+
+        this.grid = new wijmo.grid.FlexGrid('#theGrid', {
+          frozenColumns: 2,
+          frozenRows: 0,
+          allowSorting: wijmo.grid.AllowSorting.MultiColumn,
+          selectionMode: wijmo.grid.SelectionMode.Row,
+          allowMerging: wijmo.grid.AllowMerging.Cells,
+          autoGenerateColumns: false,
+          showMarquee: true,
+          isReadOnly: true,
+          formatItem: (sender, e) => {
+            if (e.panel.cellType === wijmo.grid.CellType.ColumnHeader) {
+              e.cell.style.textAlign = 'center';
+            }
+          },
+          columns: [
+            {binding: 'cltcd', header: '업체 코드', width: 250, visible: false},
+            {binding: 'comp_name', header: '업체명', width: 250, align: 'center', allowMerging: false},
+            ...monthColumns,  //여기에서 월별 컬럼을 삽입
+            {binding: 'total_sum', header: '합계', width: 120, align: 'right', allowSorting: false},
+          ],
+          itemsSource: this.viewData,
+        });
+        this.grid.rowHeaders.columns.splice(0, 1);
+        this.grid.hostElement.addEventListener('dblclick', (e) => {
+          const ht = this.grid.hitTest(e);
+          if (ht.cellType === wijmo.grid.CellType.Cell) {
+            const row = this.grid.rows[ht.row];
+            const data = row.dataItem;
+            this.openSalesPopup(data);
+          }
+        });
+        new FlexGridContextMenu(this.grid);
+        this.grid.downloadFileName = '월별 매출 현황(매출)';
+        //Footer 패널 사용 설정
+        this.grid.columnFooters.rows.push(new wijmo.grid.Row());
+
+        //Footer 합계 값 설정 (수동)
+        this.grid.loadedRows.addHandler(() => {
+          const rows = this.grid.rows;
+          const footerTotal = this.grid.columnFooters.rows[0];
+          const getSum = (field) => rows.map(r => +r.dataItem[field] || 0).reduce((a, b) => a + b, 0);
+          // footer에 들어갈 데이터 구성
+          const footerData = {
+            comp_name: '합 계', // 첫 컬럼에 텍스트
+          };
+          monthColumns.forEach(col => {
+            footerData[col.binding] = getSum(col.binding);
+          });
+          footerData['total_sum'] = getSum('total_sum');
+          footerTotal.dataItem = footerData;
+        });
+
+
+        this.grid3 = new wijmo.grid.FlexGrid('#deposit-grid', {
+          frozenColumns: 4,
+          frozenRows: 0,
+          allowSorting: wijmo.grid.AllowSorting.MultiColumn,
+          selectionMode: wijmo.grid.SelectionMode.Row,
+          allowMerging: wijmo.grid.AllowMerging.Cells,
+          autoGenerateColumns: false,
+          showMarquee: true,
+          isReadOnly: true,
+          formatItem: (sender, e) => {
+            if (e.panel.cellType === wijmo.grid.CellType.ColumnHeader) {
+              e.cell.style.textAlign = 'center';
+            }
+          },
+          columns: [
+            {binding: 'cltcd', header: '커래처 코드', width: 250, visible: false},
+            {binding: 'comp_name', header: '업체명', width: 170, align: 'left', allowMerging: false},
+            {binding: 'pname', header: '자재', width: 200, align: 'left', allowMerging: false},
+            {binding: 'clt_name', header: '외주처', width: 170, align: 'left', allowMerging: false},
+            ...monthColumns,
+            {binding: 'total_sum', header: '합계', width: 120, align: 'right', allowSorting: false},
+          ],
+          itemsSource: this.viewData,
+        });
+
+        this.grid3.rowHeaders.columns.splice(0, 1);
+        this.grid3.hostElement.addEventListener('dblclick', (e) => {
+          const ht = this.grid3.hitTest(e); //올바르게 grid3에서 hitTest
+          if (ht.cellType === wijmo.grid.CellType.Cell) {
+            const row = this.grid3.rows[ht.row];
+            const data = row.dataItem;
+            this.openDepositPopup(data);  //입금 상세 팝업 함수 실행
+          }
+        });
+
+        new FlexGridContextMenu(this.grid3);
+        this.grid3.downloadFileName = '월별 매출 현황';
+        //Footer 패널 사용 설정
+        this.grid3.columnFooters.rows.push(new wijmo.grid.Row());
+        //Footer 합계 설정
+        this.grid3.loadedRows.addHandler(() => {
+          const rows = this.grid3.rows;
+          const footerTotal = this.grid3.columnFooters.rows[0];
+          const getSum = (field) => rows.map(r => +r.dataItem[field] || 0).reduce((a, b) => a + b, 0);
+
+          const footerData = {
+            comp_name: '합 계',
+          };
+          monthColumns.forEach(col => {
+            footerData[col.binding] = getSum(col.binding);
+          });
+          footerData['total_sum'] = getSum('total_sum');
+          footerTotal.dataItem = footerData;
+        });
+
+      }
+
+      searchMainData() {
+        let _this = this;
+        let url = '/api/VendorOrderStats'
+        let baseData = {
+          'cboYear': $("#cboYear").val(),
+          'cboCompany': $("#cboCompanyHidden").val(),
+          spjangcd:  sessionStorage.getItem('spjangcd')
+        };
+        //매출 내역
+        AjaxUtil.getAsyncData(url + '/SalesRead', baseData, function (result) {
+          if (result != null) {
+            _this.grid.itemsSource = result.data;
+          }
+        });
+        // 매출 차트 (YoY)
+        AjaxUtil.getAsyncData(url + '/SalesChartRead', baseData, function (result) {
+          const noDataMsg = document.getElementById('noDataMessage');
+
+          if (result && result.data && result.data.length > 0) {
+            noDataMsg.style.display = 'none';
+
+            // labels: ['01','02',...,'12']
+            const labels = result.data.map(r => r.month);
+
+            // 당해/전년 데이터
+            const cur = result.data.map(r => Number(r.cur_year_amount || 0));
+            const prev = result.data.map(r => Number(r.prev_year_amount || 0));
+
+            renderSalesChart('yoySalesChart', labels, [
+              {
+                label: baseData.cboYear + '년',
+                data: cur,
+                borderWidth: 2,
+                tension: 0.3,
+                fill: false
+              },
+              {
+                label: (Number(baseData.cboYear) - 1) + '년',
+                data: prev,
+                borderWidth: 2,
+                tension: 0.3,
+                fill: false
+              }
+            ],'매출액');
+          } else {
+            noDataMsg.style.display = 'block';
+            if (window.chartInstances && window.chartInstances['yoySalesChart']) {
+              window.chartInstances['yoySalesChart'].destroy();
+              window.chartInstances['yoySalesChart'] = null;
+            }
+          }
+        });
+
+
+        //매입 내역
+        AjaxUtil.getAsyncData(url + '/DepositRead', baseData, function (result) {
+          if (result != null) {
+            _this.grid3.itemsSource = result.data;
+          }
+        });
+
+        //매입 차트(YoY)
+        AjaxUtil.getAsyncData(url + '/DepositChartRead', baseData, function (result) {
+          const noDataMsg = document.getElementById('noDataMessage2');
+
+          if (result && result.data && result.data.length > 0) {
+            noDataMsg.style.display = 'none';
+
+            const labels = result.data.map(r => r.month); // ['01'..'12']
+            const cur = result.data.map(r => Number(r.cur_year_amount || 0));
+            const prev = result.data.map(r => Number(r.prev_year_amount || 0));
+
+            renderDepositChart('myChart2', labels, [
+              {
+                label: baseData.cboYear + '년 매입',
+                data: cur,
+                borderWidth: 2,
+                tension: 0.3,
+                fill: false
+              },
+              {
+                label: (Number(baseData.cboYear) - 1) + '년 매입',
+                data: prev,
+                borderWidth: 2,
+                tension: 0.3,
+                fill: false
+              }
+            ]);
+          } else {
+            noDataMsg.style.display = 'block';
+            if (window.chartInstances && window.chartInstances['myChart2']) {
+              window.chartInstances['myChart2'].destroy();
+              window.chartInstances['myChart2'] = null;
+            }
+          }
+        },'매입액');
+
+
+      }
     }
 
-    $(document).ready(function () {
+    //멀티 라인 차트
+    function renderSalesChart(canvasId, labels, datasets, yTitle) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+
+      if (!window.chartInstances) window.chartInstances = {};
+      if (window.chartInstances[canvasId]) {
+        window.chartInstances[canvasId].destroy();
+      }
+
+      window.chartInstances[canvasId] = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,  // canvas의 width/height 비율 유지
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { position: 'top' },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.dataset.label}: ${Number(ctx.parsed.y).toLocaleString()}원`
+              }
+            }
+          },
+          scales: {
+            x: { title: { display: true, text: '월' } },
+            y: {
+              title: { display: true, text: yTitle },
+              beginAtZero: true,
+              ticks: { callback: v => v.toLocaleString() + '원' }
+            }
+          }
+        }
+      });
+    }
+
+    function renderDepositChart(canvasId, labels, datasets, yTitle) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+
+      if (!window.chartInstances) window.chartInstances = {};
+      if (window.chartInstances[canvasId]) {
+        window.chartInstances[canvasId].destroy();
+      }
+
+      window.chartInstances[canvasId] = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { position: 'top' },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.dataset.label}: ${Number(ctx.parsed.y).toLocaleString()}원`
+              }
+            }
+          },
+          scales: {
+            x: { title: { display: true, text: '월' } },
+            y: {
+              title: { display: true, text: yTitle },
+              beginAtZero: true,
+              ticks: { callback: v => v.toLocaleString() + '원' }
+            }
+          }
+        }
+      });
+    }
+
+    let page = null;
+
+    $(document).ready(function (e) {
+      page = new MonthlySalesListPage();
+
+      AjaxUtil.fillSelectOptions($('#cboYear'), 'data_year', '', false);
+
       // 현재 날짜 가져오기
       const today = new Date();
       const year = today.getFullYear();
@@ -197,508 +428,63 @@
       // 종료일: 오늘 날짜
       const todayFormatted = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
       $('#endDate').val(todayFormatted);
-    });
+      page.searchMainData();
 
-    function fetchListData() {
-      let data = [ ];
-      const params = {
-        search_spjangcd: $('#search_spjangcd').val(),
-        startDate: $('#startDate').val(),
-        endDate: $('#endDate').val(),
-        searchUserNm: $('#searchUserNm').val(),
-        searchCltnm: $('#searchCltnm').val(),
-      };
-
-      // 서버에서 데이터 가져오기
-      $.ajax({
-        url: '/api/VendorOrderStats/read',
-        type: 'GET',
-        data: params,
-        async: false,
-        success: function (response) {
-          // 응답이 올바르게 도착했고, data 속성이 배열인지 확인
-          if (response && Array.isArray(response.data)) {
-            data = response.data.map((item, index) => ({
-              rownum: index + 1,
-              reqdate: item.reqdate ||'',
-              ordflag_display: item.ordflag_display ||'',
-              cltnm: item.cltnm ||'',
-              telno: item.telno ||'',
-              perid: item.perid || '',
-              orderprice: item.orderprice || '',
-              deldate: item.deldate || '',
-              remark: item.remark ||'',
-            }));
-          }
-        },
-        error: function () {
-          console.error("데이터를 가져오는 중 오류가 발생했습니다.");
-        }
-      });
-
-      while (data.length < 15) {
-        data.push({
-          rownum: data.length + 1,
-          reqdate: '',
-          ordflag_display:'',
-          cltnm: '',
-          perid :'',
-          telno: '',
-          orderprice: '',
-          deldate: '',
-          remark: ''
-        });
-      }
-
-      viewdata = new wijmo.collections.CollectionView(data);
-      // 기존 그룹 제거 후 `cltnm`(업체명) 기준으로 그룹화 적용
-      viewdata.groupDescriptions.clear();
-      let groupDesc = new wijmo.collections.PropertyGroupDescription('cltnm');
-      viewdata.groupDescriptions.push(groupDesc);
-
-      // 그룹별 행 번호 다시 설정 함수
-      const resetRowNumbers = () => {
-        viewdata.groups.forEach((group) => {
-          let rowNumber = 1; // 각 그룹별 행 번호 초기화
-          group.items.forEach(item => {
-            item.rownum = rowNumber++;
-          });
-        });
-      };
-
-      // 그룹화된 데이터의 순번을 다시 계산
-      resetRowNumbers();
-
-      if (!theGrid) {
-        theGrid = new wijmo.grid.FlexGrid('#theGrid', {
-          autoGenerateColumns: false,
-          showMarquee: true,
-          isReadOnly: true,
-          columns: [
-            {binding: 'rownum', header: '순번', width: 80, align: 'center'},
-            {binding: 'reqdate', header: '주문일자', width: '*', minWidth: 160, align: 'center'},
-            {binding: 'cltnm', header: '업체명', width: '*', minWidth: 250, align: 'left'},
-            {binding: 'ordflag_display', header: '진행구분', width: '*', minWidth: 100, align: 'center'},
-            {binding: 'remark', header: '제목(메모)', width: '*', minWidth: 550, align: 'left'},
-            {binding: 'perid', header: '담당자', width: '*', minWidth: 120, align: 'center'},
-            {binding: 'telno', header: '연락처', width: '*', minWidth: 180, align: 'center'},
-            {binding: 'orderprice', header: '금액', width: '*', minWidth: 180, align: 'center'},
-            {binding: 'deldate', header: '출고일자', width: '*', minWidth: 160, align: 'center'},
-          ],
-          itemsSource: viewdata,
-        });
-
-        theGrid.rowHeaders.columns.splice(0, 1);
-        // ContextMenu 추가
-        new FlexGridContextMenu(theGrid);
-        window.downloadFileName = '회원관리';
-      } else {
-        theGrid.itemsSource = viewdata;
-      }
-    }
-
-    function loadChartData() {
-      const spjangcd = document.getElementById('search_spjangcd').value;
-      const startDate = document.getElementById('startDate').value || "";
-      const endDate = document.getElementById('endDate').value || "";
-      const searchCltnm = document.getElementById('searchCltnm').value.trim() || "";
-
-      const queryParams = {
-        search_spjangcd: spjangcd,
-        startDate: startDate,
-        endDate: endDate,
-        searchCltnm: searchCltnm,
-      };
-      const urlParams = new URLSearchParams(queryParams).toString();
-
-      $.ajax({
-        url: `/api/VendorOrderStats/getChartData?${urlParams}`,
-        method: 'GET',
-        dataType: 'json',
-        success: function (response) {
-          if (response.success && response.data && response.data.length > 0) {
-            // 📌 데이터 가공: 주문 상태별 개수 계산
-            const orderCounts = {
-              "주문취소": 0,
-              "주문등록": 0,
-              "주문확인": 0,
-              "주문확정": 0,
-              "제작진행": 0,
-              "출고": 0
-            };
-
-            response.data.forEach(item => {
-              const status = stageMapping[item.ordflag] || "기타";
-              if (orderCounts[status] !== undefined) {
-                orderCounts[status]++;
-              }
-            });
-
-            // 📌 총 건수 계산
-            const totalOrders = response.data.length;
-
-            // 📌 차트 업데이트
-            initializeChart(orderCounts, totalOrders);
-          } else {
-            console.log(response.message || "조회된 데이터가 없습니다.");
-            initializeChart({}, 0); // 데이터 없을 경우 초기화
-          }
-        },
-        error: function () {
-          console.error("데이터 로드 중 오류 발생");
-          initializeChart({}, 0);
-        }
-      });
-    }
-
-    // 숫자 → 값 매핑 객체
-    const stageMapping = {
-      5: "주문취소",
-      0: "주문등록",
-      1: "주문확인",
-      2: "주문확정",
-      3: "제작진행",
-      4: "출고",
-
-    };
-    //차트
-    console.log(Chart.version); // 콘솔에서 Chart.js 버전을 확인
-
-
-    $(document).ready(function () {
-      initializeChart(function () {
-        loadChartData(); // 차트 초기화 후 데이터 로드
-      });
-    });
-
-    window.openModal = function () {
-      let chartElement = document.getElementById('myChart');
-
-      // Chart.js 방식으로 차트 인스턴스 가져오기
-      let chartInstance = Chart.getChart(chartElement);
-
-      if (!chartInstance) {
-        console.error("차트를 찾을 수 없습니다.");
-        Alert.alert('',"조회 된 데이터가 없습니다.");
-        return;
-      }
-
-      let modal = $('#chartModal');
-      modal.show();
-
-      let modalChartHolder = $('#modalChartHolder')[0].getContext('2d');
-
-      // 기존 모달 차트가 있으면 삭제
-      if (window.modalChartInstance) {
-        window.modalChartInstance.destroy();
-      }
-
-      // 모달 차트 생성 (기존 차트 데이터 유지)
-      window.modalChartInstance = new Chart(modalChartHolder, {
-        type: chartInstance.config.type,
-        data: chartInstance.config.data,
-        options: chartInstance.config.options
-      });
-    };
-
-    $(document).on('click', '.close', function () {
-      $('#chartModal').hide();
-      if (window.modalChartInstance) {
-        window.modalChartInstance.destroy();
-      }
-    });
-
-    $(window).on('click', function (event) {
-      if ($(event.target).is('#chartModal')) {
-        $('#chartModal').hide();
-        if (window.modalChartInstance) {
-          window.modalChartInstance.destroy();
-        }
-      }
-    });
-
-    function initializeChart(orderCounts = {}, totalOrders = 0) {
-      const chartElement = document.getElementById('myChart');
-      const noDataMessage = document.getElementById('noDataMessage'); // 메시지 요소 가져오기
-
-      if (!chartElement) {
-        console.error('Chart element not found!');
-        return;
-      }
-
-      const ctx = chartElement.getContext('2d');
-
-      // 기존 차트 제거
-      const existingChart = Chart.getChart(chartElement);
-      if (existingChart) {
-        existingChart.destroy();
-      }
-
-      const labels = ["주문취소", "주문등록", "주문확인", "주문확정", "제작진행", "출고"];
-      const coloredData = labels.map(label => orderCounts[label] || 0);
-
-      // 데이터가 있는지 확인
-      const hasData = coloredData.some(count => count > 0);
-
-      if (!hasData) {
-        // 데이터가 없을 경우
-        chartElement.style.display = 'none'; // 차트 숨기기
-        noDataMessage.style.display = 'block'; // 메시지 표시
-        return;
-      }
-
-      // 데이터가 있을 경우
-      chartElement.style.display = 'block'; // 차트 보이기
-      noDataMessage.style.display = 'none'; // 메시지 숨기기
-
-      const data = {
-        labels: labels,
-        datasets: [
-          {
-            label: '각 건수',
-            data: coloredData,
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.3)',
-              'rgba(255, 159, 64, 0.4)',
-              'rgba(255, 215, 0, 0.4)',
-              'rgba(75, 192, 192, 0.5)',
-              'rgba(54, 162, 235, 0.4)',
-              'rgba(153, 102, 255, 0.2)'
-            ]
-          }
-        ]
-      };
-
-      const config = {
-        type: 'pie',
-        data: data,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'top',
-            },
-          }
-        }
-      };
-
-      // config 객체를 사용하여 차트 생성
-      new Chart(ctx, config);
-    }
-
-    //검색
-    function searchButton() {
-      // 입력된 값 가져오기
-      const search_spjangcd = document.getElementById('search_spjangcd').value || "";
-      const startDate = document.getElementById('startDate').value || "";
-      const endDate = document.getElementById('endDate').value || "";
-      const searchCltnm = document.getElementById('searchCltnm').value.trim() || "";
-
-      // 검색 요청 데이터 구성
-      const queryParams = {
-        search_spjangcd,
-        startDate,
-        endDate,
-        searchCltnm,
-      };
-
-      // 차트 데이터 로드
-      loadChartData(queryParams);
-      fetchListData(queryParams);
-    }
-
-    // 사업장
-    function bindSpjangcd() {
-      $.ajax({
-        url: '/api/dashboard2/bindSpjangcd',
-        type: 'GET',
-        async: false,
-        success: function (data) {
-          data2 = data.data;
-          const selectElement = document.getElementById('search_spjangcd');
-          if (selectElement) {
-            selectElement.value = data2; // value 속성으로 선택
-          }
-        }
-      })
-    }
-
-    function openPopup(url) {
-      // 새 창 열기
-      window.open(url, '_blank',
-        'width=1040,height=1000,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes');
-    }
-
-    //공통코드
-    const selectConfigs = [
-      {parentCode: 'ordflag', elementId: 'searchtketnm'},
-    ];
-    selectConfigs.forEach(config => {
-      initializeSelect3({
-        url: '/api/order_status/ordFlagType',
-        params: {parentCode: config.parentCode},
-        elementId: config.elementId,
-        valueField: "code",
-        textField: "value",
-        includeAllOption: true, // "전체" 옵션 사용
-      });
-    });
-
-    //업체명 모달
-    document.getElementById('searchCltnm').addEventListener('keydown', function(event) {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        console.log('Enter key pressed, showing CltnmModal...');
-        showPopupById('CltnmModal');  // 모달 열기 함수 호출
-        modalGrid();  // 모달 그리드 초기화 및 데이터 로드
-      }
-    });
-    const modalDataLoaders = {
-      'CltnmModal': modalDeta,
-    };
-
-    function showPopupById(popupId, rowIndex = null) {
-      const popup = document.getElementById(popupId);
-      if (popup) {
-        const modal = popup.closest('.modal');
-        if (modal) {
-          modal.style.display = 'block';
-          requestAnimationFrame(() => modal.classList.add('show'));
-        }
-        popup.style.display = 'block';
-        requestAnimationFrame(() => popup.classList.add('show'));
-
-        // 모달이 열리면서 해당 모달의 데이터 로드 함수 호출
-        const loadDataFunction = modalDataLoaders[popupId];
-        if (typeof loadDataFunction === 'function') {
-          try {
-            // rowIndex가 필요할 경우에만 전달
-            if (popupId === 'OrdtextModal' && rowIndex !== null) {
-              loadDataFunction(rowIndex);
-            } else {
-              loadDataFunction();
-            }
-          } catch (error) {
-            console.error(`Error loading data for modal '${popupId}':`, error);
-          }
+      // 검색
+      $('#btnSearch').click(function (e) {
+        if ($('#cboCompany').val() !== '' && $('#cboCompanyHidden').val() === '') {
+          // 업체명 텍스트는 썼지만, 업체 검색 버튼 안 눌렀을 때
+          page.searchMainData();
         } else {
-          console.log(`No data load function defined for modal with ID: ${popupId}`);
-        }
-
-        console.log(`Showing modal with ID: ${popupId}`);
-      } else {
-        console.warn(`Popup with ID '${popupId}' not found.`);
-      }
-    }
-    // 모달을 닫는 함수
-    function closePopup(popupId) {
-      const popup = document.getElementById(popupId);
-      if (popup) {
-        const modal = popup.closest('.modal');
-        if (modal) {
-          modal.style.display = 'none';
-          modal.classList.remove('show');
-        }
-        popup.style.display = 'none';
-        popup.classList.remove('show');
-        console.log(`Closing modal with ID: ${popupId}`);
-      }
-    }
-
-    function modalDeta() {
-      console.log('Initializing modal grid...');
-      const Modaldata = [];
-      const minimumRows = 13;
-
-      // searchTerm을 입력 필드에서 가져옵니다 (예: #searchCltnm)
-      const searchTerm = $('#searchCltnm').val();
-
-      $.ajax({
-        url: '/api/order_status/ModalRead',
-        type: 'GET',
-        data: { searchTerm: searchTerm }, // searchTerm을 쿼리 파라미터로 추가
-        async: true,
-        success: function(response) {
-          if (response && Array.isArray(response.data)) {
-            response.data.forEach((item, index) => {
-              Modaldata.push({
-                rownum: index + 1,  // 순번을 추가
-                ...item
-              });
-            });
-          }
-
-          // 최소 행 수 채우기
-          if (Modaldata.length < minimumRows) {
-            for (let i = Modaldata.length; i < minimumRows; i++) {
-              Modaldata.push({
-                rownum: i + 1,
-                cltcd: '',
-                cltnm: '',
-                telnum: '',
-                cltadres: ''
-              });
-            }
-          }
-
-          // 디버깅: 데이터 확인
-          console.log("Data length after adding empty rows:", Modaldata.length);
-
-          // 데이터를 CollectionView에 바인딩
-          const viewdata = new wijmo.collections.CollectionView(Modaldata);
-
-          // 기존 그리드 제거 후 새로 생성
-          if (modalGrid) {
-            modalGrid.dispose();
-          }
-
-          modalGrid = new wijmo.grid.FlexGrid('#modalGrid', {
-            autoGenerateColumns: false,
-            isReadOnly: true,
-            columns: [
-              {binding: 'rownum', header: '순번', width: 50, align: 'center'},
-              {binding: 'cltcd', header: '코드', width: 140, minWidth: 80, align: 'center'},
-              {binding: 'cltnm', header: '거래처명', width: 250 },
-              {binding: 'telnum', header: '전화', width: 250},
-              {binding: 'cltadres', header: '주소', width: '*'}
-            ],
-            itemsSource: viewdata
-          });
-          modalGrid.rowHeaders.columns.splice(0, 1);
-          console.log('Modal grid initialized and data loaded.');
-
-          // 그리드의 더블 클릭 이벤트 추가
-          let lastClickTime = 0;
-          modalGrid.hostElement.addEventListener('click', function (e) {
-            const now = new Date().getTime();
-
-            if (now - lastClickTime < 300) { // 300ms 이내의 두 번 클릭은 더블 클릭으로 인식
-              // 클릭된 위치의 행 데이터를 가져오기
-              const ht = modalGrid.hitTest(e);
-
-              if (ht.cellType === wijmo.grid.CellType.Cell) {
-                const clickedItem = modalGrid.rows[ht.row].dataItem;
-
-                if (clickedItem && clickedItem.cltnm) { // 클릭된 행에 'cltnm' 데이터가 있는지 확인
-                  $('#searchCltnm').val(clickedItem.cltnm); // 검색 필드에 업체 이름 설정
-                }
-
-                // 원하는 기능 실행
-                searchButton(); // 더블 클릭 시 원하는 함수 실행
-                closePopup('CltnmModal'); // 모달 창 닫기
-              }
-            }
-
-            lastClickTime = now;
-          });
-        },
-        error: function() {
-          console.error("Error fetching modal data.");
+          page.searchMainData();
         }
       });
-    }
 
+      $('#btnGridSetting').click(function (e) {
+        let _this = this;
+        let fix_cols = page.grid_config.frozenColumnIndex;
+        page.popColSetting.show(gui.gui_code, gui.template_key, 'grid', page.grid_config.columns, page.grid, {
+          'order_fix': false,
+          'fix_cols': fix_cols
+        });
+      });
+
+      $('#btnCompanySearch').click(function () {
+        let poppage = new PopCompComponent();
+        let $poppage = $(poppage);
+        let searchcallback = function (items) {
+          //console.log('items : ',items);
+          document.getElementById('btnCompanySearch').value = items.compname;
+          document.getElementById('cboCompanyHidden').value = items.id;
+        };
+
+        poppage.show(searchcallback);
+      });
+
+      $('#btnCompanySearch').on('input', function () {
+        const val = $(this).val();
+        if (val === '') {
+          $('#cboCompanyHidden').val('');
+        }
+      });
+
+      // .btn-clear 클릭 후 input 이벤트 강제 발생
+      $(document).on('click', '.btn-clear', function () {
+        const $input = $(this).siblings('input[type="text"]');
+        $input.val('');
+        $input.trigger('input'); // 🔥 input 이벤트 강제 발생
+      });
+      // 초기화 버튼 클릭 이벤트
+      $('#btnClear').click(function () {
+
+        document.getElementById('cboCompany').value = '';
+        document.getElementById('cboCompanyHidden').value = '';
+      });
+
+    })
   </script>
+
 </th:block>
+
+<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 </html>

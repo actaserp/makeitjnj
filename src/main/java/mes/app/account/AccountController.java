@@ -326,25 +326,78 @@ public class AccountController {
 						new Timestamp(System.currentTimeMillis()), // 현재 시간
 						"ko-KR", // lang_code (예: 한국어)
 						prenm, // Name (사용자 이름)
-						35 ,// UserGroup_id (일반거래처)
+						3 ,// UserGroup_id (일반거래처)
 						user.getId() // User_id
 				);
 				jdbcTemplate.execute("SET IDENTITY_INSERT user_profile OFF");
 
-				// TB_XA012에서 custcd와 spjangcd로 조회
-				String custcd = "SWSPANEL";
-				List<String> spjangcds = Arrays.asList("ZZ", "YY");
+				Optional<TB_XA012> xa012Opt = tbXA012Repository.findById_Spjangcd(user.getSpjangcd());
 
-				List<TB_XA012> tbX_A012List = tbXA012Repository.findByCustcdAndSpjangcds(custcd, spjangcds);
-				if (tbX_A012List.isEmpty()) {
+				if (xa012Opt.isEmpty()) {
 					result.success = false;
-					result.message = "custcd 및 spjangcd에 해당하는 데이터를 찾을 수 없습니다.";
+					result.message = "해당 spjangcd에 해당하는 사업장 정보가 없습니다.";
 					return result;
 				}
-
+				String custcd = xa012Opt.get().getId().getCustcd();
 				String fullAddress = address1 + (address2 != null && !address2.isEmpty() ? " " + address2 : "");
 
-				// TB_XCLIENT 저장
+				Map<String, Object> clientMap = userService.getActiveClientBySaupnumAndPrenm(id, prenm);
+				boolean clientExists = (clientMap != null && !clientMap.isEmpty());
+				boolean userExists = userRepository.findByUsername(id).isPresent();
+				String newCltcd = generateNewCltcd();
+				if (!(clientExists && !userExists)) {
+					TB_XCLIENT tbXClient;
+
+					if (clientExists) {
+						// ✅ 기존 거래처 정보 수정
+						String cltcd = (String) clientMap.get("cltcd");
+						String custcdFromMap = (String) clientMap.get("custcd");
+
+						if (cltcd == null || custcdFromMap == null) {
+							throw new IllegalStateException("clientMap에서 cltcd 또는 custcd가 누락되었습니다.");
+						}
+
+						tbXClient = tbXClientRepository.findById(new TB_XCLIENTId(custcdFromMap, cltcd))
+								.orElseThrow(() -> new IllegalStateException("해당 cltcd로 TB_XCLIENT 조회 실패"));
+
+						tbXClient.setPrenm(prenm);
+						tbXClient.setCltnm(cltnm);
+						tbXClient.setBiztypenm(biztypenm);
+						tbXClient.setBizitemnm(bizitemnm);
+						tbXClient.setZipcd(postno);
+						tbXClient.setCltadres(fullAddress);
+						tbXClient.setTelnum(tel);
+						tbXClient.setHptelnum(phone);
+						tbXClient.setAgneremail(email);
+					} else {
+						// ✅ 신규 거래처 등록
+						tbXClient = TB_XCLIENT.builder()
+								.saupnum(id)
+								.prenm(prenm)
+								.cltnm(cltnm)
+								.biztypenm(biztypenm)
+								.bizitemnm(bizitemnm)
+								.zipcd(postno)
+								.cltadres(fullAddress)
+								.telnum(tel)
+								.hptelnum(phone)
+								.agneremail(email)
+								.id(new TB_XCLIENTId(custcd, newCltcd))
+								.rnumchk("0")
+								.corpperclafi("0")
+								.prtcltnm(cltnm)
+								.foreyn("0")
+								.relyn("X")
+								.nation("KR")
+								.clttype("2")
+								.build();
+					}
+
+					tbXClientService.save(tbXClient);
+				} else {
+					log.info("TB_XCLIENT는 이미 존재하고, User는 새로 등록되므로 TB_XCLIENT 저장은 생략됨.");
+				}
+				/*// TB_XCLIENT 저장
 				String maxCltcd = tbXClientRepository.findMaxCltcd(); // 최대 cltcd 조회
 				String newCltcd = generateNewCltcd(maxCltcd); // 새로운 cltcd 생성
 
@@ -369,12 +422,12 @@ public class AccountController {
 						.foreyn(String.valueOf(0))                  // foreyn = 0
 						.relyn(String.valueOf(0))                   // relyn = 0
 						.bonddv(String.valueOf(0))                  // bonddv = 0
-						/*.nation("KR")               // nation = "KR"*/
+						*//*.nation("KR")               // nation = "KR"*//*
 						.clttype(String.valueOf(2))                 // clttype = 2 (거래구분)
 						.cltynm(String.valueOf(0))                  // cltynm = 0 (약명)
 						.build();
 
-				tbXClientService.save(tbXClient); // TB_XCLIENT 저장
+				tbXClientService.save(tbXClient); // TB_XCLIENT 저장*/
 
 				result.success = true;
 				result.message = "등록이 완료되었습니다.";
@@ -394,15 +447,16 @@ public class AccountController {
 
 
 	// 새로운 cltcd 생성 메서드
-	private String generateNewCltcd(String maxCltcd) {
+	private String generateNewCltcd() {
+		String maxCltcd = tbXClientRepository.findMaxCltcd(); // DB에서 최대값 조회
+
 		int newNumber = 1; // 기본값
-		// 최대 cltcd 값이 null이 아니고 "SW"로 시작하는 경우
-		if (maxCltcd != null && maxCltcd.startsWith("SW")) {
-			String numberPart = maxCltcd.substring(2); // "SW"를 제외한 부분
-			newNumber = Integer.parseInt(numberPart) + 1; // 숫자 증가
+
+		if (maxCltcd != null && !maxCltcd.isBlank()) {
+			newNumber = Integer.parseInt(maxCltcd) + 1;
 		}
-		// 새로운 cltcd 생성: "SW" 접두사와 5자리 숫자로 포맷
-		return String.format("SW%05d", newNumber);
+
+		return String.format("%05d", newNumber);
 	}
 	
 	@PostMapping("/account/updateUserInfo")
@@ -530,7 +584,7 @@ public class AccountController {
 
 	@PostMapping("/user-auth/AuthenticationEmail")
 	public AjaxResult PwSearch(@RequestParam("usernm") final String usernm,
-							   @RequestParam("mail") final String mail){
+														 @RequestParam("mail") final String mail){
 
 		AjaxResult result = new AjaxResult();
 

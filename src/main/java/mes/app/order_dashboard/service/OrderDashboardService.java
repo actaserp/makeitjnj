@@ -20,14 +20,16 @@ public class OrderDashboardService {
         MapSqlParameterSource dicParam = new MapSqlParameterSource();
 
         String sql = """
-                select xc.custcd,
-                       xc.cltcd,
-                       xc.cltnm,
-                       xc.saupnum,
-                       au.spjangcd
-                FROM TB_XCLIENT xc
-                left join auth_user au on au."username" = xc.saupnum
-                WHERE xc.saupnum = :username
+            select xc.custcd,
+              xc.cltcd,
+              xc.cltnm,
+              c.id as comp_id,
+              xc.saupnum,
+              au.spjangcd
+            FROM TB_XCLIENT xc
+            left join auth_user au on au."username" = xc.saupnum
+            left join company c on xc.cltcd =c.Code\s
+            WHERE xc.saupnum = :username
                 """;
         dicParam.addValue("username", username);
         Map<String, Object> userInfo = this.sqlRunner.getRow(sql, dicParam);
@@ -96,8 +98,7 @@ public class OrderDashboardService {
                 FROM
                     TB_DA006W hd
                 WHERE
-                    hd.custcd = :custcd
-                    AND hd.spjangcd = :spjangcd
+                    hd.spjangcd = :spjangcd
                     AND hd.cltcd = :cltcd
                     AND LEFT(hd.reqdate, 4) = CAST(YEAR(GETDATE()) AS VARCHAR(4))
                 GROUP BY

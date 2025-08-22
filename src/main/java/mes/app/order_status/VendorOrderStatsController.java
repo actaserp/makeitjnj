@@ -140,4 +140,86 @@ public class VendorOrderStatsController { //업체별 주문 통계
     return result;
   }
 
+  @GetMapping("/SalesRead")
+  public AjaxResult MonthlySalesList(@RequestParam(value="cboYear",required=false) String cboYear,
+                                     @RequestParam(value="cboCompany",required=false) Integer cboCompany,
+                                     @RequestParam(value = "spjangcd") String spjangcd){
+
+    List<Map<String,Object>> items = this.vendorOrderStatsService.getSalesList(cboYear,cboCompany, spjangcd);
+
+    AjaxResult result = new AjaxResult();
+    result.data = items;
+    return result;
+  }
+
+  @GetMapping("/SalesChartRead")
+  public AjaxResult getSalesChartRead(@RequestParam(value="cboYear",required=false) String cboYear,
+                                      @RequestParam(value="cboCompany",required=false) Integer cboCompany,
+                                      @RequestParam(value = "spjangcd") String spjangcd){
+    AjaxResult result = new AjaxResult();
+
+    try {
+
+      List<Map<String, Object>> SalesChart = vendorOrderStatsService.getSalesChartRead(cboYear,cboCompany, spjangcd);
+
+      if (SalesChart == null || SalesChart.isEmpty()) {
+        log.warn("조회된 데이터가 없습니다.");
+        result.success = false;
+        result.message = "조회된 데이터가 없습니다.";
+      } else {
+        //log.info("쿼리 결과 데이터: {}", rawData);
+        result.success = true;
+        result.data = SalesChart;
+      }
+
+    } catch (Exception e) {
+      log.error("데이터 처리 중 오류: {}", e.getMessage(), e);
+      result.success = false;
+      result.message = "데이터를 가져오는 중 오류가 발생했습니다.";
+    }
+
+    return result;
+  }
+
+  @GetMapping("/DepositRead")
+  public AjaxResult getMonthDepositList(@RequestParam(value="cboYear",required=false) String cboYear,
+                                     @RequestParam(value="cboCompany",required=false) Integer cboCompany,
+                                     @RequestParam(value = "spjangcd") String spjangcd){
+
+    List<Map<String,Object>> items = this.vendorOrderStatsService.getPurchaseList(cboYear,cboCompany, spjangcd);
+
+    AjaxResult result = new AjaxResult();
+    result.data = items;
+    return result;
+  }
+
+  @GetMapping("/DepositChartRead")
+  public AjaxResult getDepositChartRead(@RequestParam(value="cboYear",required=false) String cboYear,
+                                      @RequestParam(value="cboCompany",required=false) Integer cboCompany,
+                                      @RequestParam(value = "spjangcd") String spjangcd){
+    AjaxResult result = new AjaxResult();
+
+    try {
+
+      List<Map<String, Object>> DepositChart = vendorOrderStatsService.getDepositChartRead(cboYear,cboCompany, spjangcd);
+
+      if (DepositChart == null || DepositChart.isEmpty()) {
+        log.warn("조회된 데이터가 없습니다.");
+        result.success = false;
+        result.message = "조회된 데이터가 없습니다.";
+      } else {
+        //log.info("쿼리 결과 데이터: {}", rawData);
+        result.success = true;
+        result.data = DepositChart;
+      }
+
+    } catch (Exception e) {
+      log.error("데이터 처리 중 오류: {}", e.getMessage(), e);
+      result.success = false;
+      result.message = "데이터를 가져오는 중 오류가 발생했습니다.";
+    }
+
+    return result;
+  }
+
 }

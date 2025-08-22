@@ -33,7 +33,7 @@ public class ProgressStatusService {
         WHERE 1=1
         """);
         if (startDate != null && !startDate.isEmpty()) {
-            startDate = startDate.replace("-", ""); 
+            startDate = startDate.replace("-", "");
             sql.append(" AND reqdate >= :startDate ");
             params.addValue("startDate", startDate);
         }

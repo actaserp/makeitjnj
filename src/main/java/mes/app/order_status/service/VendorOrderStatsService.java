@@ -89,4 +89,264 @@ public class VendorOrderStatsService {
     //log.info("바인딩된 파라미터: {}", params.getValues());
     return sqlRunner.getRows(sql.toString(), params);
   }
+
+  public List<Map<String, Object>> getSalesList(String cboYear, Integer cboCompany, String spjangcd) {
+    MapSqlParameterSource paramMap = new MapSqlParameterSource();
+    paramMap.addValue("cboYear", cboYear);
+    paramMap.addValue("cboCompany", cboCompany);
+    paramMap.addValue("spjangcd", spjangcd);
+
+    String data_year = cboYear;
+    paramMap.addValue("date_form", data_year + "0101");
+    paramMap.addValue("date_to", data_year + "1231");
+
+    StringBuilder sql = new StringBuilder();
+    // 1) 대상 행 선별 (연/월 파싱)
+    sql.append("""
+    WITH base AS (
+      SELECT
+        t.cltcd,
+        t.spjangcd,
+        ISNULL(t.amount, 0) AS amount,
+        SUBSTRING(t.reqdate, 1, 4) AS sales_year,
+        SUBSTRING(t.reqdate, 5, 2) AS sales_month
+      FROM ELV_JNJ.dbo.TB_DA006W t
+      WHERE t.spjangcd = :spjangcd
+        AND SUBSTRING(t.reqdate, 1, 4) = :cboYear
+  """);
+
+    // 회사(거래처) 필터: company.id가 정수인 경우
+    if (cboCompany != null) {
+      sql.append("    AND TRY_CAST(t.cltcd AS int) = :cboCompany\n");
+    }
+    sql.append(")\n");
+
+    // 2) 거래처별·월별 집계
+    sql.append("""
+    SELECT
+      b.cltcd,
+      COALESCE(c.[Name], b.cltcd) AS comp_name,
+  """);
+
+    // 월별 합계 mon_1 ~ mon_12
+    for (int i = 1; i <= 12; i++) {
+      String mm = String.format("%02d", i);
+      sql.append("  SUM(CASE WHEN b.sales_month = '").append(mm)
+          .append("' THEN b.amount ELSE 0 END) AS mon_").append(i);
+      sql.append(i < 12 ? ",\n" : "\n");
+    }
+
+    // 총합계
+    sql.append("""
+      , SUM(b.amount) AS total_sum
+    FROM base b
+    LEFT JOIN company c
+      ON c.id = TRY_CAST(b.cltcd AS int)
+    GROUP BY b.cltcd, c.[Name]
+    ORDER BY comp_name, b.cltcd
+  """);
+
+    log.info("월별 매출현황 SQL: {}", sql);
+    log.info("SQL Parameters: {}", paramMap.getValues());
+    List<Map<String, Object>> items = this.sqlRunner.getRows(sql.toString(), paramMap);
+    return items;
+  }
+
+  public List<Map<String, Object>> getPurchaseList(String cboYear, Integer cboCompany, String spjangcd) {
+    MapSqlParameterSource paramMap = new MapSqlParameterSource();
+    paramMap.addValue("cboYear", cboYear);      // 예: "2025"
+    paramMap.addValue("spjangcd", spjangcd);    // 예: "ZZ"
+    paramMap.addValue("date_form", cboYear + "0101");
+    paramMap.addValue("date_to",   cboYear + "1231");
+    if (cboCompany != null) paramMap.addValue("cboCompany", cboCompany);
+
+    StringBuilder sql = new StringBuilder();
+
+    // 1) 대상 행 선별 (연/월 파싱) + 헤더와 조인하여 업체(거래처) 코드 확보
+    sql.append("""
+    WITH base AS (
+      SELECT
+        h.cltcd,                        -- 업체(거래처) 코드 (header)
+        j.spjangcd,
+        j.pname,                        -- 자재명
+        j.clttype,                      -- 외주처 구분(가정: 외주처 표기용)
+        ISNULL(j.setamt, 0) AS purchase_amt,  -- 매입액(집계용)
+        ISNULL(j.uamt, 0)   AS unit_cost,     -- 단가(원가)
+        j.reqdate,
+        SUBSTRING(j.reqdate, 1, 4) AS y,
+        SUBSTRING(j.reqdate, 5, 2) AS m
+      FROM ELV_JNJ.dbo.TB_DA007W j
+      INNER JOIN ELV_JNJ.dbo.TB_DA006W h
+        ON h.custcd  = j.custcd
+       AND h.spjangcd= j.spjangcd
+       AND h.reqdate = j.reqdate
+       AND h.reqnum  = j.reqnum
+      WHERE j.spjangcd = :spjangcd
+        AND j.reqdate BETWEEN :date_form AND :date_to
+        AND j.clttype IS NOT NULL AND LTRIM(RTRIM(j.clttype)) <> ''
+  """);
+
+    // 거래처(업체) 필터: company.id가 정수인 경우 TRY_CAST 사용
+    if (cboCompany != null) {
+      sql.append("        AND TRY_CAST(h.cltcd AS int) = :cboCompany\n");
+    }
+    sql.append(")\n");
+
+    // 2) 업체·주문일자(대표)·외주처·자재별 월 피벗 집계
+    sql.append("""
+    SELECT
+      b.cltcd  AS comp_code,
+      COALESCE(c.[Name], b.cltcd)  AS comp_name,
+      MIN(b.reqdate) , 
+      b.clttype  ,            
+      b.pname ,
+      c2.Name as clt_name ,
+      MAX(b.unit_cost) AS [매입액(1set/원가)],
+  """);
+
+ /*   // 1월~12월 월별 합계
+    for (int i = 1; i <= 12; i++) {
+      String mm = String.format("%02d", i);
+      sql.append("  SUM(CASE WHEN b.m = '").append(mm)
+          .append("' THEN b.purchase_amt ELSE 0 END) AS [").append(i).append("월]");
+      sql.append(i < 12 ? ",\n" : "\n");
+    }*/
+
+    // 월별 합계 mon_1 ~ mon_12
+    for (int i = 1; i <= 12; i++) {
+      String mm = String.format("%02d", i);
+      sql.append("  SUM(CASE WHEN b.m = '").append(mm)
+          .append("' THEN b.purchase_amt ELSE 0 END) AS mon_").append(i);
+      sql.append(i < 12 ? ",\n" : "\n");
+    }
+
+    // 총합(원하시면 포함)
+    sql.append("""
+      , SUM(b.purchase_amt) AS total_sum
+    FROM base b
+    LEFT JOIN company c ON c.id = TRY_CAST(b.cltcd AS int)
+    left join company c2 on b.clttype = c2.id
+    GROUP BY b.cltcd, c.[Name], b.clttype, b.pname, c2.Name 
+    ORDER BY comp_name, clt_name, pname
+  """);
+
+//     log.info("월별 매입현황 SQL: {}", sql);
+//     log.info("SQL Parameters: {}", paramMap.getValues());
+    return this.sqlRunner.getRows(sql.toString(), paramMap);
+  }
+
+  public List<Map<String, Object>> getSalesChartRead(String cboYear, Integer cboCompany, String spjangcd) {
+    MapSqlParameterSource paramMap = new MapSqlParameterSource();
+    paramMap.addValue("cboYear", cboYear);
+    paramMap.addValue("spjangcd", spjangcd);
+
+    int prevYear = Integer.parseInt(cboYear) - 1;
+    paramMap.addValue("prevYear", String.valueOf(prevYear));
+    if (cboCompany != null) paramMap.addValue("cboCompany", cboCompany);
+
+    StringBuilder sql = new StringBuilder();
+    sql.append("""
+      WITH months AS (
+        SELECT '01' AS m UNION ALL SELECT '02' UNION ALL SELECT '03' UNION ALL SELECT '04'
+        UNION ALL SELECT '05' UNION ALL SELECT '06' UNION ALL SELECT '07' UNION ALL SELECT '08'
+        UNION ALL SELECT '09' UNION ALL SELECT '10' UNION ALL SELECT '11' UNION ALL SELECT '12'
+      ),
+      base AS (
+        SELECT
+          t.spjangcd,
+          ISNULL(t.amount, 0) AS amount,
+          SUBSTRING(t.reqdate, 1, 4) AS sales_year,
+          SUBSTRING(t.reqdate, 5, 2) AS sales_month
+        FROM ELV_JNJ.dbo.TB_DA006W t
+        WHERE t.spjangcd = :spjangcd
+          AND SUBSTRING(t.reqdate, 1, 4) IN (:cboYear, :prevYear)
+    """);
+
+    if (cboCompany != null) {
+      sql.append("  AND TRY_CAST(t.cltcd AS int) = :cboCompany\n");
+    }
+    sql.append(")\n");
+
+    sql.append("""
+      , agg AS (
+        SELECT
+          sales_month,
+          SUM(CASE WHEN sales_year = :cboYear  THEN amount ELSE 0 END) AS cur_year_amount,
+          SUM(CASE WHEN sales_year = :prevYear THEN amount ELSE 0 END) AS prev_year_amount
+        FROM base
+        GROUP BY sales_month
+      )
+      SELECT
+        m.m AS month,
+        ISNULL(a.cur_year_amount, 0)  AS cur_year_amount,
+        ISNULL(a.prev_year_amount, 0) AS prev_year_amount
+      FROM months m
+      LEFT JOIN agg a ON a.sales_month = m.m
+      ORDER BY m.m
+    """);
+
+    return this.sqlRunner.getRows(sql.toString(), paramMap);
+  }
+
+  public List<Map<String, Object>> getDepositChartRead(String cboYear, Integer cboCompany, String spjangcd) {
+
+    MapSqlParameterSource paramMap = new MapSqlParameterSource();
+    paramMap.addValue("cboYear", cboYear);      // 예: "2025"
+    paramMap.addValue("spjangcd", spjangcd);    // 예: "ZZ"
+
+    int prevYear = Integer.parseInt(cboYear) - 1;
+    paramMap.addValue("prevYear", String.valueOf(prevYear));
+    if (cboCompany != null) paramMap.addValue("cboCompany", cboCompany);
+
+    StringBuilder sql = new StringBuilder();
+    sql.append("""
+      WITH months AS (
+        SELECT '01' AS m UNION ALL SELECT '02' UNION ALL SELECT '03' UNION ALL SELECT '04'
+        UNION ALL SELECT '05' UNION ALL SELECT '06' UNION ALL SELECT '07' UNION ALL SELECT '08'
+        UNION ALL SELECT '09' UNION ALL SELECT '10' UNION ALL SELECT '11' UNION ALL SELECT '12'
+      ),
+      base AS (
+        SELECT
+          h.cltcd,                        -- 거래처 코드(헤더)
+          j.spjangcd,
+          ISNULL(j.setamt, 0) AS purchase_amt,  -- 매입액(집계용)
+          SUBSTRING(j.reqdate, 1, 4) AS y,
+          SUBSTRING(j.reqdate, 5, 2) AS m
+        FROM ELV_JNJ.dbo.TB_DA007W j
+        INNER JOIN ELV_JNJ.dbo.TB_DA006W h
+          ON h.custcd  = j.custcd
+         AND h.spjangcd= j.spjangcd
+         AND h.reqdate = j.reqdate
+         AND h.reqnum  = j.reqnum
+        WHERE j.spjangcd = :spjangcd
+          AND SUBSTRING(j.reqdate, 1, 4) IN (:cboYear, :prevYear)
+    """);
+
+    if (cboCompany != null) {
+      sql.append("      AND TRY_CAST(h.cltcd AS int) = :cboCompany\n");
+    }
+    sql.append("""
+      ),
+      agg AS (
+        SELECT
+          m,
+          SUM(CASE WHEN y = :cboYear  THEN purchase_amt ELSE 0 END) AS cur_year_amount,
+          SUM(CASE WHEN y = :prevYear THEN purchase_amt ELSE 0 END) AS prev_year_amount
+        FROM base
+        GROUP BY m
+      )
+      SELECT
+        mo.m AS month,
+        ISNULL(a.cur_year_amount, 0)  AS cur_year_amount,
+        ISNULL(a.prev_year_amount, 0) AS prev_year_amount
+      FROM months mo
+      LEFT JOIN agg a ON a.m = mo.m
+      ORDER BY mo.m
+    """);
+
+//     log.info("전년대비 월별 매입차트 SQL: {}", sql);
+//     log.info("SQL Parameters: {}", paramMap.getValues());
+    return this.sqlRunner.getRows(sql.toString(), paramMap);
+
+  }
 }

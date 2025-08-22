@@ -196,7 +196,7 @@
 
                 <th style="text-align: center">
                   <label for="reqdate">
-                    주문일자
+                    접수일자
                   </label>
                 </th>
                 <td>
@@ -475,7 +475,7 @@
           <div class="search-wrap">
             <dl>
               <dt>
-                주문일자<span class="eq">*</span>
+                접수일자<span class="eq">*</span>
                 <a style="color: red;margin-top: 4px;margin-left: 5px;">(더블클릭하면 수정이 가능합니다.)</a>
               </dt>
               <dd>
@@ -983,7 +983,7 @@
                 mat_code: $row.find('input[name^="mat_code"]').val() || '',
                 dMaterial_id: $row.find('input[name^="dMaterial_id"]').val() || '',
                 pname: $row.find('input[name^="pname"]').val() || '',
-                clttype: $row.find('input[name^="clttype"]').val() || '',
+                clttype: $row.find('select[name^="clttype"]').val() || '',
                 jobflag: $row.find('select[name="jobflag"]').val() || '',
                 setamt: String($row.find('input[name^="setamt"]').val() || '').replaceAll(',', ''),
                 saleamt: String($row.find('input[name^="saleamt"]').val() || '').replaceAll(',', ''),
@@ -1287,10 +1287,10 @@
           },
           columns: [
             {binding: 'reqnum', header: 'reqnum', width: 100, visible: false},
-            {binding: 'ordflag', header: '진행구분', width: 70},
+            {binding: 'ordflag', header: '진행구분', width: 75},
             {binding: 'cltcd', header: '업체명', width: 15, align: 'center', visible: false},
             {binding: 'cltnm', header: '업체명', width: 150, align: 'center'},
-            {binding: 'reqdate', header: '주문일자', width: 120, align: 'center'},
+            {binding: 'reqdate', header: '접수일자', width: 120, align: 'center'},
             {binding: 'model_code', header: 'model', width: 200, visible: false},
             {binding: 'model_naem', header: 'model', width: 250},
             {binding: 'pname', header: '품목', width: 200},
@@ -1309,6 +1309,19 @@
           itemFormatter: function (panel, r, c, cell) {
             if (panel.cellType === wijmo.grid.CellType.Cell) {
               var item = panel.rows[r].dataItem; // 현재 행의 데이터 항목
+
+              // ✅ 진행구분 색상 처리
+              if (panel.columns[c].binding === 'ordflag') {
+                if (item.ordflag === '출하 왼료') { //'1'
+                  cell.style.backgroundColor = 'yellow';
+                  cell.style.fontWeight = 'bold';
+                } else if (item.ordflag === '주문취소') { //5
+                  cell.style.backgroundColor = 'red';
+                  cell.style.color = 'white';
+                  cell.style.fontWeight = 'bold';
+                }
+              }
+
               if (panel.columns[c].binding === 'downloads') {
                 cell.innerHTML = ''; // 셀 내용 초기화
                 if (item.isdownload) {
@@ -1338,7 +1351,7 @@
         selector.column = cbCol; // 체크박스가 cbCol에 표시되도록 지정
 
         new FlexGridContextMenu(this.grid);
-        this.grid.downloadFileName = '발주 현황';
+        this.grid.downloadFileName = '주문/진행 현황';
 
         this.grid.hostElement.addEventListener('dblclick', function (e) {
           let items = _this.grid.selectedItems;
@@ -1706,8 +1719,8 @@
 
         $row.find('input[name="pname"]').val(item.pname);
         $row.find('input[name="mat_code"]').val(item.item_code);
-        $row.find('input[name="clttype"]').val(item.detail_clttype);
         $row.find('select[name="jobflag"]').val((item.jobflag || '').trim());
+        $row.find('select[name="clttype"]').val((item.clttype || '').trim());
 
         // 숫자 필드 포맷 적용
         formatNumberInput(item.setamt + '', $row.find('input[name="setamt"]'));
@@ -1945,7 +1958,7 @@
       // 🔹 납기일 비활성화 유지
       $('#deldate').prop('disabled', true);
 
-      // 🔹 주문일자 오늘 날짜로 설정
+      // 🔹 접수일자 오늘 날짜로 설정
       const today = new Date().toISOString().split('T')[0];
       $('#reqdate').val(today);
       // 🔹 요일 표시
@@ -1996,6 +2009,8 @@
         }
       });
     }
+
+    AjaxUtil.fillSelectOptions($('#searchOrdflag'), 'system_code', 'all', null, 'ordflag','0,1,5');
 
     function formatNumberInput(inputValue, targetSelector) {
       let cleaned = inputValue.replace(/[^\d.]/g, '').replace(/,/g, ''); // 숫자, 소수점만
