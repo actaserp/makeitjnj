@@ -61,7 +61,7 @@ public class OrderDashboardService {
                     perid,
                     cltzipcd,
                     cltaddr,
-                    remark
+                    modeltxt
                 FROM
                     TB_DA006W hd
                 WHERE
