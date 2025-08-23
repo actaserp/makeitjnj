@@ -224,6 +224,11 @@ public class RequestService {
       sql += " and h.cltnm like :company_name ";
       param.addValue("company_name", "%" + company_name + "%");
     }
+
+     sql +="""
+         order by h.reqdate desc
+        """;
+
 //    log.info("getTab2Read  SQL: {}", sql);
 //    log.info("SQL Parameters: {}", param.getValues());
     return sqlRunner.getRows(sql, param);
@@ -440,30 +445,32 @@ public class RequestService {
 
     // 2) 헤더 복제 (reqdate/reqnum/deldate 오버라이드)
     final String SQL_INSERT_HEADER = """
-        INSERT INTO ELV_JNJ.dbo.TB_DA006W (
-            custcd, spjangcd, reqdate, reqnum, cltcd, cltnm, saupnum, cltzipcd, cltaddr, cltaddr02,
-            delzipcd, deladdr, deldate, perid, divicd, domcls, moncls, monrate, remark, operid,
-            dperid, sperid, ordflag, egrb, modeltxt, setsamt, setqty, amount, outamt, eyunamt,
-            pereyunamt, eyunyul, toteyunamt, projectno, indate, inperid, telno, adflag, userflag, pcode
-        )
-        SELECT
-            h.custcd,
-            h.spjangcd,
-            :newReqdate,        -- ★ override
-            :newReqnum,         -- ★ override
-            h.cltcd, h.cltnm, h.saupnum, h.cltzipcd, h.cltaddr, h.cltaddr02,
-            h.delzipcd, h.deladdr,
-            :newDeldate,        -- ★ override
-            h.perid, h.divicd, h.domcls, h.moncls, h.monrate, h.remark, h.operid,
-            h.dperid, h.sperid, h.ordflag, h.egrb, h.modeltxt, h.setsamt, h.setqty, h.amount, h.outamt, h.eyunamt,
-            h.pereyunamt, h.eyunyul, h.toteyunamt, h.projectno,
-            h.indate,           -- 정책에 따라 바꿔도 됨
-            h.inperid,          -- 정책에 따라 actor로 바꿔도 됨
-            h.telno, h.adflag, h.userflag, h.pcode
-        FROM ELV_JNJ.dbo.TB_DA006W h
-        WHERE h.spjangcd = :spjangcd
-          AND h.reqnum   = :oldReqnum
-        """;
+    INSERT INTO ELV_JNJ.dbo.TB_DA006W (
+        custcd, spjangcd, reqdate, reqnum, cltcd, cltnm, saupnum, cltzipcd, cltaddr, cltaddr02,
+        delzipcd, deladdr, deldate, perid, divicd, domcls, moncls, monrate, remark, operid,
+        dperid, sperid, ordflag, egrb, modeltxt, setsamt, setqty, amount, outamt, eyunamt,
+        pereyunamt, eyunyul, toteyunamt, projectno, indate, inperid, telno, adflag, userflag, pcode
+    )
+    SELECT
+        h.custcd,
+        h.spjangcd,
+        :newReqdate,        -- ★ override
+        :newReqnum,         -- ★ override
+        h.cltcd, h.cltnm, h.saupnum, h.cltzipcd, h.cltaddr, h.cltaddr02,
+        h.delzipcd, h.deladdr,
+        :newDeldate,        -- ★ override
+        h.perid, h.divicd, h.domcls, h.moncls, h.monrate, h.remark, h.operid,
+        h.dperid, h.sperid,
+        0 AS ordflag,       -- ★ 신규 복사건은 무조건 0
+        h.egrb, h.modeltxt, h.setsamt, h.setqty, h.amount, h.outamt, h.eyunamt,
+        h.pereyunamt, h.eyunyul, h.toteyunamt, h.projectno,
+        h.indate,           -- 정책에 따라 바꿔도 됨
+        h.inperid,          -- 정책에 따라 actor로 바꿔도 됨
+        h.telno, h.adflag, h.userflag, h.pcode
+    FROM ELV_JNJ.dbo.TB_DA006W h
+    WHERE h.spjangcd = :spjangcd
+      AND h.reqnum   = :oldReqnum
+    """;
 
     // 3) 디테일 복제 (reqdate/reqnum 오버라이드)
     final String SQL_INSERT_DETAIL = """

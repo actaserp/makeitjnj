@@ -70,7 +70,6 @@
         <div class="page-title-wrap">
             <div class="left">
                 <h2>주문 현황</h2>
-                <!-- <a id="toggleButton" onclick="toggleSearchWrap()"><img src="/images/icon/ico-down.png" alt="알람 아이콘"></a> -->
                 <!--                <a href="#" title="북마크" class="bookmark toggle">-->
                 <!--                    내메뉴-->
                 <!--                </a>-->
@@ -81,18 +80,6 @@
             </ul>
         </div>
         <!-- Select -->
-        <div class="search-wrap" id="searchWrap" style="display: none; padding-top:10px">
-            <ul>
-                <li>
-                    <select title="사업장코드" id="search_spjangcd" name="search_sjangcd"
-                            onchange="init()">
-                        <option value="" hidden selected disabled>선택</option>
-                        <option value="ZZ">제이앤제이솔루션</option> 
-                        <!-- 지역 옵션을 JavaScript에서 동적으로 채움 -->
-                    </select>
-                </li>
-            </ul>
-        </div>
         <div class="tab-wrap">
             <ul class="tab-links">
                 <li>
@@ -190,7 +177,7 @@
                                     <div class="section-top">
                                         <div class="search-wrap">
                                             <dl>
-                                                <dt>조회일자<span class="eq">*</span></dt>
+                                                <dt>납품일자<span class="eq">*</span></dt>
                                                 <dd>
                                                     <ul class="date-box">
                                                         <li><input type="date" id="startDate2" name="startDate"></li>
@@ -523,7 +510,7 @@
                 url: '/api/order_status/readCalenderGrid',
                 type: 'GET',
                 data: {
-                    'search_spjangcd': $('#search_spjangcd').val(),
+                    'search_spjangcd': sessionStorage.getItem('spjangcd'),
                     'search_startDate': $('#startDate2').val(),
                     'search_endDate': $('#endDate2').val(),
                     'search_type': searchTypeValue
@@ -564,11 +551,12 @@
                     isReadOnly: true,
                     columns: [
                         { binding: 'ordflag', header: '진행구분', align: 'center', width: 120 },
-                        { binding: 'reqdate', header: '의뢰일자', align: 'center', width: 120 },
+                        { binding: 'deldate', header: '납품희망일', align: 'center', width: 120 },
                         { binding: 'cltnm', header: '업체명', align: 'left', width: 150 },
                         { binding: 'modeltxt', header: '모델명', align: 'left', width: 160 },
-                        { binding: 'deldate', header: '납품희망일', align: 'center', width: 120 },
-                        { binding: 'amount', header: '금액', align: 'center', width: 200 }
+                        { binding: 'projectno', header: '프로젝트', align: 'left', width: 160 },
+                        { binding: 'amount', header: '금액', align: 'center', width: 200 },
+                        { binding: 'reqdate', header: '의뢰일자', align: 'center', width: 120 },
                     ],
                     itemsSource: viewdata2 // 빈 객체가 추가된 배열 사용
                 });
@@ -767,7 +755,7 @@
                 url: '/api/order_status/readCalenderGrid2',
                 type: 'GET',
                 data: {
-                    'search_spjangcd': $('#search_spjangcd').val()
+                    'search_spjangcd': sessionStorage.getItem('spjangcd')
                 },
                 async: false,
                 success: function (response) {
@@ -783,12 +771,12 @@
                 }
             });
 
-            // viewdata.items를 반복하여 각 항목의 ordflag와 reqdate 값을 가져옵니다.
+            // viewdata.items를 반복하여 각 항목의 ordflag와 deldate 값을 가져옵니다.
             for (var i = 0; i < data2.length; i++) {
                 var item = data2[i];
                 orderDates.push({
                     name: item.ordflag,
-                    date: item.reqdate,
+                    date: item.deldate,
                     projectno: item.projectno
                 });
             }
@@ -864,7 +852,7 @@
                 url: '/api/order_status/read',
                 type: 'GET',
                 data: {
-                    'search_spjangcd': $('#search_spjangcd').val(),
+                    'search_spjangcd': sessionStorage.getItem('spjangcd'),
                     'startDate': $('#startDate').val(),
                     'endDate':$('#endDate').val(),
                     'searchCltnm' :$('#searchCltnm').val(),
@@ -1290,7 +1278,7 @@
                 url: '/api/order_status/initDatas',
                 type: 'GET',
                 data: {
-                    'search_spjangcd': $('#search_spjangcd').val(),
+                    'search_spjangcd': sessionStorage.getItem('spjangcd'),
                     'search_startDate': $('#startDate2').val(),
                     'search_endDate': $('#endDate2').val(),
                 },

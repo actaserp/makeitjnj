@@ -94,8 +94,8 @@ public class OrderStatusService {
         // 정렬 조건 추가
         sql.append(" ORDER BY tb006.reqdate DESC");
 
-        log.info("샌산 스케줄 그리드read SQL: {}", sql);
-        log.info("바인딩된 파라미터: {}", params.getValues());
+//        log.info("샌산 스케줄 그리드read SQL: {}", sql);
+//        log.info("바인딩된 파라미터: {}", params.getValues());
 
         return sqlRunner.getRows(sql.toString(), params);
     }
