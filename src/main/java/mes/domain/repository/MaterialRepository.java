@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import mes.domain.entity.Material;
 
+import java.util.Optional;
+
 @Repository
 public interface MaterialRepository extends JpaRepository<Material, Integer>{
 
@@ -28,4 +30,6 @@ public interface MaterialRepository extends JpaRepository<Material, Integer>{
 
 	@Query(value = "SELECT TOP 1 Code FROM material WHERE Code LIKE '1000%' AND ISNUMERIC(Code) = 1 ORDER BY CAST(Code AS INT) DESC", nativeQuery = true)
 	String findMaxCodeForModel();
+
+	Optional<Material> findFirstByNameIgnoreCaseAndSpjangcdOrderByIdAsc(String clean, String spjangcd);
 }

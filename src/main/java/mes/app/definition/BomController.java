@@ -17,6 +17,7 @@ import mes.domain.repository.BomComponentRepository;
 import mes.domain.repository.BomRepository;
 import mes.domain.repository.MaterialRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.StringUtils;
@@ -762,7 +763,7 @@ public class BomController {
 		return newProd.getId();
 	}
 	// --- 대양전기: 자재 신규 등록/조회 (GroupId/UnitId 파라미터) ---
-	@Transactional
+	/*@Transactional
 	public Integer getOrCreateMaterialId_Daeyang(String materialName, String spjangcd, int materialGroupId, int unitId) {
 		String cleanName = materialName.trim();
 		Material mat = materialRepository.findByNameTrimmed(cleanName);
@@ -783,7 +784,48 @@ public class BomController {
 		newMat.setFactory_id(1);
 		newMat = materialRepository.save(newMat);
 		return newMat.getId();
+	}*/
+
+	@Transactional
+	public Integer getOrCreateMaterialId_Daeyang(String materialName, String spjangcd,
+																							 int materialGroupId, int unitId) {
+		// 업로드 측과 동일한 정규화(개행→공백, trim)
+		String clean = (materialName == null ? "" : materialName.replaceAll("[\\r\\n]+", " ").trim());
+
+		// 1) 우선 조회 (이름 + spjangcd)
+		Optional<Material> opt = materialRepository
+				.findFirstByNameIgnoreCaseAndSpjangcdOrderByIdAsc(clean, spjangcd);
+		if (opt.isPresent()) return opt.get().getId();
+
+		// 2) 없으면 생성 시도
+		Material m = new Material();
+		m.setName(clean); // 저장도 정규화된 이름으로
+		m.setMaterialGroupId(materialGroupId);
+		m.setUnitId(unitId);
+		m.set_created(Timestamp.valueOf(LocalDateTime.now()));
+		m.setSpjangcd(spjangcd);
+		m.setCode(getNextMaterialCode());
+		m.setPurchaseOrderStandard("mrp");
+		m.setLotUseYn("0");
+		m.setMtyn("1");
+		m.setUseyn("0");
+		m.setVatExemptionYN("N");
+		m.setWorkCenterId(21);
+		m.setStoreHouseId(3);
+		m.setFactory_id(1);
+
+		try {
+			m = materialRepository.save(m);
+			return m.getId();
+		} catch (DataIntegrityViolationException e) {
+			// 동시성 경합으로 누군가 먼저 넣었을 수 있으니 재조회
+			return materialRepository
+					.findFirstByNameIgnoreCaseAndSpjangcdOrderByIdAsc(clean, spjangcd)
+					.map(Material::getId)
+					.orElseThrow(() -> e);
+		}
 	}
+
 	// 기타(아크로) 제품 등록
 	@Transactional
 	public Integer getOrCreateProductId_Acro(String productName, String spjangcd) {

@@ -90,11 +90,11 @@ public class MaterialService {
 				LEFT JOIN factory f ON f.id = m.Factory_id
 				LEFT JOIN store_house sh ON sh.id = m.StoreHouse_id
 				LEFT JOIN work_center wc ON wc.id = m.WorkCenter_id
-				LEFT JOIN mat_uamt mu on m.id = mu.PCODE
+				LEFT JOIN mat_uamt mu on m.id = mu.PCODE AND mu.CLTCD IS NULL
 				LEFT JOIN equ e ON e.id = m.Equipment_id
 				LEFT JOIN routing r ON r.id = m.Routing_id
 				LEFT JOIN sys_code sc on sc.Code = mg.MaterialType and sc.CodeType = 'mat_type'
-				WHERE 1=1 and mu.CLTCD IS NULL
+				WHERE 1=1 
         """;
 		if (!StringUtils.isEmpty(matType)) {
 			sql += " AND mg.MaterialType = :mat_type ";
@@ -106,10 +106,12 @@ public class MaterialService {
 
 		if (!StringUtils.isEmpty(keyword)) {
 			sql += """
-            AND (
-                m.Name LIKE '%' + :keyword + '%'
-                OR m.Code LIKE '%' + :keyword + '%'
-            )
+            AND  (
+					         :keyword IS NULL OR LTRIM(RTRIM(CAST(:keyword AS NVARCHAR(100)))) = ''
+					         OR m.Name LIKE '%' + CAST(:keyword AS NVARCHAR(100)) + '%'
+					         OR CAST(m.Code AS NVARCHAR(100)) LIKE '%' + CAST(:keyword AS NVARCHAR(100)) + '%'  -- ← Code 캐스팅
+					         OR m.Code = TRY_CAST(:keyword AS DECIMAL(18,0))                                      -- ← 숫자 정확매칭
+					  )
         """;
 		}
 		sql += "ORDER BY m.MaterialGroup_id, m.Name ";

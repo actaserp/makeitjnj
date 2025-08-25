@@ -686,12 +686,12 @@
                                                 data-labelCd="단가등록/변경">단가등록/변경</span></button>
                                     </li>
 
-                                    <!--<li>
+                                    <li>
                                         <button type="button" class="btn-delete btn-danger" id="btnPriceDelete"
                                                 style="width: 115px; height: 36px;"><span
                                                 data-labelCd="단가삭제">단가삭제</span>
                                         </button>
-                                    </li>-->
+                                    </li>
                                     <!--<li>
                                         <button type="button" class="btn-edit btn-default" id="btnPriceUpdate"
                                                 style="width: 115px; height: 36px;"><span
@@ -908,7 +908,7 @@
                     columns: [
                         {binding: 'id', header: '품목번호', width: 100, align: 'center'},
                         {binding: 'material_group_id', header: 'material_group_id', visible: false },
-                        {binding: 'mat_type', header: '품목구분', width: 100, align: 'center'},
+                        {binding: 'mat_type', header: '품목구분', width: 100, align: 'center', visible: false },
                         {binding: 'mat_type_name', header: '품목구분', width: 100, align: 'center'},
                         {binding: 'mat_grp_name', header: '품목그룹', width: 150, align: 'left'},
                         {binding: 'mat_code', header: '품목코드', width: 150, align: 'left'},
@@ -949,6 +949,7 @@
                         //_this.showBomList(selectedItem.id)
 
                         _this.bindMatBasicForm(selectedItem);
+                        _this.setButtonState();
                         // _this.showBomReverseList(selectedItem.id)
                         //_this.showTestList(selectedItem.id)
                         //_this.showRoutingProcessList(selectedItem.id)
@@ -1257,37 +1258,58 @@
             }
 
 
+            // setButtonState() {
+            //     console.log('✅ setButtonState 호출됨');
+            //     let pk = $('#matBasicForm').find('#id').val();
+            //     $('#btnNew').prop('disabled', false);
+            //     $('#btnSave').prop('disabled', false);
+            //     if (pk) {
+            //         $('#btnDelete').prop('disabled', false);
+            //         // $('#btnProductionSave').prop('disabled', false);
+            //         // $('#btnInventorySave').prop('disabled', false);
+            //         // $('#btnRoutingSave').prop('disabled', false);
+            //     } else {
+            //         $('#btnDelete').prop('disabled', true);
+            //         // $('#btnProductionSave').prop('disabled', true);
+            //         // $('#btnInventorySave').prop('disabled', true);
+            //         // $('#btnRoutingSave').prop('disabled', true);
+            //     }
+            // }
+
             setButtonState() {
+                console.log('✅ setButtonState 호출됨');
                 let pk = $('#matBasicForm').find('#id').val();
+                console.log('📌 pk=', pk);
+
                 $('#btnNew').prop('disabled', false);
                 $('#btnSave').prop('disabled', false);
+
                 if (pk) {
                     $('#btnDelete').prop('disabled', false);
-                    $('#btnProductionSave').prop('disabled', false);
-                    $('#btnInventorySave').prop('disabled', false);
-                    $('#btnRoutingSave').prop('disabled', false);
+                    console.log('🟢 btnDelete enabled');
                 } else {
                     $('#btnDelete').prop('disabled', true);
-                    $('#btnProductionSave').prop('disabled', true);
-                    $('#btnInventorySave').prop('disabled', true);
-                    $('#btnRoutingSave').prop('disabled', true);
+                    console.log('🔴 btnDelete disabled');
                 }
             }
 
             setPriceButtonState() {
                 console.log('✅ setPriceButtonState 호출됨');
-                let pk = $('#matBasicForm').find('#id').val();
-                let price_pk = $('#companyPriceForm').find('#price_id').val();
-                console.log('🔍 mat_id:', pk, 'price_id:', price_pk);
+                const matId = $('#matBasicForm #id').val();
+                // 그리드의 현재 선택행
+                const current = (this.price_grid && this.price_grid.collectionView)
+                    ? this.price_grid.collectionView.currentItem
+                    : null;
+
+                // 폼의 price_id는 보조로만 사용(있으면 사용, 없어도 그리드 선택 있으면 OK)
+                const priceId = $('#companyPriceForm #price_id').val() || (current && current.price_id);
+
                 $('#btnPriceNew').prop('disabled', false);
                 $('#btnPriceSave').prop('disabled', false);
-                if (pk && price_pk) {
-                    $('#btnPriceUpdate').prop('disabled', false);
-                    $('#btnPriceDelete').prop('disabled', false);
-                } else {
-                    $('#btnPriceUpdate').prop('disabled', true);
-                    $('#btnPriceDelete').prop('disabled', true);
-                }
+
+                const enabled = !!(matId && priceId);
+                $('#btnPriceUpdate').prop('disabled', !enabled);
+                $('#btnPriceDelete').prop('disabled', !enabled);
             }
 
             // 품목 리스트 조회
@@ -1476,6 +1498,12 @@
                 let _this = this;
                 let url = this.url + '/delete';
                 let id = $('#matBasicForm').find('#id').val()
+
+                if (!id) {
+                    Alert.alert('', '삭제할 항목이 없습니다.');
+                    return;
+                }
+
                 let data = {id: id};
                 let fnSuccess = function (res) {
                     if (res.success) {
@@ -1680,6 +1708,48 @@
 
             // 단가 정보 삭제
             deletePriceData() {
+                const _this  = this;
+                const url    = this.url + '/deletePrice';
+
+                // 1) 우선 폼의 price_id
+                let priceId = $('#companyPriceForm #price_id').val();
+
+                // 2) 비어 있으면 그리드 선택행에서 가져오기 (price_id 또는 id, 데이터 필드명에 맞추세요)
+                if (!priceId && this.price_grid && this.price_grid.collectionView) {
+                    const row = this.price_grid.collectionView.currentItem;
+                    if (row) {
+                        // 그리드 컬럼이 { binding: 'price_id' }이므로:
+                        priceId = row.price_id;
+                        // 만약 서버가 행 PK를 id로 내려보낸다면 위 라인을 row.id 로 바꾸세요.
+                    }
+                }
+
+                // 3) 최종 체크
+                const matId = $('#matBasicForm #id').val();
+                if (!priceId) {
+                    Alert.alert('', '삭제할 단가 행을 선택하세요.');
+                    return;
+                }
+
+                const data = { id: priceId }; // ← 서버가 price_id 파라미터명을 요구하면 { price_id: priceId }로 변경
+                const fnSuccess = (res) => {
+                    if (res && res.success) {
+                        Alert.alert('', '삭제되었습니다');
+                        // 목록 리프레시: 사용 중인 함수명에 맞추세요 (showPriceList 또는 showPriceHistoryList)
+                        _this.showPriceHistoryList(matId);
+                        // 폼 초기화(선택 사항)
+                        $('#companyPriceForm')[0].reset();
+                        $('#companyPriceForm #price_id').val('');
+                        _this.setPriceButtonState && _this.setPriceButtonState();
+                    } else {
+                        Alert.alert('', (res && res.message) || '삭제에 실패했습니다.');
+                    }
+                };
+
+                AjaxUtil.postAsyncData(url, data, fnSuccess);
+            }
+
+            /*deletePriceData() {
                 let _this = this;
                 let url = this.url + '/deletePrice';
                 let id = $('#companyPriceForm').find('#price_id').val()
@@ -1691,7 +1761,7 @@
                 };
 
                 AjaxUtil.postAsyncData(url, data, fnSuccess);
-            }
+            }*/
 
 
             // BOM 조회
@@ -2080,6 +2150,7 @@
 
             // 기본정보 삭제버튼
             $('#btnDelete').click(function (e) {
+                console.info("기본 정보 삭제");
                 Alert.confirm('',
                     '삭제하시겠습니까?',
                     function () {
@@ -2329,41 +2400,41 @@
                 $('#btnGridSetting').css('visibility', 'visible');
             }
 
-            $(".tab-links a").on("click", function () {
-                const id = $(this).attr("id");
-                const showButtons = ["tabs_basic", "tabs_production", "tabs_inventory", "tabs_unitcost"];
-
-                if (showButtons.includes(id)) {
-                    $(".button-wrap.button-list").show();
-
-                    if (id === "tabs_unitcost") {
-                        // 저장 버튼만 이동해서 보여주기
-                        $("#btnNew").parent().hide();
-                        $("#btnDelete").parent().hide();
-
-                        // 저장 버튼을 따로 복사해서 옮겨 붙이기
-                        const $saveBtn = $("#btnSave").closest("li").clone();
-                        // 버튼 안의 <button>에 다시 id 부여
-                        $saveBtn.find("button").attr("id", "btnSave");
-
-                        $saveBtn.find("#btnSave").addClass("unitcost-save-btn");
-                        $("#unitcostSaveButtonContainer").html($saveBtn).show();
-
-
-                        // 기존 버튼 영역 숨기기
-                        $(".button-wrap.button-list").hide();
-                    } else {
-                        // 버튼들 원래대로 복원
-                        $(".button-wrap.button-list li").show();
-                        $(".button-wrap.button-list").show();
-                        $("#unitcostSaveButtonContainer").hide();
-                    }
-
-                } else {
-                    $(".button-wrap.button-list").hide();
-                    $("#unitcostSaveButtonContainer").hide();
-                }
-            });
+            // $(".tab-links a").on("click", function () {
+            //     const id = $(this).attr("id");
+            //     const showButtons = ["tabs_basic", "tabs_production", "tabs_inventory", "tabs_unitcost"];
+            //
+            //     if (showButtons.includes(id)) {
+            //         $(".button-wrap.button-list").show();
+            //
+            //         if (id === "tabs_unitcost") {
+            //             // 저장 버튼만 이동해서 보여주기
+            //             $("#btnNew").parent().hide();
+            //             $("#btnDelete").parent().hide();
+            //
+            //             // 저장 버튼을 따로 복사해서 옮겨 붙이기
+            //             const $saveBtn = $("#btnSave").closest("li").clone();
+            //             // 버튼 안의 <button>에 다시 id 부여
+            //             $saveBtn.find("button").attr("id", "btnSave");
+            //
+            //             $saveBtn.find("#btnSave").addClass("unitcost-save-btn");
+            //             $("#unitcostSaveButtonContainer").html($saveBtn).show();
+            //
+            //
+            //             // 기존 버튼 영역 숨기기
+            //             $(".button-wrap.button-list").hide();
+            //         } else {
+            //             // 버튼들 원래대로 복원
+            //             $(".button-wrap.button-list li").show();
+            //             $(".button-wrap.button-list").show();
+            //             $("#unitcostSaveButtonContainer").hide();
+            //         }
+            //
+            //     } else {
+            //         $(".button-wrap.button-list").hide();
+            //         $("#unitcostSaveButtonContainer").hide();
+            //     }
+            // });
 
 
 

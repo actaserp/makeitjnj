@@ -226,7 +226,7 @@ public class RequestService {
     }
 
      sql +="""
-         order by h.reqdate desc
+         order by h.reqdate DESC;
         """;
 
 //    log.info("getTab2Read  SQL: {}", sql);

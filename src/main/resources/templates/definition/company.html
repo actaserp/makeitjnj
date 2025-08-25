@@ -107,31 +107,31 @@
                     <li><a href="#tabs_basic_tab" id="tabs_basic">기본정보</a></li>
                     <li><a href="#tabs_manage_tab" id="tabs_manage">관리정보</a></li>
                     <li><a href="#tabs_price_tab" id="tabs_unitcost">품목단가</a></li>
-                    <div class="button-wrap button-list">
-                        <ul>
-                            <li>
-                                <button type="button" class="btn-excellt btn-default " id="btnNew" name="btnNew"
-                                        style="width: 115px; height: 36px;">
-                                    <i class="fas fa-plus"></i>신규등록
-                                </button>
-                            </li>
-
-                            <li>
-                                <button type="button" class="btn-delete btn-danger" id="btnDelete"
-                                        style="width: 115px; height: 36px;">
-                                    <i class="fas fa-trash"></i>삭제
-                                </button>
-                            </li>
-
-                            <li>
-                                <button disabled type="button" class="btn-excellt btn-defaul" id="btnSave"
-                                        style="width: 115px; height: 36px;">
-                                    <i class="fas fa-save"></i>저장
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
                 </ul>
+                <div class="button-wrap button-list">
+                    <ul>
+                        <li>
+                            <button type="button" class="btn-excellt btn-default " id="btnNew" name="btnNew"
+                                    style="width: 115px; height: 36px;">
+                                <i class="fas fa-plus"></i>신규등록
+                            </button>
+                        </li>
+
+                        <li>
+                            <button type="button" class="btn-delete btn-danger" id="btnDelete"
+                                    style="width: 115px; height: 36px;">
+                                <i class="fas fa-trash"></i>삭제
+                            </button>
+                        </li>
+
+                        <li>
+                            <button disabled type="button" class="btn-excellt btn-defaul" id="btnSave"
+                                    style="width: 115px; height: 36px;">
+                                <i class="fas fa-save"></i>저장
+                            </button>
+                        </li>
+                    </ul>
+                </div>
                 <div>
                     <section class="tab-item" id="tabs_basic_tab" style="border-top-left-radius: 0;">
                         <div>
@@ -976,6 +976,7 @@
             }
 
             setButtonState() {
+                console.log('btnDelete disabled?', $('#btnDelete').prop('disabled'));
                 let pk = $('#basicForm').find('#id').val();
                 $('#btnNew').prop('disabled', false);
                 $('#btnSave').prop('disabled', false);
