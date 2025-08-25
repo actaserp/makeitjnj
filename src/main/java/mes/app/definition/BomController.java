@@ -511,7 +511,7 @@ public class BomController {
 			String productName = all_rows.get(0).get(1).replaceAll("[\\r\\n]+", " ").trim();
 			int productId = getOrCreateProductId_Daeyang(productName, spjangcd);
 
-			Bom bom = bomRepository.findByMaterialIdAndBomTypeAndVersion(productId, "manufacturing", "1.0");
+			/*Bom bom = bomRepository.findByMaterialIdAndBomTypeAndVersion(productId, "manufacturing", "1.0");
 			if (bom == null) {
 				bom = new Bom();
 				bom.setName(productName);
@@ -525,7 +525,19 @@ public class BomController {
 				bom.set_creater_id(userId);
 				bom.set_created(startDate);
 				bom = bomRepository.save(bom);
-			}
+			}*/
+			Bom bom = new Bom();
+			bom.setName(productName);
+			bom.setMaterialId(productId);
+			bom.setBomType("manufacturing");
+			bom.setVersion("1.0");           // 버전 고정 유지
+			bom.setStartDate(startDate);
+			bom.setOutputAmount(1F);
+			bom.setEndDate(endDate);
+			bom.setSpjangcd(spjangcd);
+			bom.set_creater_id(userId);
+			bom.set_created(startDate);
+			bom = bomRepository.save(bom);
 
 			Map<Integer, BomComponent> bomCompMap = new HashMap<>();
 			Map<String, Integer> materialNameToId = new HashMap<>(); // 자재명 → id 캐시
@@ -568,7 +580,14 @@ public class BomController {
 				if (amount <= 0) continue; // 수량이 0인 데이터 무시
 
 				// 위치정보(비고) 수집
-				String location = row.size() > 5 && row.get(5) != null ? row.get(5).replaceAll("[\\r\\n]+", " ").trim() : "";
+				String location = row.size() > 5 && row.get(5) != null
+						? row.get(5).replaceAll("[\\r\\n]+", " ").trim()
+						: "";
+
+				// .0 제거 처리
+				if (location.matches("^\\d+\\.0+$")) {   // 예: "25200.0", "100.0"
+					location = location.replaceAll("\\.0+$", "");  // → "25200", "100"
+				}
 
 				BomComponent comp = bomCompMap.get(materialId);
 				if (comp == null) {
@@ -629,11 +648,12 @@ public class BomController {
 			}
 
 			// 수량이 0 초과인 것만 저장
-			bomComponentRepository.saveAll(
-					bomCompMap.values().stream()
-							.filter(c -> Optional.ofNullable(c.getAmount()).orElse(0f) > 0)
-							.collect(Collectors.toList())
-			);
+//			bomComponentRepository.saveAll(
+//					bomCompMap.values().stream()
+//							.filter(c -> Optional.ofNullable(c.getAmount()).orElse(0f) > 0)
+//							.collect(Collectors.toList())
+//			);
+			bomComponentRepository.saveAll(componentsToSave);
 			result.success = true;
 			result.data = bom;
 		}  else if ("02".equals(excelType)) {
@@ -738,7 +758,7 @@ public class BomController {
 	}
 
 	// 대양전기 제품 등록
-	@Transactional
+/*	@Transactional
 	public Integer getOrCreateProductId_Daeyang(String productName, String spjangcd) {
 		String cleanName = productName.trim();
 		Material prod = materialRepository.findByNameTrimmed(cleanName);
@@ -748,7 +768,7 @@ public class BomController {
 		// 대양전기 전용 materialGroupId 예시 (47로 지정, 필요시 수정)
 		Material newProd = new Material();
 		newProd.setName(productName);
-		newProd.setMaterialGroupId(45); // <-- 대양전기 그룹ID로
+		newProd.setMaterialGroupId(20); // <-- 대양전기 그룹ID로
 		newProd.setCode(getNextModelCode());
 		newProd.set_created(Timestamp.valueOf(LocalDateTime.now()));
 		newProd.setFactory_id(1);
@@ -761,7 +781,36 @@ public class BomController {
 		newProd.setStoreHouseId(4);
 		newProd = materialRepository.save(newProd);
 		return newProd.getId();
+	}*/
+
+	@Transactional
+	public Integer getOrCreateProductId_Daeyang(String productName, String spjangcd) {
+		final int GROUP_ID_PRODUCT = 20; // "모델" 그룹 가정(필요시 조정)
+		final String cleanName = productName == null ? "" : productName.trim();
+
+		// 이름+그룹+사업장 기준으로 1건 선택
+		List<Material> found = materialRepository
+				.findAllByNameAndGroupAndSpjang(cleanName, GROUP_ID_PRODUCT, spjangcd);
+		if (!found.isEmpty()) return found.get(0).getId();
+
+		// 없으면 생성
+		Material newProd = new Material();
+		newProd.setName(cleanName);
+		newProd.setMaterialGroupId(GROUP_ID_PRODUCT);
+		newProd.setCode(getNextModelCode());
+		newProd.set_created(Timestamp.valueOf(LocalDateTime.now()));
+		newProd.setFactory_id(1);
+		newProd.setUnitId(3);
+		newProd.setLotUseYn("0");
+		newProd.setMtyn("1");
+		newProd.setUseyn("0");
+		newProd.setSpjangcd(spjangcd);
+		newProd.setWorkCenterId(39);
+		newProd.setStoreHouseId(4);
+		newProd = materialRepository.save(newProd);
+		return newProd.getId();
 	}
+
 	// --- 대양전기: 자재 신규 등록/조회 (GroupId/UnitId 파라미터) ---
 	/*@Transactional
 	public Integer getOrCreateMaterialId_Daeyang(String materialName, String spjangcd, int materialGroupId, int unitId) {

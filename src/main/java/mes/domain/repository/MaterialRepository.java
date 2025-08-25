@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import mes.domain.entity.Material;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,4 +33,18 @@ public interface MaterialRepository extends JpaRepository<Material, Integer>{
 	String findMaxCodeForModel();
 
 	Optional<Material> findFirstByNameIgnoreCaseAndSpjangcdOrderByIdAsc(String clean, String spjangcd);
+
+	@Query("""
+    select m
+    from Material m
+    where m.spjangcd = :spjangcd
+      and m.materialGroupId = :groupId
+      and lower(trim(m.name)) = lower(trim(:name))
+    order by m.id asc
+""")
+	List<Material> findAllByNameAndGroupAndSpjang(
+			@Param("name") String name,
+			@Param("groupId") Integer groupId,
+			@Param("spjangcd") String spjangcd);
+
 }
