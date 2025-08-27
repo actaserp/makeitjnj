@@ -139,77 +139,45 @@ public class RequestService {
     param.addValue("spjangcd", spjangcd);
 
     String sql = """
-        WITH aggregated AS (
-            SELECT *
-            FROM (
-                SELECT
-                    reqdate,
-                    reqnum,
-                    reqseq,
-                    pname,
-                    remark,
-                    qty,
-                    saleamt,
-                    uamt,
-                    ROW_NUMBER() OVER (PARTITION BY reqdate, reqnum ORDER BY reqseq ASC) AS rn
-                FROM TB_DA007W
-            ) AS sub
-            WHERE rn = 1
-        ),
-        summary AS (
-            SELECT
-                reqdate,
-                reqnum,
-                SUM(qty) AS total_qty,
-                SUM(saleamt) AS total_saleamt,
-                SUM(uamt) AS total_uamt
-            FROM TB_DA007W
-            GROUP BY reqdate, reqnum
-        ),
+        WITH\s
         latest_model_history AS (
-            SELECT *
-            FROM (
-                SELECT *,
-                       ROW_NUMBER() OVER (PARTITION BY modelid ORDER BY version_no DESC) AS rn
-                FROM model_history
-            ) t
-            WHERE rn = 1
-        )
-        SELECT
-            h.reqnum,
-            STUFF(STUFF(h.reqdate, 5, 0, '-'), 8, 0, '-') AS reqdate,
-             sc.Value as ordflag,
-            h.cltcd,
-            h.cltnm,
-            h.indate,
-            h.modeltxt AS model_naem,
-           h.pcode as model_code,
-           mh.modeltxt_current ,
-            s.total_qty,
-            s.total_saleamt,
-            s.total_uamt,
-            a.remark,
-            a.pname,
-            a.reqseq,
-            STUFF(STUFF(h.deldate, 5, 0, '-'), 8, 0, '-') AS deldate,
-            (
-               SELECT bd.filepath, bd.filesvnm, bd.fileextns,
-                      bd.fileurl, bd.fileornm, bd.filesize, bd.fileid
-               FROM tb_DA006WFILE bd
-               WHERE bd.custcd = h.custcd
-                 AND bd.spjangcd = h.spjangcd
-                 AND bd.reqdate = h.reqdate
-                 AND bd.reqnum = h.reqnum
-               ORDER BY bd.indatem DESC
-               FOR JSON PATH
-            ) AS hd_files
-        FROM TB_DA006W h
-        LEFT JOIN summary s ON h.reqdate = s.reqdate AND h.reqnum = s.reqnum
-        LEFT JOIN aggregated a ON h.reqdate = a.reqdate AND h.reqnum = a.reqnum
-        LEFT JOIN latest_model_history mh ON h.pcode = mh.modelid
-        left join sys_code sc on sc.Code = ordflag and CodeType ='ordflag'
-        WHERE h.spjangcd = :spjangcd
-          AND h.reqdate BETWEEN :start AND :end
+                    SELECT *
+                    FROM (
+                        SELECT *,
+                               ROW_NUMBER() OVER (PARTITION BY modelid ORDER BY version_no DESC) AS rn
+                        FROM model_history
+                    ) t
+                    WHERE rn = 1
+                )
+                SELECT
+                    h.reqnum,
+                    STUFF(STUFF(h.reqdate, 5, 0, '-'), 8, 0, '-') AS reqdate,
+                     sc.Value as ordflag,
+                    h.cltcd,
+                    h.cltnm,
+                    h.indate,
+                    h.modeltxt AS model_naem,
+                   h.pcode as model_code,
+                   mh.modeltxt_current ,
+                    STUFF(STUFF(h.deldate, 5, 0, '-'), 8, 0, '-') AS deldate,
+                    STUFF(STUFF(h.shipdate, 5, 0, '-'), 8, 0, '-') AS shipdate_fmt,
+                    (
+                       SELECT bd.filepath, bd.filesvnm, bd.fileextns,
+                              bd.fileurl, bd.fileornm, bd.filesize, bd.fileid
+                       FROM tb_DA006WFILE bd
+                       WHERE bd.custcd = h.custcd
+                         AND bd.spjangcd = h.spjangcd
+                         AND bd.reqdate = h.reqdate
+                         AND bd.reqnum = h.reqnum
+                       ORDER BY bd.indatem DESC
+                       FOR JSON PATH
+                    ) AS hd_files,
+                     h.*
+                FROM TB_DA006W h
+                LEFT JOIN latest_model_history mh ON h.pcode = mh.modelid
+                left join sys_code sc on sc.Code = ordflag and CodeType ='ordflag'
+                WHERE h.spjangcd = :spjangcd
+                  AND h.reqdate BETWEEN :start AND :end
         """;
     if (ordflag != null && !ordflag.isEmpty()) {
       sql += " and h.ordflag = :ordflag ";
@@ -329,8 +297,8 @@ public class RequestService {
           AND h.spjangcd = :spjangcd
     """;
 
-    log.info("getOrderDetail  SQL: {}", sql);
-    log.info("SQL Parameters: {}", paramMap.getValues());
+//    log.info("getOrderDetail  SQL: {}", sql);
+//    log.info("SQL Parameters: {}", paramMap.getValues());
     return this.sqlRunner.getRows(sql, paramMap);
   }
 

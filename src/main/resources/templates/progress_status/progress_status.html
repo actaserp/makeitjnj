@@ -59,15 +59,6 @@
         </div>
         <div class="search-wrap" id="searchWrap" style="display: none; padding-top:10px">
             <ul>
-                <!--<li>
-                    <select title="사업장" id="search_spjangcd" name="search_spjangcd"
-                            onchange="init()">
-                        <option value="" hidden selected disabled>선택</option>
-                        <option value="ZZ">성우에스피(주)</option>
-                        <option value="PP">성우피앤비(주)</option>
-                        &lt;!&ndash; 지역 옵션을 JavaScript에서 동적으로 채움 &ndash;&gt;
-                    </select>
-                </li>-->
             </ul>
         </div>
         <!-- Select -->
@@ -204,11 +195,6 @@
         function init() {
             fetchListData();
             loadChartData();
-            if (!isBindSpjangcdCalled) {
-                bindSpjangcd();
-                isBindSpjangcdCalled = true; // 플래그 업데이트
-            }
-          document.getElementById('search_spjangcd').addEventListener('change', searchButton);
         }
 
         $(document).ready(function () {
@@ -285,7 +271,18 @@
                 });
             }
 
-            viewdata = new wijmo.collections.CollectionView(data2);
+            let viewdata = new wijmo.collections.CollectionView(data2, {
+                filter: it => !!it.reqnum
+            });
+
+            // ✅ 'reqdate'의 'YYYY-MM'로 그룹핑
+            viewdata.groupDescriptions.clear();
+            viewdata.groupDescriptions.push(
+                new wijmo.collections.PropertyGroupDescription(
+                    'reqdate',
+                    (it, prop) => (it[prop] || '').slice(0, 7) // 예: '2025-08'
+                )
+            );
 
             if (!theGrid) {
                 // 데이터 그리드에 바인딩
@@ -295,20 +292,137 @@
                     isReadOnly: true, // 전체 읽기 전용
                     columns: [
                         {binding: 'rownum', header: '순번', width: 70, align: 'center'},
-                        {binding: 'reqdate', header: '주문일자', width: 110, align: 'center'},
-                        {binding: 'cltnm', header: '업체명', width: 150, align: 'left'},
                         {binding: 'ordflag_display', header: '진행구분', width: 110, align: 'center'},
+                        {binding: 'reqdate', header: '주문일자', width: 110, align: 'center'},
+                        {binding: 'deldate', header: '납품예정일', width: 110, align: 'center'},
+                        {binding: 'shipdate_fmt', header: '출고일자', width: 110, align: 'center'},
+                        {binding: 'cltnm', header: '업체명', width: 150, align: 'left'},
                         {binding: 'modeltxt', header: '모델명', width: 400, align: 'left'},
-                        {binding: 'perid', header: '담당자',width: 120, align: 'left'},
-                       // {binding: 'telno', header: '연락처', width: '*', minWidth: 100, align: 'center'},
-                        {binding: 'amount', header: '금액', width: 120, align: 'right'},
-                        {binding: 'deldate', header: '출고일자', width: 110, align: 'center'},
+                        {binding: 'projectno', header: 'projectNo', width: 150},
+                        {binding: 'setsamt', header: '공급기준', width: 110, align: 'right', format: 'n0'},
+                        {binding: 'setqty', header: '수량', width: 60, align: 'right', format: 'n0'},
+                        {binding: 'amount', header: '공급계', width: 110, align: 'right', format: 'n0'},
+                        {binding: 'outamt', header: '외주계', width: 110, align: 'right', format: 'n0'},
+                        {binding: 'eyunamt', header: '이윤', width: 110, align: 'right', format: 'n0'},
+
                     ],
-                    itemsSource: viewdata
+                    itemsSource: viewdata,
+                    formatItem: function (s, e) {
+                        // 1) 헤더 중앙 정렬
+                        if (e.panel.cellType === wijmo.grid.CellType.ColumnHeader) {
+                            e.cell.style.textAlign = 'center';
+                            return;
+                        }
+
+                        // 2) 본문 셀
+                        if (e.panel.cellType === wijmo.grid.CellType.Cell) {
+                            const col = s.columns[e.col];
+                            if (!col) return;
+
+                            // 매번 초기화(잔상 방지)
+                            e.cell.style.backgroundColor = '';
+                            e.cell.style.color = '';
+                            e.cell.style.fontWeight = '';
+                            e.cell.classList.remove('status-shipped', 'status-canceled');
+
+                            // === (A) 그룹행(월계 헤더) 먼저 처리 ===
+                            const rowObj = s.rows[e.row];
+                            if (rowObj instanceof wijmo.grid.GroupRow) {
+                                const group = rowObj.dataItem; // CollectionViewGroup
+                                const ym = group?.name || '';  // month key: 'YYYY-MM'
+                                // 합계
+                                const sumSetsamt = group.getAggregate(wijmo.Aggregate.Sum, 'setsamt') || 0;
+                                const sumSetqty  = group.getAggregate(wijmo.Aggregate.Sum, 'setqty')  || 0;
+                                const sumAmount  = group.getAggregate(wijmo.Aggregate.Sum, 'amount')  || 0;
+                                const sumOutamt  = group.getAggregate(wijmo.Aggregate.Sum, 'outamt')  || 0;
+                                const sumEyunamt = group.getAggregate(wijmo.Aggregate.Sum, 'eyunamt') || 0;
+
+                                if (col.binding === 'rownum') {
+                                    const f = v => wijmo.Globalize.format(v, 'n0');
+                                    e.cell.innerHTML = `
+                                  <b>월계 (${ym.slice(5)}월)</b>
+                                  &nbsp;&nbsp;공급기준: ${f(sumSetsamt)}
+                                  &nbsp;|&nbsp;수량: ${f(sumSetqty)}
+                                  &nbsp;|&nbsp;공급계: ${f(sumAmount)}
+                                  &nbsp;|&nbsp;외주계: ${f(sumOutamt)}
+                                  &nbsp;|&nbsp;이윤: ${f(sumEyunamt)}
+                                `;
+                                } else {
+                                    e.cell.innerHTML = '';
+                                }
+                                e.cell.style.fontWeight = 'bold';
+                                e.cell.style.background = '#f3f5f8';
+                                return; // 그룹행은 여기서 종료
+                            }
+                            // 진행구분 색상 처리 (코드 기준: 1=출하 완료, 5=주문취소)
+                            const item = s.rows[e.row]?.dataItem;
+                            if (!item) return;
+
+                            // 진행구분 셀 색상
+                            if (col.binding === 'ordflag_display') {
+                                const code = item.ordflag;
+                                if (code === '1' || code === 1) {
+                                    e.cell.style.backgroundColor = 'yellow';
+                                    e.cell.style.fontWeight = 'bold';
+                                } else if (code === '5' || code === 5) {
+                                    e.cell.style.backgroundColor = 'red';
+                                    e.cell.style.color = 'white';
+                                    e.cell.style.fontWeight = 'bold';
+                                }
+                            }
+                        }
+                    }
                 });
                 theGrid.rowHeaders.columns.splice(0, 1);
                 new FlexGridContextMenu(theGrid);
                 window.downloadFileName = '주문진행 현황';
+
+                // 푸터 생성
+                theGrid.columnFooters.rows.clear();
+                theGrid.columnFooters.rows.push(new wijmo.grid.Row()); // 합계
+
+                function updateFooter() {
+                    if (!theGrid || !theGrid.itemsSource) return;
+
+                    const rows = theGrid.rows;
+                    const SUM_FIELDS = ['setsamt','setqty','amount','outamt','eyunamt'];
+
+                    // 전체 합계
+                    const sumsAll = { setsamt:0, setqty:0, amount:0, outamt:0, eyunamt:0 };
+                    for (let i = 0; i < rows.length; i++) {
+                        const it = rows[i].dataItem;
+                        if (!it || !it.reqnum) continue;
+                        SUM_FIELDS.forEach(f => {
+                            const v = Number(it[f]);
+                            if (!isNaN(v)) sumsAll[f] += v;
+                        });
+                    }
+
+                    // 풋터 1행만
+                    theGrid.columnFooters.rows.clear();
+                    theGrid.columnFooters.rows.push(new wijmo.grid.Row());
+
+                    const colLabel = theGrid.columns.getColumn('ordflag_display')?.index ?? 0;
+                    theGrid.columnFooters.setCellData(0, colLabel, '합계');
+
+                    SUM_FIELDS.forEach(b => {
+                        const col = theGrid.columns.getColumn(b);
+                        if (col) theGrid.columnFooters.setCellData(0, col.index, sumsAll[b]);
+                    });
+                }
+
+
+                // 풋터 스타일(푸터만 적용)
+                theGrid.formatItem.addHandler((s, e) => {
+                    if (e.panel.cellType === wijmo.grid.CellType.ColumnFooter) {
+                        e.cell.style.fontWeight = 'bold';
+                        e.cell.style.backgroundColor = '#f3f5f8';
+                    }
+                });
+                viewdata.collectionChanged.addHandler(updateFooter);
+                theGrid.loadedRows.addHandler(updateFooter);
+                updateFooter();
+
             } else {
                 // 이미 FlexGrid가 존재하는 경우, 데이터만 업데이트
                 theGrid.itemsSource = viewdata;

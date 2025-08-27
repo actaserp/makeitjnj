@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -32,36 +35,49 @@ public class OrderStatusService {
         }
 
         StringBuilder sql = new StringBuilder("""
-       SELECT
-          tb006.*,
-          uc.Value AS ordflag_display,
-          (
-              SELECT ISNULL((
-                  SELECT
-                      bd.filepath,
-                      bd.filesvnm,
-                      bd.fileextns,
-                      bd.fileurl,
-                      bd.fileornm,
-                      bd.filesize,
-                      bd.fileid
-                  FROM
-                      tb_DA006WFILE bd
-                  WHERE
-                      bd.custcd = tb006.custcd
-                      AND bd.spjangcd = tb006.spjangcd
-                      AND bd.reqdate = tb006.reqdate
-                      AND bd.reqnum = tb006.reqnum
-                  ORDER BY
-                      bd.indatem DESC
-                  FOR JSON PATH
-              ), '[]')
-          ) AS hd_files
-      FROM
-          TB_DA006W tb006 
-      left join sys_code uc on uc.Code = tb006.ordflag
-      WHERE
-          tb006.spjangcd = :spjangcd
+        WITH
+          latest_model_history AS (
+             SELECT *
+             FROM (
+                 SELECT *,
+                        ROW_NUMBER() OVER (PARTITION BY modelid ORDER BY version_no DESC) AS rn
+                 FROM model_history
+             ) t
+             WHERE rn = 1
+         )
+         SELECT
+           tb006.*,
+            STUFF(STUFF(tb006.shipdate, 5, 0, '-'), 8, 0, '-') AS shipdate_fmt,
+            mh.modeltxt_current ,
+           uc.Value AS ordflag_display,
+           (
+               SELECT ISNULL((
+                   SELECT
+                       bd.filepath,
+                       bd.filesvnm,
+                       bd.fileextns,
+                       bd.fileurl,
+                       bd.fileornm,
+                       bd.filesize,
+                       bd.fileid
+                   FROM
+                       tb_DA006WFILE bd
+                   WHERE
+                       bd.custcd = tb006.custcd
+                       AND bd.spjangcd = tb006.spjangcd
+                       AND bd.reqdate = tb006.reqdate
+                       AND bd.reqnum = tb006.reqnum
+                   ORDER BY
+                       bd.indatem DESC
+                   FOR JSON PATH
+               ), '[]')
+               ) AS hd_files
+           FROM
+               TB_DA006W tb006
+           left join sys_code uc on uc.Code = tb006.ordflag
+            LEFT JOIN latest_model_history mh ON tb006.pcode = mh.modelid
+           WHERE
+               tb006.spjangcd = :spjangcd
     """);
         
         // 날짜 필터링 (TB_DA006W 기준)
@@ -180,10 +196,10 @@ public class OrderStatusService {
 
         // 조건 추가
         if (params.hasValue("startDate")) {
-            sql += " AND tb007.reqdate >= :startDate";
+            sql += " AND tb007.deldate >= :startDate";
         }
         if (params.hasValue("endDate")) {
-            sql += " AND tb007.reqdate <= :endDate";
+            sql += " AND tb007.deldate <= :endDate";
         }
         if (params.hasValue("searchCltnm")) {
             sql += " AND tb006.cltnm LIKE :searchCltnm";
@@ -276,18 +292,18 @@ public class OrderStatusService {
                 """);
         // 날짜 필터
         if (searchStartDate != null && !searchStartDate.isEmpty()) {
-            sql.append(" AND reqdate >= :searchStartDate");
+            sql.append(" AND deldate >= :searchStartDate");
         }
         //
         if (searchEndDate != null && !searchEndDate.isEmpty()) {
-            sql.append(" AND reqdate <= :searchEndDate");
+            sql.append(" AND deldate <= :searchEndDate");
         }
         // 진행구분 필터
         if (searchType != null && !searchType.isEmpty()) {
             sql.append(" AND ordflag LIKE :searchType");
         }
         // 정렬 조건 추가
-        sql.append(" ORDER BY reqdate ASC");
+        sql.append(" ORDER BY deldate ASC");
 
         List<Map<String, Object>> items = this.sqlRunner.getRows(sql.toString(), dicParam);
         return items;
@@ -346,7 +362,7 @@ public class OrderStatusService {
                         AND CAST(CAST(YEAR(GETDATE()) AS VARCHAR(4)) + '1231' AS INT)
                 """);
         // 정렬 조건 추가
-        sql.append(" ORDER BY reqdate ASC");
+        sql.append(" ORDER BY deldate ASC");
 
         List<Map<String, Object>> items = this.sqlRunner.getRows(sql.toString(), dicParam);
         return items;
@@ -356,19 +372,19 @@ public class OrderStatusService {
     public TB_DA006W UpdateOrdflag(List<Map<String, Object>> orders) {
         for (Map<String, Object> order : orders) {
             String reqnum = (String) order.get("reqnum"); // 주문 번호
-            String ordflag = (String) order.get("ordflag"); // 0 또는 1 (문자열)
-
-            // "0" → "1", "1" → "0" 변환 후 업데이트
-            String newOrdflag = "0".equals(ordflag) ? "1" : "0";
+            String today = LocalDate.now(ZoneId.of("Asia/Seoul"))
+                .format(DateTimeFormatter.BASIC_ISO_DATE); // shipdate가 CHAR(8)일 때
 
             String sql = """
-            UPDATE TB_DA006W 
-            SET ordflag = :ordflag
-            WHERE reqnum = :reqnum
+            UPDATE TB_DA006W
+               SET ordflag  = '1',
+                   shipdate = :today
+             WHERE reqnum  = :reqnum
+               AND ordflag = '0'
         """;
 
             MapSqlParameterSource params = new MapSqlParameterSource();
-            params.addValue("ordflag", newOrdflag);
+            params.addValue("today", today);
             params.addValue("reqnum", reqnum);
 
 //            log.info("📌 주문 상태 변경 SQL 실행: {}", sql);
@@ -377,7 +393,7 @@ public class OrderStatusService {
             sqlRunner.execute(sql, params);
         }
 
-        return new TB_DA006W(); // 업데이트 결과 반환 (실제 로직에 맞게 수정 필요)
+        return new TB_DA006W(); // 필요 시 실제 결과로 대체
     }
 
     public int CancelOrderUpdateOrdflag(List<Map<String, Object>> orders) {

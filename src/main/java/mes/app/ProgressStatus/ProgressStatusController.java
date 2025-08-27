@@ -110,8 +110,8 @@ public class ProgressStatusController {
             User user = (User) auth.getPrincipal();
             String userid = user.getUsername();
 
-            log.info("검색 조건 search_spjangcd:{}, startDate: {}, endDate: {}, cltnm: {}, ordflag: {}, searchTitle: {}",
-                    search_spjangcd, startDate, endDate, searchCltnm, searchtketnm, searchTitle);
+            /*log.info("검색 조건 search_spjangcd:{}, startDate: {}, endDate: {}, cltnm: {}, ordflag: {}, searchTitle: {}",
+                    search_spjangcd, startDate, endDate, searchCltnm, searchtketnm, searchTitle);*/
 
             List<Map<String, Object>> rawData = progressStatusService.getChartData2(
                     search_spjangcd, startDate, endDate, searchCltnm, searchtketnm, searchTitle);

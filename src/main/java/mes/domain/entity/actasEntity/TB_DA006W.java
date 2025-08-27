@@ -49,6 +49,10 @@ public class TB_DA006W {
     @Column(name = "deldate")
     private String deldate;
 
+    //출하일자
+    @Column(name = "shipdate")
+    private String shipdate;
+
     // 13 담당자
     @Column(name = "perid")
     private String perid;

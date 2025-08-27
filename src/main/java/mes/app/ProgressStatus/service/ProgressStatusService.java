@@ -26,6 +26,7 @@ public class ProgressStatusService {
         StringBuilder sql = new StringBuilder("""
         SELECT
             tb006.*,
+            STUFF(STUFF(tb006.shipdate, 5, 0, '-'), 8, 0, '-') AS shipdate_fmt,
             uc.Value AS ordflag_display
         FROM
             TB_DA006W tb006

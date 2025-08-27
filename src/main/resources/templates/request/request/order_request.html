@@ -559,7 +559,7 @@
 
         <div class="container-fluid">
           <p id="selectedItem"></p>
-          <div id="theGrid" style="max-height: 714px"></div>
+          <div id="theGrid" style="height: 700px"></div>
         </div>
       </section>
       <!--      주문 의뢰 현황 종료          -->
@@ -919,7 +919,7 @@
         this.$btnSave = $('#btnSave');
         this.$btnCopy = $('#btn_reqnum_copy');
         this.spjangcd = sessionStorage.getItem('spjangcd');
-        this.viewData = new wijmo.collections.CollectionView();
+        this.viewData = new wijmo.collections.CollectionView([]);
         this.url = '/api/request/request';
         this.grid = null;
         this.init();
@@ -1276,79 +1276,174 @@
 
         this.grid = new wijmo.grid.FlexGrid('#theGrid', {
           selectionMode: wijmo.grid.SelectionMode.Row,
-          headersVisibility: wijmo.grid.HeadersVisibility.Column,
+          headersVisibility: wijmo.grid.HeadersVisibility.Row | wijmo.grid.HeadersVisibility.Column,
           autoGenerateColumns: false,
           showMarquee: true,
           isReadOnly: true,
-          formatItem: (sender, e) => {
-            if (e.panel.cellType === wijmo.grid.CellType.ColumnHeader) {
-              e.cell.style.textAlign = 'center';
-            }
-          },
           columns: [
             {binding: 'reqnum', header: 'reqnum', width: 100, visible: false},
-            {binding: 'ordflag', header: '진행구분', width: 75},
+            {binding: 'ordflag', header: '진행구분', width: 85},
             {binding: 'cltcd', header: '업체명', width: 15, align: 'center', visible: false},
             {binding: 'cltnm', header: '업체명', width: 150, align: 'center'},
             {binding: 'reqdate', header: '접수일자', width: 120, align: 'center'},
+            {binding: 'deldate', header: '납품예정일', width: 120, align: 'center'},
+            {binding: 'shipdate_fmt', header: '출하일자', width: 110, align: 'center'},
             {binding: 'model_code', header: 'model', width: 200, visible: false},
-            {binding: 'model_naem', header: 'model', width: 250},
-            {binding: 'pname', header: '품목', width: 200},
-            {binding: 'total_qty', header: '수량', width: 60, align: 'right', format: 'n0'},
-            {binding: 'total_saleamt', header: '판매단가', width: 100, align: 'right'},
-            {binding: 'total_uamt', header: '금액', width: 100, align: 'right'},
-            {binding: 'deldate', header: '납품 희망일', width: 120, align: 'center'},
-            {binding: 'clttype', header: '비고', width: 100, align: 'center'},
-            {binding: 'modeltxt_current', header: '최근 모델이력', width: '*', align: 'center'},
+            {binding: 'model_naem', header: 'model', width: 300},
+            {binding: 'projectno', header: 'projectNo', width: 150},
+            {binding: 'setsamt', header: '공급기준', width: 110, align: 'right', format: 'n0'},
+            {binding: 'setqty', header: '수량', width: 60, align: 'right', format: 'n0'},
+            {binding: 'amount', header: '공급계', width: 110, align: 'right', format: 'n0'},
+            {binding: 'outamt', header: '외주계', width: 110, align: 'right', format: 'n0'},
+            {binding: 'eyunamt', header: '이윤', width: 110, align: 'right', format: 'n0'},
+            {binding: 'modeltxt_current', header: '최근 모델이력', width: 120, align: 'center'},
             {binding: 'downloads', header: '첨부파일', width: 100, align: 'center'},
             {binding: 'isdownload', visible: false},
             {binding: 'hd_files', visible: false},
             {binding: 'saupnum', visible: false},
           ],
           itemsSource: this.viewData, // 데이터를 설정할 배열
-          itemFormatter: function (panel, r, c, cell) {
-            if (panel.cellType === wijmo.grid.CellType.Cell) {
-              var item = panel.rows[r].dataItem; // 현재 행의 데이터 항목
+          formatItem: function (s, e) {
+            // 1) 헤더 중앙 정렬
+            if (e.panel.cellType === wijmo.grid.CellType.ColumnHeader) {
+              e.cell.style.textAlign = 'center';
+              return;
+            }
 
-              // ✅ 진행구분 색상 처리
-              if (panel.columns[c].binding === 'ordflag') {
-                if (item.ordflag === '출하 왼료') { //'1'
-                  cell.style.backgroundColor = 'yellow';
-                  cell.style.fontWeight = 'bold';
-                } else if (item.ordflag === '주문취소') { //5
-                  cell.style.backgroundColor = 'red';
-                  cell.style.color = 'white';
-                  cell.style.fontWeight = 'bold';
+            // 2) 본문 셀
+            if (e.panel.cellType === wijmo.grid.CellType.Cell) {
+              const col = s.columns[e.col];
+              if (!col) return;
+
+              // 초기화(잔상 방지)
+              e.cell.style.backgroundColor = '';
+              e.cell.style.color = '';
+              e.cell.style.fontWeight = '';
+              e.cell.classList.remove('status-shipped', 'status-canceled');
+              // e.cell.innerHTML = e.cell.innerHTML; // 불필요하면 생략 가능
+
+              // === (A) 그룹행(월계 헤더) ===
+              const rowObj = s.rows[e.row];
+              if (rowObj instanceof wijmo.grid.GroupRow) {
+                const group = rowObj.dataItem;
+                const ym = group?.name || '';
+
+                const sumSetsamt = group.getAggregate(wijmo.Aggregate.Sum, 'setsamt') || 0;
+                const sumSetqty = group.getAggregate(wijmo.Aggregate.Sum, 'setqty') || 0;
+                const sumAmount = group.getAggregate(wijmo.Aggregate.Sum, 'amount') || 0;
+                const sumOutamt = group.getAggregate(wijmo.Aggregate.Sum, 'outamt') || 0;
+                const sumEyunamt = group.getAggregate(wijmo.Aggregate.Sum, 'eyunamt') || 0;
+
+                if (col.binding === 'ordflag') {
+                  const f = v => wijmo.Globalize.format(v, 'n0');
+                  e.cell.innerHTML = `
+                  <b>월계 (${ym.slice(5)}월)</b>
+                  &nbsp;&nbsp;공급기준: ${f(sumSetsamt)}
+                  &nbsp;|&nbsp;수량: ${f(sumSetqty)}
+                  &nbsp;|&nbsp;공급계: ${f(sumAmount)}
+                  &nbsp;|&nbsp;외주계: ${f(sumOutamt)}
+                  &nbsp;|&nbsp;이윤: ${f(sumEyunamt)}
+                `;
+                } else {
+                  e.cell.innerHTML = '';
+                }
+                e.cell.style.fontWeight = 'bold';
+                e.cell.style.background = '#f3f5f8';
+                return; // 그룹행은 여기서 종료
+              }
+
+              // === (B) 일반 데이터행 ===
+              const item = rowObj?.dataItem;
+              if (!item) return;
+
+              // 진행구분 색상 (숫자/문자 모두 케어)
+              if (col.binding === 'ordflag') {
+                const code = item.ordflag;
+                const isShipped  = (code === 1 || code === '1' || code === '출하완료' || code === '출하 완료');
+                const isCanceled = (code === 5 || code === '5' || code === '주문취소');
+
+                if (isShipped) {
+                  e.cell.style.backgroundColor = 'yellow';
+                  e.cell.style.fontWeight = 'bold';
+                } else if (isCanceled) {
+                  e.cell.style.backgroundColor = 'red';
+                  e.cell.style.color = 'white';
+                  e.cell.style.fontWeight = 'bold';
                 }
               }
 
-              if (panel.columns[c].binding === 'downloads') {
-                cell.innerHTML = ''; // 셀 내용 초기화
-                if (item.isdownload) {
-                  cell.innerHTML = '<a title="다운로드" class="btn-filedown" onclick="downloadFile_order()">다운로드</a>';
-                }
+              // 다운로드 링크
+              if (col.binding === 'downloads') {
+                e.cell.innerHTML = item.isdownload
+                  ? '<a title="다운로드" class="btn-filedown" onclick="downloadFile_order_status()">다운로드</a>'
+                  : '';
               }
             }
           }
-        });
-        const cbCol = new wijmo.grid.Column({
-          width: 36,
-          header: '',       // 헤더 텍스트 없음
-          isReadOnly: true,
-          align: 'center'
-        });
-        this.grid.columns.insert(0, cbCol);
 
-// ✅ Selector 설치 및 해당 컬럼에 바인딩
+        });
+
+        this.grid.rowHeaders.columns[0].width = 36;
+        //this.grid.columns.insert(0, cbCol);
+
+        // ✅ Selector 설치 및 해당 컬럼에 바인딩
         const selector = new Selector(this.grid, {
           itemChecked: () => {
-            // 선택된 행 개수 필요하면 여기서 처리
-            const count = this.grid.rows.filter(r => r.isSelected).length;
-            const el = document.getElementById('checked-count');
-            if (el) el.textContent = String(count);
+            console.log("✅ 체크박스 선택됨!");
           }
         });
-        selector.column = cbCol; // 체크박스가 cbCol에 표시되도록 지정
+        //selector.column = cbCol; // 체크박스가 cbCol에 표시되도록 지정
+
+        // ✅ 풋터 초기화
+        this.grid.columnFooters.rows.clear();
+        this.grid.columnFooters.rows.push(new wijmo.grid.Row()); // 합계 1행
+
+        // ✅ 풋터 스타일
+        this.grid.formatItem.addHandler((s, e) => {
+          if (e.panel.cellType === wijmo.grid.CellType.ColumnFooter) {
+            e.cell.style.fontWeight = 'bold';
+            e.cell.style.backgroundColor = '#f3f5f8';
+          }
+        });
+
+        // ✅ 합계 계산 함수
+        const updateFooter = () => {
+          if (!this.grid || !this.grid.itemsSource) return;
+
+          const rows = this.grid.rows;
+          const SUM_FIELDS = ['setsamt','setqty','amount','outamt','eyunamt'];
+
+          const sums = { setsamt:0, setqty:0, amount:0, outamt:0, eyunamt:0 };
+          for (let i = 0; i < rows.length; i++) {
+            const it = rows[i].dataItem;
+            if (!it || !it.reqnum) continue;          // 패딩/그룹 제외
+            SUM_FIELDS.forEach(f => {
+              const v = Number(it[f]);
+              if (!isNaN(v)) sums[f] += v;
+            });
+          }
+
+          // 풋터 1행만 사용
+          this.grid.columnFooters.rows.clear();
+          this.grid.columnFooters.rows.push(new wijmo.grid.Row());
+
+          // ‘합계’ 라벨은 진행구분(= ordflag) 컬럼 아래에
+          const labelColIndex = this.grid.columns.getColumn('ordflag')?.index ?? 0;
+          this.grid.columnFooters.setCellData(0, labelColIndex, '합계');
+
+          // 숫자 합계 채우기
+          SUM_FIELDS.forEach(f => {
+            const col = this.grid.columns.getColumn(f);
+            if (col) this.grid.columnFooters.setCellData(0, col.index, sums[f]);
+          });
+        };
+
+      // ✅ 데이터 변경 시 합계 갱신
+        if (this.viewData) {
+          this.viewData.collectionChanged.addHandler(updateFooter);
+        }
+        this.grid.loadedRows.addHandler(updateFooter);
+        updateFooter();
 
         new FlexGridContextMenu(this.grid);
         this.grid.downloadFileName = '주문/진행 현황';
@@ -1637,13 +1732,33 @@
           'action': 'read',
           'spjangcd': spjangcd
         };
+        let fnsuccess = (result) => {
+          if (!result || !Array.isArray(result.data)) return;
 
-        let fnsuccess = function (result) {
-          if (result != null) {
-            _this.viewData = new wijmo.collections.CollectionView(result.data); // ✅ 새로 할당
-            _this.grid.itemsSource = _this.viewData; // ✅ 그리드에 다시 바인딩
-          }
+          // ✅ CollectionView + 필터 적용
+          let viewdata = new wijmo.collections.CollectionView(result.data, {
+            filter: it => !!it.reqnum
+          });
+
+          // ✅ 'reqdate' 기준 그룹핑 (YYYY-MM)
+          viewdata.groupDescriptions.clear();
+          viewdata.groupDescriptions.push(
+            new wijmo.collections.PropertyGroupDescription(
+              'reqdate',
+              (it, prop) => (it[prop] || '').slice(0, 7) // '2025-08'
+            )
+          );
+
+          // ✅ 디버깅 로그
+          console.log('그룹핑 대상 수:', result.data.length);
+          console.log('reqnum 리스트:', result.data.map(d => d.reqnum));
+          console.log('reqdate 리스트:', result.data.map(d => d.reqdate));
+
+          // ✅ 바인딩
+          _this.viewData = viewdata;
+          _this.grid.itemsSource = _this.viewData;
         };
+
         AjaxUtil.getAsyncData(url, data, fnsuccess);
       }
 
@@ -1999,15 +2114,24 @@
           const item = result.data[0];
           const unitPrice = item.PUAMT || 0;
           const unitPriceFormatted = unitPrice.toLocaleString();
-          console.log('[단가 입력 대상]', $unitPrice.length, $unitPrice);
 
-          $unitPrice.val(unitPriceFormatted);            // 사용자 표시용 (콤마 포함)
-          $originalPrice.val(unitPrice);                 // 원시값 저장용 (hidden)
+          $unitPrice.val(unitPriceFormatted);   // 사용자 표시용
+          $originalPrice.val(unitPrice);        // 원시값
+
+          // ✅ 수량 × 단가 → uamt 자동 계산
+          const qtyVal = parseFloat(row.find('input[name="QTY"]').val()?.replace(/,/g, '') || 0);
+          const uamt = unitPrice * qtyVal;
+          row.find('input[name="uamt"]').val(uamt.toLocaleString());
+
         } else {
           $unitPrice.val('');
           $originalPrice.val('');
+          row.find('input[name="uamt"]').val('');
         }
+        // ✅ 합계 다시 계산
+        updateOrderSummary();
       });
+
     }
 
     AjaxUtil.fillSelectOptions($('#searchOrdflag'), 'system_code', 'all', null, 'ordflag','0,1,5');

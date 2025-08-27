@@ -133,8 +133,8 @@ public class BaljuOrderService {
         ORDER BY MAX(DeliveryDate) DESC, bh_id
         """;
 
-    log.info("발주 read SQL: {}", sql);
-    log.info("SQL Parameters: {}", dicParam.getValues());
+//    log.info("발주 read SQL: {}", sql);
+//    log.info("SQL Parameters: {}", dicParam.getValues());
 return this.sqlRunner.getRows(sql, dicParam);
 }
 
@@ -351,8 +351,8 @@ return this.sqlRunner.getRows(sql, dicParam);
          ORDER BY INPUTDATE DESC
         """;
 
-    log.info("발주 단가 데이터 SQL: {}", sql);
-    log.info("SQL Parameters: {}", dicParam.getValues());
+//    log.info("발주 단가 데이터 SQL: {}", sql);
+//    log.info("SQL Parameters: {}", dicParam.getValues());
     List<Map<String, Object>> items = this.sqlRunner.getRows(sql, dicParam);
     return items;
   }

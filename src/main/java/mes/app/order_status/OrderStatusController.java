@@ -40,7 +40,7 @@ public class OrderStatusController {
             @RequestParam(required = false) String searchstate,
             Authentication auth) {
         AjaxResult result = new AjaxResult();
-        log.info("주문 확인 read 들어온 데이터:startDate{}, endDate{}, searchSpjangcd{}, searchCltnm{},searchstate{} ", startDate, endDate, searchSpjangcd, searchCltnm, searchstate);
+//        log.info("주문 확인 read 들어온 데이터:startDate{}, endDate{}, searchSpjangcd{}, searchCltnm{},searchstate{} ", startDate, endDate, searchSpjangcd, searchCltnm, searchstate);
         try {
             // 로그인한 사용자 정보에서 이름(perid) 가져오기
             User user = (User) auth.getPrincipal();
