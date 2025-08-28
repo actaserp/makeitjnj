@@ -140,7 +140,7 @@
           },
           columns: [
             {binding: 'cltcd', header: '업체 코드', width: 250, visible: false},
-            {binding: 'comp_name', header: '업체명', width: 250, align: 'center', allowMerging: false},
+            {binding: 'comp_name', header: '업체명', width: 180, align: 'left', allowMerging: false},
             ...monthColumns,  //여기에서 월별 컬럼을 삽입
             {binding: 'total_sum', header: '합계', width: 120, align: 'right', allowSorting: false},
           ],
@@ -192,10 +192,7 @@
             }
           },
           columns: [
-            {binding: 'cltcd', header: '커래처 코드', width: 250, visible: false},
-            {binding: 'comp_name', header: '업체명', width: 170, align: 'left', allowMerging: false},
-            {binding: 'pname', header: '자재', width: 200, align: 'left', allowMerging: false},
-            {binding: 'clt_name', header: '외주처', width: 170, align: 'left', allowMerging: false},
+            {binding: 'clt_name', header: '외주처', width: 180, align: 'left', allowMerging: false},
             ...monthColumns,
             {binding: 'total_sum', header: '합계', width: 120, align: 'right', allowSorting: false},
           ],
