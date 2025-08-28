@@ -166,9 +166,6 @@ public class VendorOrderStatsService {
     sql.append("""
     WITH base AS (
       SELECT
-        h.cltcd,                        -- 업체(거래처) 코드 (header)
-        j.spjangcd,
-        j.pname,                        -- 자재명
         j.clttype,                      -- 외주처 구분(가정: 외주처 표기용)
         ISNULL(j.setamt, 0) AS purchase_amt,  -- 매입액(집계용)
         ISNULL(j.uamt, 0)   AS unit_cost,     -- 단가(원가)
@@ -195,22 +192,11 @@ public class VendorOrderStatsService {
     // 2) 업체·주문일자(대표)·외주처·자재별 월 피벗 집계
     sql.append("""
     SELECT
-      b.cltcd  AS comp_code,
-      COALESCE(c.[Name], b.cltcd)  AS comp_name,
       MIN(b.reqdate) , 
-      b.clttype  ,            
-      b.pname ,
+      b.clttype  , 
       c2.Name as clt_name ,
       MAX(b.unit_cost) AS [매입액(1set/원가)],
   """);
-
- /*   // 1월~12월 월별 합계
-    for (int i = 1; i <= 12; i++) {
-      String mm = String.format("%02d", i);
-      sql.append("  SUM(CASE WHEN b.m = '").append(mm)
-          .append("' THEN b.purchase_amt ELSE 0 END) AS [").append(i).append("월]");
-      sql.append(i < 12 ? ",\n" : "\n");
-    }*/
 
     // 월별 합계 mon_1 ~ mon_12
     for (int i = 1; i <= 12; i++) {
@@ -222,16 +208,15 @@ public class VendorOrderStatsService {
 
     // 총합(원하시면 포함)
     sql.append("""
-      , SUM(b.purchase_amt) AS total_sum
-    FROM base b
-    LEFT JOIN company c ON c.id = TRY_CAST(b.cltcd AS int)
-    left join company c2 on b.clttype = c2.id
-    GROUP BY b.cltcd, c.[Name], b.clttype, b.pname, c2.Name 
-    ORDER BY comp_name, clt_name, pname
+    , SUM(b.purchase_amt) AS total_sum
+     FROM base b
+     left join company c2 on b.clttype = c2.id
+     GROUP BY b.clttype, c2.Name
+     ORDER BY clt_name
   """);
 
-//     log.info("월별 매입현황 SQL: {}", sql);
-//     log.info("SQL Parameters: {}", paramMap.getValues());
+     log.info("월별 매입현황 SQL: {}", sql);
+     log.info("SQL Parameters: {}", paramMap.getValues());
     return this.sqlRunner.getRows(sql.toString(), paramMap);
   }
 
@@ -307,7 +292,7 @@ public class VendorOrderStatsService {
       ),
       base AS (
         SELECT
-          h.cltcd,                        -- 거래처 코드(헤더)
+          j.clttype,                     
           j.spjangcd,
           ISNULL(j.setamt, 0) AS purchase_amt,  -- 매입액(집계용)
           SUBSTRING(j.reqdate, 1, 4) AS y,
@@ -344,8 +329,8 @@ public class VendorOrderStatsService {
       ORDER BY mo.m
     """);
 
-//     log.info("전년대비 월별 매입차트 SQL: {}", sql);
-//     log.info("SQL Parameters: {}", paramMap.getValues());
+     log.info("전년대비 월별 매입차트 SQL: {}", sql);
+     log.info("SQL Parameters: {}", paramMap.getValues());
     return this.sqlRunner.getRows(sql.toString(), paramMap);
 
   }
