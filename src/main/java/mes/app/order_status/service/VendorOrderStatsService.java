@@ -146,8 +146,8 @@ public class VendorOrderStatsService {
     ORDER BY comp_name, b.cltcd
   """);
 
-    log.info("월별 매출현황 SQL: {}", sql);
-    log.info("SQL Parameters: {}", paramMap.getValues());
+//    log.info("월별 매출현황 SQL: {}", sql);
+//    log.info("SQL Parameters: {}", paramMap.getValues());
     List<Map<String, Object>> items = this.sqlRunner.getRows(sql.toString(), paramMap);
     return items;
   }
@@ -185,7 +185,7 @@ public class VendorOrderStatsService {
 
     // 거래처(업체) 필터: company.id가 정수인 경우 TRY_CAST 사용
     if (cboCompany != null) {
-      sql.append("        AND TRY_CAST(h.cltcd AS int) = :cboCompany\n");
+      sql.append("        AND TRY_CAST(j.clttype AS int) = :cboCompany\n");
     }
     sql.append(")\n");
 
@@ -215,8 +215,8 @@ public class VendorOrderStatsService {
      ORDER BY clt_name
   """);
 
-     log.info("월별 매입현황 SQL: {}", sql);
-     log.info("SQL Parameters: {}", paramMap.getValues());
+//     log.info("월별 매입현황 SQL: {}", sql);
+//     log.info("SQL Parameters: {}", paramMap.getValues());
     return this.sqlRunner.getRows(sql.toString(), paramMap);
   }
 
@@ -305,10 +305,11 @@ public class VendorOrderStatsService {
          AND h.reqnum  = j.reqnum
         WHERE j.spjangcd = :spjangcd
           AND SUBSTRING(j.reqdate, 1, 4) IN (:cboYear, :prevYear)
+           AND j.clttype IS NOT NULL AND LTRIM(RTRIM(j.clttype)) <> ''
     """);
 
     if (cboCompany != null) {
-      sql.append("      AND TRY_CAST(h.cltcd AS int) = :cboCompany\n");
+      sql.append("      AND TRY_CAST(j.clttype AS int) = :cboCompany\n");
     }
     sql.append("""
       ),
@@ -329,8 +330,8 @@ public class VendorOrderStatsService {
       ORDER BY mo.m
     """);
 
-     log.info("전년대비 월별 매입차트 SQL: {}", sql);
-     log.info("SQL Parameters: {}", paramMap.getValues());
+//     log.info("전년대비 월별 매입차트 SQL: {}", sql);
+//     log.info("SQL Parameters: {}", paramMap.getValues());
     return this.sqlRunner.getRows(sql.toString(), paramMap);
 
   }
