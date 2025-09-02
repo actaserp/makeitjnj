@@ -176,6 +176,8 @@ public class RequestController {
 
     // ✅ 1. TB_DA006W 저장 (헤더)
     TB_DA006W_PK pk = new TB_DA006W_PK(custcd, spjangcd, reqdate, reqnum);
+    log.debug("custcd={}, spjangcd={}, reqdate={}, reqnum={}", custcd, spjangcd, reqdate, reqnum);
+
     TB_DA006W head;
     if (isNew) {
       head = new TB_DA006W();
@@ -251,7 +253,6 @@ public class RequestController {
     List<TB_DA007W> oldDetails = tbDa007WRepository.findById_CustcdAndId_SpjangcdAndId_ReqdateAndId_Reqnum(
         custcd, spjangcd, reqdate, reqnum);
     tbDa007WRepository.deleteAll(oldDetails);
-    //tbDa007WRepository.deleteByPk(custcd, spjangcd, reqdate, reqnum);
 
     List<Map<String, Object>> detailList = (List<Map<String, Object>>) data.get("detailList");
     int seq = 1;
@@ -265,7 +266,7 @@ public class RequestController {
       detail.setModelnm(modelname);
       detail.setPcode(Long.valueOf(modelId)); //모델 코드
       detail.setPname((String) row.get("pname"));
-      detail.setJapcode((String) row.get("mat_code"));
+      detail.setJapcode(parseBigDecimalSafe(row.get("mat_code")));
       detail.setQty(parseDoubleSafe(row.get("qty")));
       detail.setSetamt(parseBigDecimalSafe(row.get("setamt")));
       detail.setSaleamt(parseBigDecimalSafe(row.get("saleamt")));
@@ -576,16 +577,13 @@ public class RequestController {
 
   @GetMapping("/getDetailList")
   public AjaxResult getOrderDetail(
-      @RequestParam("custcd") String custcd,
       @RequestParam("spjangcd") String spjangcd,
-      @RequestParam("reqdate") String reqdate,
       @RequestParam("reqnum") String reqnum,
       HttpServletRequest request) {
 
-    String formattedReqdate = reqdate.replace("-", "");
 
-//    log.info("getDetailList 들어옴 custcd:{},spjangcd:{}, reqdate:{}, reqnum:{}", custcd, spjangcd, formattedReqdate, reqnum);
-    List<Map<String, Object>> detailList = requestService.getOrderDetail(reqnum, formattedReqdate, custcd, spjangcd);
+//    log.info("getDetailList 들어옴 spjangcd:{},  reqnum:{}", spjangcd,  reqnum);
+    List<Map<String, Object>> detailList = requestService.getOrderDetail(reqnum, spjangcd);
 
     AjaxResult result = new AjaxResult();
     result.data = detailList;

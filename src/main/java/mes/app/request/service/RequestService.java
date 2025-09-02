@@ -69,7 +69,8 @@ public class RequestService {
             '모품목' AS part_type,
             b.Version,
             b.StartDate,
-            b.EndDate
+            b.EndDate,
+            null as Description
         FROM bom b
         LEFT JOIN material pm ON pm.id = b.Material_id
         WHERE b.spjangcd = :spjangcd
@@ -95,7 +96,8 @@ public class RequestService {
             '자품목' AS part_type,
             b.Version,
             b.StartDate,
-            b.EndDate
+            b.EndDate,
+            bc.Description 
         FROM bom b
         JOIN bom_comp bc ON bc.BOM_id = b.id
         LEFT JOIN material cm ON cm.id = bc.Material_id
@@ -223,17 +225,15 @@ public class RequestService {
   }
 
 
-  public List<Map<String, Object>> getOrderDetail(String reqnum, String formattedReqdate, String custcd, String spjangcd) {
+  public List<Map<String, Object>> getOrderDetail(String reqnum, String spjangcd) {
     MapSqlParameterSource paramMap = new MapSqlParameterSource();
     paramMap.addValue("reqnum", reqnum);
-    paramMap.addValue("reqdate", formattedReqdate);
-    paramMap.addValue("custcd", custcd);
     paramMap.addValue("spjangcd", spjangcd);
 
     String sql = """
         SELECT 
           h.reqdate,
-             h.deldate ,
+          h.deldate ,
           h.reqnum,
           h.pcode as model_code,
           h.modeltxt as model_name,
@@ -256,8 +256,9 @@ public class RequestService {
           h.projectno,
           h.cltzipcd,
           h.cltaddr,
+          h.ordflag ,
           d.reqseq,
-          d.pcode as item_code,
+          d.japcode as item_code,
           d.pname,
           d.modelnm,
           d.jobflag,
@@ -292,8 +293,6 @@ public class RequestService {
          AND h.custcd   = mh.custcd
          AND h.spjangcd = mh.spjangcd
         WHERE h.reqnum = :reqnum
-          AND h.reqdate = :reqdate
-          AND h.custcd = :custcd
           AND h.spjangcd = :spjangcd
     """;
 

@@ -25,7 +25,7 @@ public class TB_DA007W {
 
     // 8 자재품목코드
     @Column(name = "japcode")
-    private String japcode;
+    private BigDecimal japcode;
 
     // 9 부품명
     @Column(name = "pname")
