@@ -176,7 +176,7 @@ public class RequestController {
 
     // ✅ 1. TB_DA006W 저장 (헤더)
     TB_DA006W_PK pk = new TB_DA006W_PK(custcd, spjangcd, reqdate, reqnum);
-    log.debug("custcd={}, spjangcd={}, reqdate={}, reqnum={}", custcd, spjangcd, reqdate, reqnum);
+//    log.debug("custcd={}, spjangcd={}, reqdate={}, reqnum={}", custcd, spjangcd, reqdate, reqnum);
 
     TB_DA006W head;
     if (isNew) {

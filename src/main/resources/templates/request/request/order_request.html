@@ -1028,7 +1028,7 @@
             const ordflag = String($('#ordflag').val() ?? '').trim();      // 안전 변환
 
             // 수정인데 진행상태(0/빈값이 아님)면 차단
-            if (reqnum && ordflag !== '' && ordflag !== '0') {
+            if (reqnum && ordflag !== '주문접수' && ordflag !== '0' && ordflag !== '') {
               Alert.alert('', '수정은 주문접수일 때만 가능합니다.');
               return;
             }
