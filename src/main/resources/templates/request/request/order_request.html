@@ -2141,17 +2141,13 @@
 
     AjaxUtil.fillSelectOptions($('#searchOrdflag'), 'system_code', 'all', null, 'ordflag','0,1,5');
 
-    function formatNumberInput(inputValue, target) {
+    function formatNumberInput(inputValue, targetSelector) {
       let cleaned = (inputValue || '').toString().replace(/[^\d.]/g, '').replace(/,/g, '');
       let parts = cleaned.split('.');
       let intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       let formatted = parts.length > 1 ? intPart + '.' + parts[1] : intPart;
 
-      if (typeof target === 'string') {
-        $(target).val(formatted);
-      } else {
-        target.val(formatted); // jQuery 객체 지원
-      }
+      $(targetSelector).val(formatted);
     }
 
     let page = null;

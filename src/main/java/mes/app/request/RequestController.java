@@ -220,7 +220,7 @@ public class RequestController {
     head.setIndate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
     head.setTelno((String) data.get("telno"));
     tbDa006WRepository.save(head);
-    log.info("헤더 저장 완료: {}", head);
+//    log.info("헤더 저장 완료: {}", head);
 
     // ✅ 1-1. 모델 이력 저장
     if (modeltxt_history != null && !modeltxt_history.isBlank()) {
