@@ -1231,7 +1231,7 @@
 
                   $row.find('input[name="pname"]').val(bom.mat_name || '');
                   $row.find('input[name="mat_code"]').val(bom.mat_code || '');
-                  $row.find('input[name="setamt"]').val(bom.Description ||'');
+                  formatNumberInput(bom.Description, $row.find('input[name="setamt"]'));
                   $row.find('input[name="SetAmtUnitPrice"]').val('');
                   $row.find('input[name="saleamt"]').val('');
                   $row.find('input[name="QTY"]').val(bom.quantity || '');
@@ -2044,7 +2044,8 @@
       const amount = setsamt * setqty;  //공급계(amount) = 공급기준(setsamt) * 수량(setqty)
       const outamt = sumUamt;   //외주계(outamt)  = 제품가 합계(sum_uamt)
 
-      const eyunamt = amount - outamt;    //이윤(eyunamt) = 공급계(amount) - 외주계(outamt)
+     // const eyunamt = amount - outamt;    //이윤(eyunamt) = 공급계(amount) - 외주계(outamt)
+      const eyunamt = sumSetAmt *  sumQty;    //이윤(eyunamt) = 1set합계(sum_setamt) * 수량(setqty)
       const pereyunamt = sumSetAmt - setsamt;   //개당이윤(pereyunamt) = 1set합계(sum_setamt) - 공급기준(setsamt)
       const eyunyul = setsamt !== 0 ? (pereyunamt / setsamt) * 100 : 0; //이윤율(eyunyul) = 개당이윤(pereyunamt) / 공급기준(setsamt) *100
       const toteyunamt = amount !== 0 ? (eyunamt / amount) * 100 : 0;   //전체이윤(toteyunamt) = 이윤(eyunamt)/공급계(amount) * 100
@@ -2140,13 +2141,17 @@
 
     AjaxUtil.fillSelectOptions($('#searchOrdflag'), 'system_code', 'all', null, 'ordflag','0,1,5');
 
-    function formatNumberInput(inputValue, targetSelector) {
-      let cleaned = inputValue.replace(/[^\d.]/g, '').replace(/,/g, ''); // 숫자, 소수점만
+    function formatNumberInput(inputValue, target) {
+      let cleaned = (inputValue || '').toString().replace(/[^\d.]/g, '').replace(/,/g, '');
       let parts = cleaned.split('.');
       let intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       let formatted = parts.length > 1 ? intPart + '.' + parts[1] : intPart;
 
-      $(targetSelector).val(formatted);
+      if (typeof target === 'string') {
+        $(target).val(formatted);
+      } else {
+        target.val(formatted); // jQuery 객체 지원
+      }
     }
 
     let page = null;
