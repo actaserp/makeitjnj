@@ -858,7 +858,7 @@
         const pop = new PopMatComponent();
         pop.material_group  = 21;
         pop.show(function (item) {
-          console.log('[팝업 선택된 부품 데이터]', item);  // ✅ 콘솔 출력
+          // console.log('[팝업 선택된 부품 데이터]', item);  // ✅ 콘솔 출력
 
           $pname.val(item.Name);
           $productId.val(item.id);
@@ -974,7 +974,7 @@
             product_code: $('#product_code').val(),
             modeltxt_history :$('#modeltxt_history').val(),
           };
-          console.info("저장 데이터 : ", defaultData) ;
+          // console.info("저장 데이터 : ", defaultData) ;
           let detailList = [];
           $('#OrderRequestForm tbody tr').each(function () {
             let $row = $(this);
@@ -1178,7 +1178,7 @@
           let poppage = new PopCompComponent();
           let $poppage = $(poppage);
           let searchcallback = function (items) {
-            console.log('items : ', items);
+            // console.log('items : ', items);
             document.getElementById('cboCompany').value = items.compcode; //체번 코드
             document.getElementById('CompanyName').value = items.compname;
             document.getElementById('cboCompanyHidden').value = items.id; //cltcd
@@ -1199,7 +1199,7 @@
           poppage.material_group = 20;
 
           let searchcallback = function (items) {
-            console.log('items : ', items);
+            // console.log('items : ', items);
             document.getElementById('product_code').value = items.Code;
             document.getElementById('Material_id').value = items.id;
             document.getElementById('modeltxt').value = items.Name;
@@ -1258,7 +1258,7 @@
           let modeltxtVal = $('#modeltxt').val();
 
           let searchcallback = function (item) {
-            console.log('모델이력 팝업', item);
+            // console.log('모델이력 팝업', item);
           }
           poppage.show(searchcallback, {
             modelid: modelidVal,
@@ -1398,7 +1398,7 @@
         // ✅ Selector 설치 및 해당 컬럼에 바인딩
         const selector = new Selector(this.grid, {
           itemChecked: () => {
-            console.log("✅ 체크박스 선택됨!");
+            // console.log("✅ 체크박스 선택됨!");
           }
         });
         //selector.column = cbCol; // 체크박스가 cbCol에 표시되도록 지정
@@ -1627,7 +1627,7 @@
       saveAllUnitPrices(detailList, cltcd) {
         const promises = [];
 
-        console.log('[단가 저장 대상 전체]', detailList);
+        // console.log('[단가 저장 대상 전체]', detailList);
 
         detailList.forEach(item => {
           const pcode = item.dMaterial_id || '';  // ✅ 수정
@@ -1637,11 +1637,11 @@
           if (!pcode || puamt === '') return; // ✅ 수정
 
           const data = { pcode, pname, puamt, cltcd };
-          console.log('🔸 단가 저장 요청:', data);
+          // console.log('🔸 단가 저장 요청:', data);
           const promise = new Promise((resolve, reject) => {
             AjaxUtil.postAsyncData('/api/request/request/SaveUnitPrice', data, function (res) {
               if (res.success) {
-                console.log('✅ 단가 저장 완료:', data);
+                // console.log('✅ 단가 저장 완료:', data);
                 resolve();
               } else {
                 console.warn('❌ 단가 저장 실패:', data, res);
@@ -1663,7 +1663,7 @@
         if (jsonDataBlob instanceof Blob) {
           jsonDataBlob.text().then(text => {
             const parsed = JSON.parse(text);
-            console.log('[jsonData 내용 확인]', parsed);
+            // console.log('[jsonData 내용 확인]', parsed);
           });
         }
 
@@ -1675,12 +1675,12 @@
                 const parsed = JSON.parse(e.target.result);
                 console.log(`[FormData] ${pair[0]} (Blob/JSON):`, parsed);
               } catch (err) {
-                console.warn(`[FormData] ${pair[0]} (Blob/Text):`, e.target.result);
+                // console.warn(`[FormData] ${pair[0]} (Blob/Text):`, e.target.result);
               }
             };
             reader.readAsText(pair[1]);
           } else {
-            console.log(`[FormData] ${pair[0]}:`, pair[1]);
+            // console.log(`[FormData] ${pair[0]}:`, pair[1]);
           }
         }
 
@@ -1760,9 +1760,9 @@
           );
 
           // ✅ 디버깅 로그
-          console.log('그룹핑 대상 수:', result.data.length);
-          console.log('reqnum 리스트:', result.data.map(d => d.reqnum));
-          console.log('reqdate 리스트:', result.data.map(d => d.reqdate));
+          // console.log('그룹핑 대상 수:', result.data.length);
+          // console.log('reqnum 리스트:', result.data.map(d => d.reqnum));
+          // console.log('reqdate 리스트:', result.data.map(d => d.reqdate));
 
           // ✅ 바인딩
           _this.viewData = viewdata;
@@ -1792,7 +1792,7 @@
 
     function bindOrderDetailToForm(data) {
       if (!data || data.length === 0) return;
-      console.info("더블 클릭 데이터 : ", data);
+      // console.info("더블 클릭 데이터 : ", data);
       // 헤더 정보는 첫 번째 row 기준
       const header = data[0];
 
@@ -1867,6 +1867,28 @@
 
     // 합계 계산
     function updateSummaryFields() {
+     let sumSetAmt = 0, sumSaleAmt = 0, sumQty = 0, sumUamt = 0;
+
+     $('#OrderRequestForm tbody tr').each(function () {
+      const $row = $(this);
+
+      const setamt = parseFloat(($row.find('input[name="setamt"]').val() || '').replace(/,/g, '')) || 0;
+      const saleamt = parseFloat(($row.find('input[name="saleamt"]').val() || '').replace(/,/g, '')) || 0;
+      const qty = parseFloat(($row.find('input[name="QTY"]').val() || '').replace(/,/g, '')) || 0;
+      const uamt = parseFloat(($row.find('input[name="uamt"]').val() || '').replace(/,/g, '')) || 0;
+
+      sumSetAmt += setamt;
+      sumSaleAmt += saleamt;
+      sumQty += qty;
+      sumUamt += uamt;
+     });
+
+     $('#sum_setamt').val(sumSetAmt.toLocaleString());
+     $('#sum_saleamt').val(sumSaleAmt.toLocaleString());
+     $('#sum_qty').val(sumQty.toLocaleString());
+     $('#sum_uamt').val(sumUamt.toLocaleString());
+    }
+    /*function updateSummaryFields() {
       let sumSetAmt = 0, sumSaleAmt = 0, sumQty = 0, sumUamt = 0;
 
       $('#OrderRequestForm tbody tr').each(function () {
@@ -1881,7 +1903,7 @@
       $('#sum_saleamt').val(sumSaleAmt.toLocaleString());
       $('#sum_qty').val(sumQty.toLocaleString());
       $('#sum_uamt').val(sumUamt.toLocaleString());
-    }
+    }*/
 
     function addComma(value) {
       if (!value) return '0';
@@ -2030,6 +2052,7 @@
         sumSaleAmt += saleamt;
         sumQty += qty;
         sumUamt += uamt;
+
       });
 
       // 🔹 합계 표시
@@ -2276,8 +2299,8 @@
       getHoliday();
 
       $('a[href="#tab2"]').on('click', function (e) {
-        console.log('탭2 검색 버튼 클릭됨');
-        console.log($('#btnTab2Search').length);  // 1이 나와야 정상
+        // console.log('탭2 검색 버튼 클릭됨');
+        // console.log($('#btnTab2Search').length);  // 1이 나와야 정상
         $('#btnTab2Search').trigger('click');
       });
 

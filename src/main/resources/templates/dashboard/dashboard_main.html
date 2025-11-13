@@ -1063,7 +1063,7 @@
                   const LastYearCnt  = data2.LastYearCnt || [];
                   const ThisYearCnt  = data2.ThisYearCnt || [];
 
-// request (ordflag=0): 전년 대비 증감
+                // request (ordflag=0): 전년 대비 증감
                   {
                     const last0 = getTotalByFlag(LastYearCnt, 0);
                     const curr0 = getTotalByFlag(ThisYearCnt, 0);
@@ -1072,13 +1072,13 @@
                     setCardCount('request', `${arrow} ${diff0.toLocaleString()} <span class="unit">건</span>`);
                   }
 
-// check (ordflag=1): 올해 건수
+                // check (ordflag=1): 올해 건수
                   {
                     const curr1 = getTotalByFlag(ThisYearCnt, 1);
                     setCardCount('check', `${curr1.toLocaleString()} <span class="unit">건</span>`);
                   }
 
-// order/product/delivery는 주석 상태 → 존재할 때만 갱신
+                  // order/product/delivery는 주석 상태 → 존재할 때만 갱신
                   const exists = sel => document.querySelector(sel);
 
                   if (exists('.order dl dd')) {
