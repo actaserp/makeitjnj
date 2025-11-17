@@ -14,10 +14,7 @@ import mes.domain.repository.actasRepository.ModelHistoryRepository;
 import mes.domain.repository.actasRepository.TB_DA006WFILERepository;
 import mes.domain.repository.actasRepository.TB_DA006WRepository;
 import mes.domain.repository.actasRepository.TB_DA007WRepository;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -704,6 +701,9 @@ public class RequestController {
         setCell(sheet, 16, 2, String.valueOf(mailDeta.get("modeltxt")));
         setCell(sheet, 16, 9, String.valueOf(mailDeta.get("setqty")));
         setCell(sheet, 16, 18, String.valueOf(mailDeta.get("setsamt")));
+
+        FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+        evaluator.evaluateAll();
 
         workbook.write(fos);
       } catch (Exception e) {
