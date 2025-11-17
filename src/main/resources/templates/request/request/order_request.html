@@ -250,20 +250,20 @@
               <tr>
                 <th style="text-align: center">
                   <label for="setsamt">
-                    공급기준
+                    SET 공급단가
                   </label>
                 </th>
                 <td>
-                  <input type="text" id="setsamt" name="setsamt" style="width: 100%">
+                  <input type="text" id="setsamt" name="setsamt" style="width: 100%" placeholder="SET 공급단가">
                 </td>
 
                 <th style="text-align: center">
                   <label for="setqty">
-                    수량
+                    SET 수량
                   </label>
                 </th>
                 <td>
-                  <input type="text" id="setqty" name="setqty" style="width: 200px">
+                  <input type="text" id="setqty" name="setqty" style="width: 200px" placeholder="SET 수량">
                 </td>
 
                 <th style="text-align: center">
@@ -272,54 +272,54 @@
                   </label>
                 </th>
                 <td>
-                  <input type="text" id="amount" name="amount" style="width: 200px">
+                  <input type="text" id="amount" name="amount" style="width: 200px" readonly>
                 </td>
 
                 <th style="text-align: center">
                   <label for="outamt">
-                    외주계
+                    외주합계
                   </label>
                 </th>
                 <td>
-                  <input type="text" id="outamt" name="outamt" style="width: 200px">
+                  <input type="text" id="outamt" name="outamt" style="width: 200px" readonly>
                 </td>
               </tr>
 
               <tr>
                 <th style="text-align: center">
                   <label for="eyunamt">
-                    이윤
-                  </label>
-                </th>
-                <td>
-                  <input type="text" id="eyunamt" name="eyunamt" style="width: 100%">
-                </td>
-
-                <th style="text-align: center">
-                  <label for="pereyunamt">
                     개당이윤
                   </label>
                 </th>
                 <td>
-                  <input type="text" id="pereyunamt" name="pereyunamt" style="width: 200px">
+                  <input type="text" id="eyunamt" name="eyunamt" style="width: 100%" readonly>
+                </td>
+
+                <th style="text-align: center">
+                  <label for="pereyunamt">
+                    개당이윤율
+                  </label>
+                </th>
+                <td>
+                  <input type="text" id="pereyunamt" name="pereyunamt" style="width: 200px" readonly>
                 </td>
 
                 <th style="text-align: center">
                   <label for="eyunyul">
-                    이윤율
-                  </label>
-                </th>
-                <td>
-                  <input type="text" id="eyunyul" name="eyunyul" style="width: 200px">
-                </td>
-
-                <th style="text-align: center">
-                  <label for="toteyunamt">
                     전체이윤
                   </label>
                 </th>
                 <td>
-                  <input type="text" id="toteyunamt" name="toteyunamt" style="width: 200px">
+                  <input type="text" id="eyunyul" name="eyunyul" style="width: 200px" readonly>
+                </td>
+
+                <th style="text-align: center">
+                  <label for="toteyunamt">
+                    전체이윤율
+                  </label>
+                </th>
+                <td>
+                  <input type="text" id="toteyunamt" name="toteyunamt" style="width: 200px" readonly >
                 </td>
               </tr>
 
@@ -398,7 +398,7 @@
                   <th>1set/원가</th>
                   <th>판매단가</th>
                   <th>수량</th>
-                  <th>제품가</th>
+                  <th>외주계(제품가)</th>
                   <th >
                     <a class="btn in_btn plus" id="addRemark" title="추가" style="width:30px; height:35px;">
                       <img src="/images/icon/ico-plus.svg" alt="등록 아이콘"
@@ -440,7 +440,7 @@
                   </td>
                   <td><input type="text" name="saleamt" placeholder="판매단가" style="width: 100%;"/></td>
                   <td><input type="text" name="QTY" placeholder="수량" style="width: 100%;"/></td>
-                  <td><input type="text" name="uamt" placeholder="제품가" style="width: 100%;"/></td>
+                  <td><input type="text" name="uamt" placeholder="외주계(제품가)" style="width: 100%;"/></td>
                   <td class="al_c item_border" style="text-align: center; vertical-align: middle;">
                     <a class="btn in_btn del" title="행 삭제"
                        style="display: flex; justify-content: center; align-items: center; width: 35px; height: 35px; margin: 0 auto;">
@@ -2023,7 +2023,7 @@
       setDay();  // 초기 실행
     }
 
-    function updateOrderSummary() {
+   /* function updateOrderSummary() {
       let sumSetAmt = 0;
       let sumSaleAmt = 0;
       let sumQty = 0;
@@ -2068,8 +2068,8 @@
       const outamt = sumUamt;   //외주계(outamt)  = 제품가 합계(sum_uamt)
 
      // const eyunamt = amount - outamt;    //이윤(eyunamt) = 공급계(amount) - 외주계(outamt)
-      const eyunamt = sumSetAmt *  sumQty;    //이윤(eyunamt) = 1set합계(sum_setamt) * 수량(setqty)
-      const pereyunamt = sumSetAmt - setsamt;   //개당이윤(pereyunamt) = 1set합계(sum_setamt) - 공급기준(setsamt)
+      const eyunamt = sumSetAmt *  sumQty;    //이윤(eyunamt) = set합계(sum_setamt) * 수량(setqty)
+      const pereyunamt = sumSetAmt - setsamt;   //개당이윤(pereyunamt) = set합계(sum_setamt) - 공급기준(setsamt)
       const eyunyul = setsamt !== 0 ? (pereyunamt / setsamt) * 100 : 0; //이윤율(eyunyul) = 개당이윤(pereyunamt) / 공급기준(setsamt) *100
       const toteyunamt = amount !== 0 ? (eyunamt / amount) * 100 : 0;   //전체이윤(toteyunamt) = 이윤(eyunamt)/공급계(amount) * 100
 
@@ -2080,6 +2080,99 @@
       $('#eyunyul').val(Math.abs(eyunyul).toFixed(2));
 
       $('#toteyunamt').val(toteyunamt.toFixed(2));
+    }*/
+
+    function updateOrderSummary() {
+     let sumSetAmt = 0;
+     let sumSaleAmt = 0;
+     let sumQty = 0;
+     let sumUamt = 0; // ★ 외주합계(= Σ(행 외주계))
+
+     $('#OrderRequestForm tbody tr').each(function () {
+      const $row = $(this);
+
+      if ($row.hasClass('item-template-row') || $row.hasClass('sum-row')) return;
+
+      const setamtVal  = ($row.find('input[name^="setamt"]').val()  || '').replace(/,/g, '');
+      const saleamtVal = ($row.find('input[name^="saleamt"]').val() || '').replace(/,/g, '');
+      const qtyVal     = ($row.find('input[name^="QTY"]').val()     || '').replace(/,/g, '');
+      const $uamtInput = $row.find('input[name^="uamt"]');
+
+      // ★ 행이 비어있는지 체크 (uamt는 자동계산이라 체크 대상에서 제외)
+      const isEmptyRow = [setamtVal, saleamtVal, qtyVal].every(v => v.trim() === '');
+      if (isEmptyRow) {
+       $uamtInput.val('');
+       return;
+      }
+
+      const setamt  = parseFloat(setamtVal)  || 0;
+      const saleamt = parseFloat(saleamtVal) || 0;
+      const qty     = parseFloat(qtyVal)     || 0;
+
+      // 합계 누적
+      sumSetAmt  += setamt;
+      sumSaleAmt += saleamt;
+      sumQty     += qty;
+
+      // 🔹 외주계(행) = 1set/원가(setamt) * 수량(qty)
+      const rowUamt = setamt * qty;
+
+      // 🔹 행의 uamt(외주계/제품가) 칸에 세팅
+      if (rowUamt !== 0) {
+       $uamtInput.val(rowUamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
+      } else {
+       $uamtInput.val('');
+      }
+
+      // 🔹 외주합계 누적
+      sumUamt += rowUamt;
+     });
+
+     // 🔹 합계 표시
+     $('#sum_setamt').val(sumSetAmt.toLocaleString());
+     $('#sum_saleamt').val(sumSaleAmt.toLocaleString());
+     $('#sum_qty').val(sumQty.toLocaleString());
+     $('#sum_uamt').val(sumUamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
+
+     // 🔹 헤더 기준값
+     const setsamt = parseFloat(($('#setsamt').val() || '').replace(/,/g, '')) || 0;
+     const setqty  = parseFloat(($('#setqty').val()  || '').replace(/,/g, '')) || 0;
+
+     // ● 공급계 = Set공급단가 * Set수량
+     const amount = setsamt * setqty;
+
+     // ● 외주합계 = 외주계 합계
+     const outamt = sumUamt;
+
+     // ● 전체이윤 = 공급계 - 외주합계
+     const eyunamt = amount - outamt;
+
+     // ● 개당이윤 = Set공급단가 - Set합계
+     const pereyunamt = setsamt - sumSetAmt;
+
+     // ● 개당이윤율 = 개당이윤 / Set공급단가 * 100
+     const eyunyul = setsamt !== 0 ? (pereyunamt / setsamt) * 100 : 0;
+
+     // ● 전체이윤율 = 전체이윤 / 공급계 * 100
+     const toteyunamt = amount !== 0 ? (eyunamt / amount) * 100 : 0;
+
+     // 🔹 표시
+     // 🔹 공급계 / 외주합계
+     $('#amount').val(amount.toLocaleString(undefined, { maximumFractionDigits: 2 }));
+     $('#outamt').val(outamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
+
+     // 🔹 개당이윤 (원)  -> 라벨: 개당이윤
+     $('#eyunamt').val(pereyunamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
+
+     // 🔹 개당이윤율 (%)  -> 라벨: 개당이윤율
+     $('#pereyunamt').val(eyunyul.toFixed(2));
+
+     // 🔹 전체이윤 (원)  -> 라벨: 전체이윤
+     $('#eyunyul').val(eyunamt.toLocaleString(undefined, { maximumFractionDigits: 2 }));
+
+     // 🔹 전체이윤율 (%) -> 라벨: 전체이윤율
+     $('#toteyunamt').val(toteyunamt.toFixed(2));
+
     }
 
     function clearForm() {

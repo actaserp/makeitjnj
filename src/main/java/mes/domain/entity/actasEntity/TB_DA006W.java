@@ -124,7 +124,7 @@ public class TB_DA006W {
 
     // 30 개당이윤
     @Column(name = "pereyunamt")
-    private Long pereyunamt;
+    private BigDecimal pereyunamt;
 
     // 31 이윤율
     @Column(name = "eyunyul")

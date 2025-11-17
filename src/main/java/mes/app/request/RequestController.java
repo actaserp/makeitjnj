@@ -191,6 +191,7 @@ public class RequestController {
     }
     Object toteyunamtObj = data.get("toteyunamt");
     Object eyunyulObj = data.get("eyunyul");
+    Object pereyunamt = data.get("pereyunamt");
     head.setId(pk);
     head.setCltcd(String.valueOf(data.get("cboCompanyHidden")));
     head.setCltnm((String) data.get("CompanyName"));  //회사이름
@@ -207,13 +208,16 @@ public class RequestController {
     head.setAmount(Long.parseLong((String) data.get("amount")));    //공급계
     head.setOutamt(Long.parseLong((String) data.get("outamt")));    //외주계
     head.setEyunamt(Long.parseLong((String) data.get("eyunamt")));  //이윤
-    head.setPereyunamt(Long.parseLong((String) data.get("pereyunamt")));  //개당이윤율
+//    head.setPereyunamt(Long.parseLong((String) data.get("pereyunamt")));  //개당이윤율
     head.setOrdflag("0"); //0 : 주문의뢰 1:견적작성 2:제작 3:출고
     if (eyunyulObj != null && !eyunyulObj.toString().isBlank()) {
       head.setEyunyul(new BigDecimal(eyunyulObj.toString()));
     }  //이윤율
     if (toteyunamtObj != null) {
       head.setToteyunamt(new BigDecimal(toteyunamtObj.toString()));
+    }
+    if (pereyunamt != null && !pereyunamt.toString().isBlank()) {
+      head.setPereyunamt(new BigDecimal(pereyunamt.toString()));
     }
     head.setProjectno((String) data.get("projectno"));
     head.setInperid(user.getUsername());
